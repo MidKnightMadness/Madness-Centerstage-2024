@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package com.acmerobotics.dashboard.DashboardSamples;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
