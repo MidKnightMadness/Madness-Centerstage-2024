@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
-import com.acmerobotics.dashboard.config.Config;
+//import com.acmerobotics.dashboard.config.Config;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,15 +12,18 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import java.util.concurrent.TimeUnit;
-@Config
+//@Config
 public class Odometry implements Runnable{ // "implements runnable" is for multithreading
 
     //All variables mentioned here will be addessed as "this.VARIABLE_NAME"
 
     //Constants
-    double inPerTick = 0.00220075; // 1 - 7 recalibrated distances\\
-    double verticalWheelDistance = 5.0; // 1 - 7 recalibrated dimensions
-    double lateralWheelDistance = 12.50; // 1 - 7 recalibrated dimensions
+    // Same for now
+    double inPerTickLeft = 0.00097656;
+    double inPerTickRight = 0.00097656;
+    double inPerTickCenter = 0.00097656;
+    double verticalWheelDistance = 1.5;
+    double lateralWheelDistance = 13.50 * 4.0 / 3.0;
 
 
     //Tracking Time
@@ -89,7 +94,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         elapsedTime = new ElapsedTime();
 
         //Initialize Motors
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "Left Encoder");
+        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
         rightEncoder = hardwareMap.get(DcMotorEx.class, "Right Encoder");
         horizontalEncoder = hardwareMap.get(DcMotorEx.class, "Center Encoder");
 
@@ -107,9 +112,9 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         //Implementing low pass filter for smoothing
         //Note: change coefficients to make filter more/less responsive
-        leftTicks = (int) (0.5 * leftEncoder.getCurrentPosition()+ 0.5 * prevLeft);
-        rightTicks = (int) (-0.5 * rightEncoder.getCurrentPosition() + 0.5 * prevRight);
-        topTicks = (int) (0.5 * horizontalEncoder.getCurrentPosition() + 0.5 * prevFront);
+        leftTicks = (int) (-0.5 * leftEncoder.getCurrentPosition()+ 0.5 * lastLeftTicks);
+        rightTicks = (int) (-0.5 * rightEncoder.getCurrentPosition() + 0.5 * lastRightTicks);
+        topTicks = (int) (0.5 * horizontalEncoder.getCurrentPosition() + 0.5 * lastTopTicks);
 
         //calculate change in tick reading
         deltaLeftTicks = leftTicks - lastLeftTicks;
@@ -122,14 +127,14 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         lastTopTicks = topTicks;
 
         // raw distance from each encoder
-        leftDistanceMoved = inPerTick * deltaLeftTicks;
-        rightDistanceMoved = inPerTick * deltaRightTicks;
-        topDistanceMoved = inPerTick * deltaTopTicks;
+        leftDistanceMoved = inPerTickLeft * deltaLeftTicks;
+        rightDistanceMoved = inPerTickRight * deltaRightTicks;
+        topDistanceMoved = inPerTickCenter * deltaTopTicks;
 
         // calculate change in angles
-        deltaRadians = -getDeltaRotation(leftDistanceMoved, rightDistanceMoved);
+        deltaRadians = -(90.0 / 91.8) * getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
         angularVelocity = deltaRadians / deltaTime;
-        rotationRadians += .5 * deltaRadians; //Finding integral part 1
+        rotationRadians += deltaRadians; //Finding integral part 1
 
         //average left and right encoder distance
         forwardMovement = (leftDistanceMoved + rightDistanceMoved) / 2.0;
@@ -148,8 +153,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         //Calculating final x and y
         //Note: Changed signs since was reversed, had to re-swap variables
-        this.position.x += netX;
-        this.position.y += netY;
+        this.position.x -= (12.0 / 10.75) * netX;
+        this.position.y += (12.0 / 10.75) * netY;
 
         //getting x and y velocities
         velocity.x = netX / deltaTime;

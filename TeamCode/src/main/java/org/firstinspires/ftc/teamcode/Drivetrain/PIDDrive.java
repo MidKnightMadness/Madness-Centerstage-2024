@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+//import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -12,7 +12,7 @@ public class PIDDrive{
     // Auxillary variables (low pass, PID, etc...), currently hardcoded since no real need to do otherwise
     public double [] previousInputs;
     public static final double LOW_PASS_LATENCY = 0.5;
-    private TelemetryPacket telemetryPacket;
+    //    private TelemetryPacket telemetryPacket;
 
     // PID
     double [] P = {0.2, 0.2, -1.0};
@@ -146,5 +146,16 @@ public class PIDDrive{
         this.targetState [0] = targetX;
         this.targetState [1] = targetY;
         this.targetState [2] = targetRadians;
+    }
+
+    public double gainScheduling(double t){ // For t from 0 to 1
+        // For point to point, t represents distance from starting to ending point
+        if(0.00 <= t && t < 0.25){
+            return 4.0 * t;
+        }else if(0.25 <= t && t < 0.75){
+            return 1.0;
+        }else{
+            return 4.0 - 4.0*t;
+        }
     }
 }

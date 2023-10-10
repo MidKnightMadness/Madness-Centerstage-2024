@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Drivetrain;
 
 import static java.lang.Thread.sleep;
 
-import com.acmerobotics.dashboard.FtcDashboard;
+//import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -44,9 +44,9 @@ public class MecanumDrive {
     // Turning right is FL clockwise, FR clockwise, BL clockwise, BR clockwise
 
     // FR was being weird
-    public static final double [] FORWARD = {1.0, 1.0, 1.0, -1.0};
-    public static final double [] RIGHT = {1.0, -1.0, -1.0, -1.0};
-    public static final double [] CLOCKWISE = {1.0, -1.0, 1.0, 1.0};
+    public static final double [] FORWARD = {1.0, -1.0, 1.0, 1.0};
+    public static final double [] RIGHT = {1.0, 1.0, -1.0, 1.0};
+    public static final double [] CLOCKWISE = {1.0, 1.0, 1.0, -1.0};
     public static final double POWER_MULTIPLIER = 1.0;
 
     // Inputs and power constraints
@@ -102,15 +102,15 @@ public class MecanumDrive {
         telemetry.addData("X", x);
         telemetry.addData("Y", y);
 
-        telemetry.addData("FL", motorInputs [2] * 1.41);
-        telemetry.addData("FR", motorInputs [1] * 1.41);
-        telemetry.addData("BL", motorInputs [0] * 1.41);
-        telemetry.addData("BR", motorInputs [3] * 1.41);
+        telemetry.addData("FL", motorInputs [0]);
+        telemetry.addData("FR", motorInputs [1]);
+        telemetry.addData("BL", motorInputs [2]);
+        telemetry.addData("BR", motorInputs [3]);
 
-        BL.setPower( motorInputs [0] * 2.0);
-        FR.setPower( motorInputs [1] * 2.0);
-        FL.setPower( motorInputs [2] * 2.0);
-        BR.setPower( motorInputs [3] * 2.0);
+        FL.setPower( motorInputs [0]);
+        FR.setPower( motorInputs [1]);
+        BL.setPower( motorInputs [2]);
+        BR.setPower( motorInputs [3]);
     }
 
     // Built-in ow pass for autonomous purposes
@@ -154,15 +154,15 @@ public class MecanumDrive {
         telemetry.addData("X", newX);
         telemetry.addData("Y", newY);
 
-        telemetry.addData("FL", motorInputs [2]);
+        telemetry.addData("FL", motorInputs [0]);
         telemetry.addData("FR", motorInputs [1]);
-        telemetry.addData("BL", motorInputs [0]);
+        telemetry.addData("BL", motorInputs [2]);
         telemetry.addData("BR", motorInputs [3]);
         telemetry.addData("Low pass latency", 0.5);
 
-        BL.setPower(motorInputs [0]);
+        FL.setPower(motorInputs [0]);
         FR.setPower(motorInputs [1]);
-        FL.setPower(motorInputs [2]);
+        BL.setPower(motorInputs [2]);
         BR.setPower(motorInputs [3]);
     }
 }
