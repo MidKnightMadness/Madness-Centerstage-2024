@@ -104,6 +104,7 @@ public class SensorMRColor extends LinearOpMode {
 
       if (rgbBuffer.size() == BUFFER_SIZE) {
         RGBColor average = RGBColor.average(rgbBuffer);
+        average.normalizeRGB();
         rgbBuffer.clear();
         telemetry.addData("RGBA", average);
         telemetry.update();

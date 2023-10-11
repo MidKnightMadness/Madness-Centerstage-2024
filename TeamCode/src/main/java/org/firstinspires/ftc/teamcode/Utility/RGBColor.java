@@ -73,6 +73,24 @@ public class RGBColor {
             bSum += colors.get(i).b;
             aSum += colors.get(i).a;
         }
+
         return new RGBColor(rSum / length, gSum / length, bSum / length, aSum / length);
+    }
+
+    // Clamp RGB values to 0-255
+    public RGBColor normalizeRGB() {
+        float magnitude = (float) Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
+        float adjustedMagnitude = magnitude / 255f;
+
+        this.r /= adjustedMagnitude;
+        this.g /= adjustedMagnitude;
+        this.b /= adjustedMagnitude;
+
+        return this;
+    }
+
+    public void normalizeRGBA() {
+        float magnitude = this.r * this.r + this.g * this.g + this.b * this.b;
+
     }
 }
