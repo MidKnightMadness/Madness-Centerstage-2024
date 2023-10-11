@@ -14,22 +14,31 @@ public class PIDDrive{
     public static final double LOW_PASS_LATENCY = 0.5;
     //    private TelemetryPacket telemetryPacket;
 
-    // PID
-    double [] P = {0.2, 0.2, -1.0};
-    double [] I = {0.1, 0.1, -0.15};
+    // PID for spline driving
+//    double [] P = {0.2, 0.2, -1.0};
+//    double [] I = {0.1, 0.1, -0.15};
+//    final double integralDecay = 0.95;
+//    double [] D = {0.35, 0.35, 0.25};
+//    double [] D2 = {0.0, 0.0, 0.0};
+//    double [] cumulativeError = {0.0, 0.0, 0.0};
+
+    // For non-spline-path driving - Mayhem chassis 2022
+//    double [] P = {0.15, 0.15, -1.0};
+//    double [] I = {0.4, 0.4, -0.075};
+//    final double integralDecay = 0.95;
+//    double [] D = {0.1, 0.1, -0.05};
+//    double [] D2 = {0.75, 0.75, -0.05};
+//    double [] cumulativeError = {0.0, 0.0, 0.0};
+
+
+    // For non-spline-path driving - Madness robot 2022
+    double [] P = {0.5, 0.5, 0.0};
+    double [] I = {0.0, 0.0, 0.0};
     final double integralDecay = 0.95;
-    double [] D = {0.35, 0.35, 0.25};
-    double [] D2 = {0.0, 0.0, 0.0};
+    double [] D = {0.05, 0.05, 0.0};
+    double [] D2 = {0.6, 0.6, 0.0};
     double [] cumulativeError = {0.0, 0.0, 0.0};
 
-    /* For non-spline-path driving
-    double [] P = {0.15, 0.15, -1.0};
-    double [] I = {0.4, 0.4, -0.075};
-    final double integralDecay = 0.95;
-    double [] D = {0.1, 0.1, -0.05};
-    double [] D2 = {0.75, 0.75, -0.05};
-    double [] cumulativeError = {0.0, 0.0, 0.0};
-    */
 
     // Navigational variables
     double [] delta = {0.0, 0.0, 0.0};
@@ -57,6 +66,8 @@ public class PIDDrive{
         odometry.updatePosition();
 
         // Output data (was used in testing)
+        telemetry.addLine("\nupdated5");
+        telemetry.addData("Update rate", 1.0 / odometry.deltaTime);
         telemetry.addData("\nPID ======================\nLeft", odometry.leftTicks);
         telemetry.addData("Right", odometry.rightTicks);
         telemetry.addData("Front", odometry.topTicks);
@@ -69,10 +80,20 @@ public class PIDDrive{
         telemetry.addData("Target y", this.targetState [1]);
         telemetry.addData("Target angle", this.targetState [2] * 180.0 / Math.PI);
 
+        telemetry.addData("\nproportional x gain", (targetState [0] - odometry.getXCoordinate()) * P [0]);
+        telemetry.addData("proportional y gain", (targetState [1] - odometry.getYCoordinate()) * P [1]);
+
         telemetry.addData("\nintegral x gain", cumulativeError [0]);
         telemetry.addData("integral y gain", cumulativeError [1]);
-        telemetry.addData("angular y gain", cumulativeError [2]);
+        telemetry.addData("integral angular gain", cumulativeError [2]);
 
+        if(distanceToTarget - lastDistanceToTarget < 0.0) { // If approaching target
+            telemetry.addData("\nderivative x gain", odometry.getVelocity().x * D[0]);
+            telemetry.addData("derivative y gain", odometry.getVelocity().y * D[0]);
+        }else{
+            telemetry.addData("\nderivative x gain", odometry.getVelocity().x * D2[0]);
+            telemetry.addData("derivative y gain", odometry.getVelocity().y * D2[0]);
+        }
         // Proportional component, x and y
         delta [0] = (targetState [0] - odometry.getXCoordinate()) * P [0];
         delta [1] = (targetState [1] - odometry.getYCoordinate()) * P [1];
@@ -98,8 +119,8 @@ public class PIDDrive{
             delta [1] -= odometry.getVelocity().y * D [1];
         }else{ // If overshooting target
             // Overshoot handled here (will affect first tick leaving a target point to go to next target)
-            delta [0] -= odometry.getVelocity().x * D [0];
-            delta [1] -= odometry.getVelocity().y * D [1];
+            delta [0] -= odometry.getVelocity().x * D2 [0];
+            delta [1] -= odometry.getVelocity().y * D2 [1];
         }
         // Turning doesn't have have the same overshooting issues, so just do velocity gain calculations
         delta [2] += odometry.angularVelocity * D [2];

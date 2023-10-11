@@ -132,7 +132,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         topDistanceMoved = inPerTickCenter * deltaTopTicks;
 
         // calculate change in angles
-        deltaRadians = -(90.0 / 91.8) * getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
+        deltaRadians = -getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
         angularVelocity = deltaRadians / deltaTime;
         rotationRadians += deltaRadians; //Finding integral part 1
 

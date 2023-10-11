@@ -48,8 +48,9 @@ public class BasicOpMode extends OpMode {
             {0.0, 33.0},
             {-23.0, 23.0}
     };
-    public SectionSpline spline;
-    public double [] targetState = {0.0, 0.0, 0.0};
+
+//    public SectionSpline spline;
+    public double [] targetState = {0.0, 20.0, Math.PI / 2.0};
 
     // Auxillary variables (low pass, PID, etc...)
     public double [] previousInputs;
@@ -65,7 +66,7 @@ public class BasicOpMode extends OpMode {
         // Drivetrain
         drive = new MecanumDrive(hardwareMap, telemetry);
         odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2(0.0, 0.0));
-//        pidDrive = new PIDDrive(this.odometry, 0.0, 0.0, - Math.PI, telemetry);
+        pidDrive = new PIDDrive(this.odometry, 0.0, 0.0, - Math.PI, telemetry);
 //        spline = new SectionSpline(roots, 6.0);
 
         // Aux data
@@ -76,13 +77,45 @@ public class BasicOpMode extends OpMode {
 //        dataDump = new MultipleTelemetry();
     }
 
+
+    // Added boolean for resetting encoders since they started weird
+    private boolean encodersReset = false;
     boolean odometryRunning = false;
-//    double [] PIDOutputs = {0.0, 0.0, 0.0};
+    double [] PIDOutputs = {0.0, 0.0, 0.0};
     @Override
     public void loop() {
+//        if(gamepad1.x){
+//            odometry.resetEncoders();
+//        }
+
         if(gamepad1.x){
-            odometry.resetEncoders();
+            drive.FL.setPower(0.0);
+            drive.FR.setPower(0.0);
+            drive.BL.setPower(0.0);
+            drive.BR.setPower(0.0);
+            while(true){
+                drive.FL.setPower(0.0);
+                drive.FR.setPower(0.0);
+                drive.BL.setPower(0.0);
+                drive.BR.setPower(0.0);
+            }
         }
+
+        if(!encodersReset){
+            odometry.resetEncoders();
+            odometry.rotationRadians = Math.PI / 2.0;
+            encodersReset = true;
+        }
+
+        // POINT TO POINT / TESTING POINT TO POINT PID
+        odometry.updatePosition();
+
+        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
+        PIDOutputs = pidDrive.updatePID();
+
+        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
+
+        // SPLINE DRIVING CODE
 
 //        if(!(t <= 0.05 && -gamepad1.left_stick_y < 0.0) && !(t >= 0.95 && -gamepad1.left_stick_y > 0.0)){
 //            t -= gamepad1.left_stick_y * 0.01;
@@ -106,17 +139,17 @@ public class BasicOpMode extends OpMode {
 //            odometryRunning = true;
 //        }
 
-        // Handle controller inputs with low pass filter and input into drive
+        // NORMAL DRIVE CODE
 
 //        if(gamepad1.left_bumper){
-            drive.FieldOrientedDrive(previousInputs [0] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_x,
-                    - previousInputs [1] * LOW_PASS_LATENCY - (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_y,
-                    previousInputs [2] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.right_stick_x,
-                    odometry.getRotationRadians(), telemetry);
-            telemetry.addLine("Field Oriented");
-            telemetry.addLine("updated2");
+//            drive.FieldOrientedDrive(previousInputs [0] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_x,
+//                    - previousInputs [1] * LOW_PASS_LATENCY - (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_y,
+//                    previousInputs [2] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.right_stick_x,
+//                    odometry.getRotationRadians(), telemetry);
+//            telemetry.addLine("Field Oriented");
+
 //        }else{
-            odometry.updatePosition();
+//            odometry.updatePosition();
 //            drive.NormalDrive(previousInputs [0] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_x,
 //                    - previousInputs [1] * LOW_PASS_LATENCY - (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_y,
 //                    previousInputs [2] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.right_stick_x,
