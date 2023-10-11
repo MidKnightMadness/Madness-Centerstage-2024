@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -30,21 +30,13 @@ public class SingleMotorTest extends OpMode {
             setRPM = 0;
         }
 
-
-//
-//        if (gamepad1.left_trigger != 0) {
-//            testMotor.setPower(1);
-//        }
-
-
         if (gamepad1.right_trigger != 0) {
             setRPM = 0;
         }
 
-//        testMotor.setVelocity(setRPM, AngleUnit.DEGREES);
-//        telemetry.addData("Measured RPM", testMotor.getVelocity(AngleUnit.DEGREES) / (2.0 * Math.PI));
-        testMotor.setPower(gamepad1.left_stick_y);
-        telemetry.addData("Set RPM2", setRPM);
+        testMotor.setVelocity(setRPM, AngleUnit.DEGREES);
+        telemetry.addData("Measured RPM", testMotor.getVelocity(AngleUnit.RADIANS) / (2.0 * Math.PI));
+        telemetry.addData("Desired RPM: ", setRPM);
     }
 }
 
