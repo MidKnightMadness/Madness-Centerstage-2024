@@ -4,39 +4,48 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
+
 @TeleOp
 public class ColorSensorTest extends OpMode {
 
     ColorSensor cs;
+    ColorSensorWrapper csw;
 
+    public final int RedMin[] = {430, 60,150};
 
+    public final int RedMax[] = {550,120,260};
+    public final int GreenMin[] = {860, 150,120};
+    public final int GreenMax[] = {1000,240, 220};
+    public final int BlueMin[] = {920, 440,70};
+    public final int BlueMax[] = {1100,550,170};
     @Override
     public void init() {
         // Init
         cs = hardwareMap.get(ColorSensor.class, "test color sensor");
-
-
+        csw = new ColorSensorWrapper(cs);
     }
 
     @Override
     public void loop() {
         //color sensor is from 1 inch away
-        if (cs.red() >= 430 && cs.red() <= 550 && cs.green() >= 860 && cs.green() <= 1000 && cs.blue() >= 920&& cs.blue() <= 1100) {
-            //maximum and minimum for white color
-            telemetry.addLine("Color: White");
-        }
-        else if(cs.red()>=60&&cs.red()<=120&&cs.green()>=150&&cs.green()<=240&&cs.blue()>=440&&cs.blue()<=550){
-            telemetry.addLine("Color: Blue");
-        }
-        else if(cs.red()>=150&&cs.red()<=260&&cs.green()>=120&&cs.green()<=220&&cs.blue()>=70&&cs.blue()<=170){
-            telemetry.addLine("Color: Red");
-        }
-        else{
-            telemetry.addLine("Color: Unidentified");
+        csw.update();
+
+        for(int i=0;i<3;i++){
+            if(cs.red()>=RedMin[i]&&cs.red()<=RedMax[i]&&cs.green()>=GreenMin[i]&&cs.green()<=GreenMax[i]&&cs.blue()>=BlueMin[i]&&cs.blue()<=BlueMax[i]){
+                if(i==0){
+                    telemetry.addLine("Color: White");
+                }
+                if(i==1){
+                    telemetry.addLine("Color: Blue");
+                }
+                if(i==2){
+                    telemetry.addLine("Color: Red");
+                }
+            }
         }
 
-
-        telemetry.addLine("RGB Values/nRed: "+cs.red()+"/nGreen:" + cs.green()+"/nBlue:" + cs.blue()+ "/nAlpha:" + cs.alpha());
+        telemetry.addLine("RGB Values: " + csw.getValue());
         telemetry.update();
     }
 }
