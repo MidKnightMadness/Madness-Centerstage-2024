@@ -36,7 +36,7 @@ public class PIDDrive{
     double [] I = {0.0, 0.0, 0.0};
     final double integralDecay = 0.95;
     double [] D = {0.05, 0.05, 0.0};
-    double [] D2 = {0.6, 0.6, 0.0};
+    double [] D2 = {0.25, 0.25, 0.0};
     double [] cumulativeError = {0.0, 0.0, 0.0};
 
 
