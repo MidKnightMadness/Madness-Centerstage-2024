@@ -77,10 +77,9 @@ public class RGBColor {
         return new RGBColor(rSum / length, gSum / length, bSum / length, aSum / length);
     }
 
-    // Clamp RGB values to 0-255
     public RGBColor normalizeRGB() {
         float magnitude = (float) Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
-        float adjustedMagnitude = magnitude / 255f;
+        float adjustedMagnitude = magnitude;
 
         this.r /= adjustedMagnitude;
         this.g /= adjustedMagnitude;
@@ -89,8 +88,14 @@ public class RGBColor {
         return this;
     }
 
-    public void normalizeRGBA() {
-        float magnitude = this.r * this.r + this.g * this.g + this.b * this.b;
+    public RGBColor normalizeRGB(float targetMagnitude) {
+        float magnitude = (float) Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
+        float adjustedMagnitude = magnitude / targetMagnitude;
 
+        this.r /= adjustedMagnitude;
+        this.g /= adjustedMagnitude;
+        this.b /= adjustedMagnitude;
+
+        return this;
     }
 }
