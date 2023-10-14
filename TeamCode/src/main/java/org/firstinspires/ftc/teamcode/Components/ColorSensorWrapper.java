@@ -31,10 +31,12 @@ public class ColorSensorWrapper {
 
     public void update() {
         rgbBuffer.add(new RGBColor(colorSensor.red(), colorSensor.green(), colorSensor.blue(), colorSensor.alpha()));
-
-        if (this.BUFFER_SIZE == rgbBuffer.size()) {
-            value = RGBColor.average(rgbBuffer);
-            rgbBuffer.clear();
+        //adding a new color the array list of rg colors
+        //called many times in a frame
+        if (this.BUFFER_SIZE == rgbBuffer.size()) {//if the number equals the size of the rg buffer in the array list
+            value = RGBColor.average(rgbBuffer).normalizeRGB();//value which is a rgb color calls the average value of the array list
+           //calculates the average of all the values in the arraylist rgbuffer and normalises them
+            rgbBuffer.clear();//
         }
     }
 
