@@ -32,19 +32,21 @@ public class PIDDrive{
 
 
     // For non-spline-path driving - Madness robot 2022
-    double [] P = {0.5, 0.5, 0.0};
-    double [] I = {0.0, 0.0, 0.0};
-    final double integralDecay = 0.95;
-    double [] D = {0.05, 0.05, 0.0};
-    double [] D2 = {0.25, 0.25, 0.0};
+    double [] P = {0.4, 0.4, 0.0};
+    double [] I = {0.1, 0.1, 0.0};
+    final double integralDecay = 0.9;
+    double [] D = {0.05, 0.06, 0.0};
+    double [] D2 = {0.0, 0.0, 0.0};
     double [] cumulativeError = {0.0, 0.0, 0.0};
 
 
     // Navigational variables
     double [] delta = {0.0, 0.0, 0.0};
     double [] targetState = {0.0, 0.0, 0.0};
-    double distanceToTarget = 0.0;
+    public double distanceToTarget = 0.0;
     double lastDistanceToTarget = 0.0;
+    double initialDistanceToTarget = 0.0;
+    double integralTermMultiplier = 0.0;
 
     public  PIDDrive (Odometry odometry, double targetX, double targetY, double targetRadians, Telemetry telemetry){
         this.odometry = odometry;
@@ -53,6 +55,10 @@ public class PIDDrive{
         this.targetState [0] = targetX;
         this.targetState [1] = targetY;
         this.targetState [2] = targetRadians;
+
+        initialDistanceToTarget = (targetState [0] - odometry.getXCoordinate()) * (targetState [0] - odometry.getXCoordinate());
+        initialDistanceToTarget += (targetState [1] - odometry.getYCoordinate()) * (targetState [1] - odometry.getYCoordinate());
+        initialDistanceToTarget = Math.sqrt(initialDistanceToTarget);
     }
 
     public double [] updatePID(){ // Update as often as possible, preferrably every tick
@@ -66,7 +72,7 @@ public class PIDDrive{
         odometry.updatePosition();
 
         // Output data (was used in testing)
-        telemetry.addLine("\nupdated5");
+        telemetry.addLine("\nupdated12");
         telemetry.addData("Update rate", 1.0 / odometry.deltaTime);
         telemetry.addData("\nPID ======================\nLeft", odometry.leftTicks);
         telemetry.addData("Right", odometry.rightTicks);
@@ -91,36 +97,39 @@ public class PIDDrive{
             telemetry.addData("\nderivative x gain", odometry.getVelocity().x * D[0]);
             telemetry.addData("derivative y gain", odometry.getVelocity().y * D[0]);
         }else{
-            telemetry.addData("\nderivative x gain", odometry.getVelocity().x * D2[0]);
-            telemetry.addData("derivative y gain", odometry.getVelocity().y * D2[0]);
+            telemetry.addData("\nderivative x gain", -Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] - Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+            telemetry.addData("derivative y gain", Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] - Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
         }
         // Proportional component, x and y
         delta [0] = (targetState [0] - odometry.getXCoordinate()) * P [0];
         delta [1] = (targetState [1] - odometry.getYCoordinate()) * P [1];
+
         // Proportional component, angle
-        if(Math.abs(targetState [2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) < Math.PI) { // Enables rotation clockwise or counterclockwise, depending on which way is closer to angle target
-            delta [2] = (targetState [2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P [2];
-            // Needs % statement since angle will likely go over 360˚
-        }else{
-            delta [2] = (targetState [2] + odometry.getRotationRadians() % (2.0 * Math.PI) - (2.0 * Math.PI))  * P [2];
+        if(odometry.getRotationRadians() % (2.0 * Math.PI) > 0.0) { // Enables rotation clockwise or counterclockwise, depending on which way is closer to angle target
+            delta[2] = (targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2];
+        }else{ // Assumes targetState[2] is between 0 and 2π
+            delta[2] = (targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI) + 2.0 * Math.PI)) * P[2];
         }
 
         // Integral component independently calculated, then added to delta, since "delta" has P and D components added already
-        cumulativeError [0] += I [0] * delta [0];
-        cumulativeError [1] += I [1] * delta [1];
+        integralTermMultiplier = 4.0 * Math.exp(- 2.0 * (distanceToTarget) * (distanceToTarget)); // Only activates to correct minute errors
+        cumulativeError [0] += integralTermMultiplier * I [0] * delta [0];
+        cumulativeError [1] += integralTermMultiplier * I [1] * delta [1];
         cumulativeError [2] += I [2] * ((targetState [2] - (odometry.getRotationRadians() % (2.0 * Math.PI))));
 
         // Will slow robot more by increasing damping term (P term) on approach to target for x and y
         // Meant to solve issue of integral term building up too much when robot starts far away from target, causing robot overshoot
-        if(distanceToTarget - lastDistanceToTarget < 0.0){ // If approaching target
+        double distanceToTargetChangeRate = (distanceToTarget - lastDistanceToTarget) / odometry.deltaTime;
+        if(distanceToTargetChangeRate < 0.0){ // If approaching target
             // Profiles d term on approach (jacks up term to increase "braking" gain)
-            double XYDterm = 0.0 * ((0.9 / (1 + Math.exp(distanceToTarget - 15))) + 0.1);
-            delta [0] -= odometry.getVelocity().x * D [0];
-            delta [1] -= odometry.getVelocity().y * D [1];
+            double XDerivativeMultiplier = 4.0 * Math.exp(-(distanceToTarget - 5.0) * (distanceToTarget - 6.0) / (initialDistanceToTarget / 2.0)) -
+                    3.0 * Math.exp(-(distanceToTarget) * (distanceToTarget) / 9.0);
+            delta [0] -= (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] * XDerivativeMultiplier) + (Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+            delta [1] -= -(Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] * XDerivativeMultiplier) + (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
         }else{ // If overshooting target
             // Overshoot handled here (will affect first tick leaving a target point to go to next target)
-            delta [0] -= odometry.getVelocity().x * D2 [0];
-            delta [1] -= odometry.getVelocity().y * D2 [1];
+//            delta [0] -= Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] + Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1];
+//            delta [1] -= -Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] + Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1];
         }
         // Turning doesn't have have the same overshooting issues, so just do velocity gain calculations
         delta [2] += odometry.angularVelocity * D [2];
@@ -163,20 +172,9 @@ public class PIDDrive{
         return this.delta;
     }
 
-    public void setTargetState(double targetX, double targetY, double targetRadians){
-        this.targetState [0] = targetX;
-        this.targetState [1] = targetY;
-        this.targetState [2] = targetRadians;
-    }
-
-    public double gainScheduling(double t){ // For t from 0 to 1
-        // For point to point, t represents distance from starting to ending point
-        if(0.00 <= t && t < 0.25){
-            return 4.0 * t;
-        }else if(0.25 <= t && t < 0.75){
-            return 1.0;
-        }else{
-            return 4.0 - 4.0*t;
-        }
+    public void setTargetState(double targetX, double targetY, double targetRadians) {
+        this.targetState[0] = targetX;
+        this.targetState[1] = targetY;
+        this.targetState[2] = targetRadians;
     }
 }

@@ -112,9 +112,9 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         //Implementing low pass filter for smoothing
         //Note: change coefficients to make filter more/less responsive
-        leftTicks = (int) (-0.5 * leftEncoder.getCurrentPosition()+ 0.5 * lastLeftTicks);
-        rightTicks = (int) (-0.5 * rightEncoder.getCurrentPosition() + 0.5 * lastRightTicks);
-        topTicks = (int) (0.5 * horizontalEncoder.getCurrentPosition() + 0.5 * lastTopTicks);
+        leftTicks = (int) (-0.75 * leftEncoder.getCurrentPosition()+ 0.25 * lastLeftTicks);
+        rightTicks = (int) (-0.75 * rightEncoder.getCurrentPosition() + 0.25 * lastRightTicks);
+        topTicks = (int) (0.75 * horizontalEncoder.getCurrentPosition() + 0.25 * lastTopTicks);
 
         //calculate change in tick reading
         deltaLeftTicks = leftTicks - lastLeftTicks;

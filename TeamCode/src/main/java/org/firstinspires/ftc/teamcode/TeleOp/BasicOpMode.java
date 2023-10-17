@@ -50,7 +50,7 @@ public class BasicOpMode extends OpMode {
     };
 
 //    public SectionSpline spline;
-    public double [] targetState = {0.0, 20.0, Math.PI / 2.0};
+    public double [] targetState = {45.0, 0.0, Math.PI / 2.0};
 
     // Auxillary variables (low pass, PID, etc...)
     public double [] previousInputs;
@@ -93,11 +93,10 @@ public class BasicOpMode extends OpMode {
             drive.FR.setPower(0.0);
             drive.BL.setPower(0.0);
             drive.BR.setPower(0.0);
-            while(true){
-                drive.FL.setPower(0.0);
-                drive.FR.setPower(0.0);
-                drive.BL.setPower(0.0);
-                drive.BR.setPower(0.0);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -112,6 +111,7 @@ public class BasicOpMode extends OpMode {
 
         pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
         PIDOutputs = pidDrive.updatePID();
+
 
         drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
 

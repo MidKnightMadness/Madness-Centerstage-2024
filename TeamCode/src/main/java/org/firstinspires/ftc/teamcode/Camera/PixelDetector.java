@@ -29,6 +29,7 @@ public class PixelDetector extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
+
         // Get input data, ignore outermost border of pixels
         height = input.height() - 2;
         width = input.width() - 2;
