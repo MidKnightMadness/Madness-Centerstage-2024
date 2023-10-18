@@ -59,6 +59,7 @@ public class RGBColor {
         return String.format("(%s, %s, %s, %s)", this.r, this.g, this.b, this.a);
     }
 
+    //gives me an rgb Color
     public static RGBColor average(ArrayList<RGBColor> colors) {
         float rSum = 0;
         float gSum = 0;
@@ -77,25 +78,18 @@ public class RGBColor {
         return new RGBColor(rSum / length, gSum / length, bSum / length, aSum / length);
     }
 
+    // Clamp RGB values to 0-255
     public RGBColor normalizeRGB() {
         float magnitude = (float) Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
-        float adjustedMagnitude = magnitude;
+        float adjustedMagnitude = magnitude;//sets ratios out of 1
 
         this.r /= adjustedMagnitude;
         this.g /= adjustedMagnitude;
         this.b /= adjustedMagnitude;
 
         return this;
+        //check the google sheets example
     }
 
-    public RGBColor normalizeRGB(float targetMagnitude) {
-        float magnitude = (float) Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
-        float adjustedMagnitude = magnitude / targetMagnitude;
 
-        this.r /= adjustedMagnitude;
-        this.g /= adjustedMagnitude;
-        this.b /= adjustedMagnitude;
-
-        return this;
-    }
 }
