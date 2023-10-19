@@ -62,16 +62,6 @@ public class BasicOpMode extends OpMode {
     public double t = 0.1;
 
 
-    // Color Sensor Testing
-    //first number if R, second is G, third is B values for RGB
-    public final double RedMin[] = {0.27,0.08,0.6};
-
-    public final double RedMax[] = {0.37,0.22, 1.0};
-    public final double GreenMin[] = {0.60, 0.27,0.0};
-    public final double GreenMax[] = {0.70,0.44, 1.0};
-    public final double BlueMin[] = {0.65, 0.85,0.0};
-    public final double BlueMax[] = {0.75,0.97,1.0};
-
     IndepColorSensor indepColorSensor;
     ColorSensorWrapper colorSensorWrapper;
 
@@ -97,7 +87,7 @@ public class BasicOpMode extends OpMode {
 
         //initializing the color sensors
 //        colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
-        indepColorSensor = new IndepColorSensor(hardwareMap);
+        indepColorSensor = new IndepColorSensor(hardwareMap, telemetry);
         colorSensorWrapper = new ColorSensorWrapper(indepColorSensor.colorSensor, 2);
         indepColorSensor.run();
     }
@@ -109,10 +99,8 @@ public class BasicOpMode extends OpMode {
     double [] PIDOutputs = {0.0, 0.0, 0.0};
     @Override
     public void loop() {
-//        if(gamepad1.x){
-//            odometry.resetEncoders();
-//        }
 
+//      BASE PROCEDURE =============================================================================
         if(gamepad1.x){
             drive.FL.setPower(0.0);
             drive.FR.setPower(0.0);
@@ -132,16 +120,16 @@ public class BasicOpMode extends OpMode {
             timer.reset();
         }
 
-        // POINT TO POINT / TESTING POINT TO POINT PID
         odometry.updatePosition();
 
+//        POINT TO POINT PID DRIVING ===============================================================
 //        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
 //        PIDOutputs = pidDrive.updatePID();
 
 
 //        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
 
-        // SPLINE DRIVING CODE
+        // SPLINE DRIVING CODE =====================================================================
 
 //        if(!(t <= 0.05 && -gamepad1.left_stick_y < 0.0) && !(t >= 0.95 && -gamepad1.left_stick_y > 0.0)){
 //            t -= gamepad1.left_stick_y * 0.01;
@@ -165,7 +153,7 @@ public class BasicOpMode extends OpMode {
 //            odometryRunning = true;
 //        }
 
-        // NORMAL DRIVE CODE
+        // NORMAL DRIVE CODE =======================================================================
 
 //        if(gamepad1.left_bumper){
 //            drive.FieldOrientedDrive(previousInputs [0] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_x,
@@ -173,64 +161,38 @@ public class BasicOpMode extends OpMode {
 //                    previousInputs [2] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.right_stick_x,
 //                    odometry.getRotationRadians(), telemetry);
 //            telemetry.addLine("Field Oriented");
-
+//
 //        }else{
 //            odometry.updatePosition();
 //            drive.NormalDrive(previousInputs [0] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_x,
 //                    - previousInputs [1] * LOW_PASS_LATENCY - (1.0 - LOW_PASS_LATENCY) * gamepad1.left_stick_y,
 //                    previousInputs [2] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.right_stick_x,
 //                    telemetry);
-
-            telemetry.addData("x", odometry.getXCoordinate());
-            telemetry.addData("y", odometry.getYCoordinate());
-            telemetry.addData("angle", odometry.getRotationDegrees());
-
-            telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
-            telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
-            telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
-            telemetry.update();
-
+//
+//            telemetry.addData("x", odometry.getXCoordinate());
+//            telemetry.addData("y", odometry.getYCoordinate());
+//            telemetry.addData("angle", odometry.getRotationDegrees());
+//
+//            telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
+//            telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
+//            telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
+//            telemetry.update();
+//
 //        }
 //
 //
-        previousInputs [0] = gamepad1.left_stick_x;
-        previousInputs [1] = gamepad1.left_stick_y;
-        previousInputs [2] = gamepad1.right_stick_x;
+//        previousInputs [0] = gamepad1.left_stick_x;
+//        previousInputs [1] = gamepad1.left_stick_y;
+//        previousInputs [2] = gamepad1.right_stick_x;
 
-        // Color Sensor stuff
-//        colorSensorWrapper.update();
-        //color sensor is from 1 inch away
-        //in the color sensor wrapper
-        //when updating the color sensor wrapper, add the values of rgb to the rgbColor,
-//        RGBColor color = colorSensorWrapper.getValue();//passing on the csw.values into rgbcolor color
-//        boolean condition = false;
+//        COLOR SENSOR TESTING =====================================================================
 //
-//        for(int i=0;i<3;i++){
-//            if(color.r>=RedMin[i] && color.r <= RedMax[i] && color.g >= GreenMin[i] && color.g <=GreenMax[i] && color.b>=BlueMin[i]&&color.b<=BlueMax[i]) {
-//                if (i == 0) {
-//                    telemetry.addLine("Color: White");
-//                    condition = true;
-//                }
-//                if (i == 1) {
-//                    telemetry.addLine("Color: Blue");
-//                    condition = true;
-//                }
-//                if (i == 2) {
-//                    telemetry.addLine("Color: Red");
-//                    condition = true;
-//                    detections [reverses] = true;
-//                    if(velocities [reverses] == 0.0){
-//                        velocities [reverses] = odometry.getVelocity().y;
-//                    }
-//                }
-//            }
+//        telemetry.addLine("RGB Values: " + indepColorSensor.colorSensorWrapper.getValue());
+//        if(indepColorSensor.red){
+//            telemetry.addLine("RED");
+//        }else{
+//            telemetry.addLine("NO RED DETECTED");
 //        }
-//        //just adding color unidentified if all other colors are false
-//        if(condition==false){
-//            telemetry.addLine("Color: Unidentified");
-//        }
-//
-//        telemetry.addLine("RGB Values: " + colorSensorWrapper.getValue());
 //        telemetry.addData("Power level:", powerLevel);
 //        telemetry.addData("Reverses", reverses);
 //        telemetry.addLine("Detections: [" + detections [0] + ", " + detections [1] + ", " + detections [2] + ", " + detections [3] + ", " + detections [4] + ", " + detections [5] + "]");

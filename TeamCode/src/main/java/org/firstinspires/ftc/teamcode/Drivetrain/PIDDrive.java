@@ -39,6 +39,14 @@ public class PIDDrive{
     double [] D2 = {0.0, 0.0, 0.0};
     double [] cumulativeError = {0.0, 0.0, 0.0};
 
+    // For spline path driving - Madness robot 2022
+//    double [] P = {0.4, 0.4, 0.0};
+//    double [] I = {0.1, 0.1, 0.0};
+//    final double integralDecay = 0.9;
+//    double [] D = {0.0, 0.0, 0.0};
+//    double [] D2 = {0.0, 0.0, 0.0};
+//    double [] cumulativeError = {0.0, 0.0, 0.0};
+
 
     // Navigational variables
     double [] delta = {0.0, 0.0, 0.0};
