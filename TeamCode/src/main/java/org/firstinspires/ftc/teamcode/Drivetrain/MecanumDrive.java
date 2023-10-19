@@ -47,7 +47,7 @@ public class MecanumDrive {
     public static final double [] FORWARD = {1.0, -1.0, 1.0, 1.0};
     public static final double [] RIGHT = {1.0, 1.0, -1.0, 1.0};
     public static final double [] CLOCKWISE = {1.0, 1.0, 1.0, -1.0};
-    public static final double POWER_MULTIPLIER = 1.0;
+    public static final double POWER_MULTIPLIER = .5;
 
     // Inputs and power constraints
     private double [] motorInputs;
@@ -97,15 +97,15 @@ public class MecanumDrive {
             }
         }
 
-        telemetry.addData("Power envelope", powerEnvelope);
-        telemetry.addData("Max Power", maxPowerLevel);
-        telemetry.addData("X", x);
-        telemetry.addData("Y", y);
-
-        telemetry.addData("FL", motorInputs [0]);
-        telemetry.addData("FR", motorInputs [1]);
-        telemetry.addData("BL", motorInputs [2]);
-        telemetry.addData("BR", motorInputs [3]);
+//        telemetry.addData("Power envelope", powerEnvelope);
+//        telemetry.addData("Max Power", maxPowerLevel);
+//        telemetry.addData("X", x);
+//        telemetry.addData("Y", y);
+//
+//        telemetry.addData("FL", motorInputs [0]);
+//        telemetry.addData("FR", motorInputs [1]);
+//        telemetry.addData("BL", motorInputs [2]);
+//        telemetry.addData("BR", motorInputs [3]);
 
         FL.setPower( motorInputs [0]);
         FR.setPower( motorInputs [1]);
@@ -149,16 +149,16 @@ public class MecanumDrive {
             }
         }
 
-        telemetry.addData("\nPower envelope", powerEnvelope);
-        telemetry.addData("Max Power", maxPowerLevel);
-        telemetry.addData("X", newX);
-        telemetry.addData("Y", newY);
-
-        telemetry.addData("FL", motorInputs [0]);
-        telemetry.addData("FR", motorInputs [1]);
-        telemetry.addData("BL", motorInputs [2]);
-        telemetry.addData("BR", motorInputs [3]);
-        telemetry.addData("Low pass latency", 0.5);
+//        telemetry.addData("\nPower envelope", powerEnvelope);
+//        telemetry.addData("Max Power", maxPowerLevel);
+//        telemetry.addData("X", newX);
+//        telemetry.addData("Y", newY);
+//
+//        telemetry.addData("FL", motorInputs [0]);
+//        telemetry.addData("FR", motorInputs [1]);
+//        telemetry.addData("BL", motorInputs [2]);
+//        telemetry.addData("BR", motorInputs [3]);
+//        telemetry.addData("Low pass latency", 0.5);
 
         FL.setPower(motorInputs [0]);
         FR.setPower(motorInputs [1]);

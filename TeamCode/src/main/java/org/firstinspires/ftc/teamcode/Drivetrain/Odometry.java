@@ -23,11 +23,12 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     double inPerTickRight = 0.00097656;
     double inPerTickCenter = 0.00097656;
     double verticalWheelDistance = 1.5;
-    double lateralWheelDistance = 13.50 * 4.0 / 3.0;
+    // Need to retry this, somehow was not equalizing properly (centerDistanceTraveled - deltaRadians*distanceToFront)
+    double lateralWheelDistance = 13.50; // * 4.0 / 3.0;
 
 
     //Tracking Time
-    double deltaTime = 0;
+    public double deltaTime = 0;
     double lastTime = 0;
     ElapsedTime elapsedTime;
 
@@ -112,9 +113,9 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         //Implementing low pass filter for smoothing
         //Note: change coefficients to make filter more/less responsive
-        leftTicks = (int) (-0.75 * leftEncoder.getCurrentPosition()+ 0.25 * lastLeftTicks);
-        rightTicks = (int) (-0.75 * rightEncoder.getCurrentPosition() + 0.25 * lastRightTicks);
-        topTicks = (int) (0.75 * horizontalEncoder.getCurrentPosition() + 0.25 * lastTopTicks);
+        leftTicks = (int) (-0.9 * leftEncoder.getCurrentPosition()+ 0.1 * lastLeftTicks);
+        rightTicks = (int) (-0.9 * rightEncoder.getCurrentPosition() + 0.1 * lastRightTicks);
+        topTicks = (int) (-0.9 * horizontalEncoder.getCurrentPosition() + 0.1 * lastTopTicks);
 
         //calculate change in tick reading
         deltaLeftTicks = leftTicks - lastLeftTicks;
@@ -132,7 +133,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         topDistanceMoved = inPerTickCenter * deltaTopTicks;
 
         // calculate change in angles
-        deltaRadians = -getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
+        deltaRadians = getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
         angularVelocity = deltaRadians / deltaTime;
         rotationRadians += deltaRadians; //Finding integral part 1
 
@@ -146,8 +147,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         rotCosine = Math.cos(rotationRadians);
 
         //Calculating change X and Y position of robot
-        netX = forwardMovement * rotCosine - trueLateralMovement * rotSin;
-        netY = forwardMovement * rotSin + trueLateralMovement * rotCosine;
+        netX = forwardMovement * rotCosine + trueLateralMovement * rotSin;
+        netY = forwardMovement * rotSin - trueLateralMovement * rotCosine;
 
         rotationRadians += .5 * deltaRadians; //Finding integral part 2
 
@@ -209,7 +210,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     }
 
     public double getDeltaRotation(double leftChange, double rightChange) {
-        return -(rightChange - leftChange) / lateralWheelDistance;
+        return (rightChange - leftChange) / lateralWheelDistance;
     }
 
     public double getXCoordinate() {
