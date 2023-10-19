@@ -9,7 +9,7 @@ public abstract class Localizer {
     double[] delta = {0.0, 0.0}; // coordinate with field x and y axes from target to robot
     double[] targetCoords = {0.0, 0.0}; // coordinates of target on field
 
-    abstract double[] getRelCoords(double robotHeading);
+    abstract double[] getRelCoords(double robotHeading, double currentX, double currentY);
     abstract double[] getCoords(double robotHeading);
 }
 

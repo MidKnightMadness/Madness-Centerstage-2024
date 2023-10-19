@@ -13,6 +13,7 @@ public class RangeSensorLocalizer extends Localizer{
     double angleToPerpendicular = 0.0; // Radians, for if the distance sensor does not point directly off to the side; so this is generally 0
     public DistanceSensor distanceSensor;
     public AnalogInput analog;
+    private double robotHeading = 0.0;
 
     public RangeSensorLocalizer(int detectionDelay, double relX, double relY, HardwareMap hardwareMap, String tag) {
         this.detectionDelay = detectionDelay;
@@ -23,19 +24,30 @@ public class RangeSensorLocalizer extends Localizer{
     }
 
     @Override
-    double[] getRelCoords(double robotHeading) {
+    double[] getRelCoords(double robotHeading, double currentX, double currentY) {
         // Assumes pointing at top or bottom wall (not audience or backstage side)
-        // If sensor is pointing down
-        if(relativeCoords [0] > 0){ // Assumes right is positive, pointing at bottom wall
-            distanceSensor.getDistance(DistanceUnit.MM);
-            analog.getVoltage();
+        robotHeading %= Math.PI * 2.0;
+        if(robotHeading < 0.0){
+            robotHeading += Math.PI * 2.0;
+        }
 
+        if((relativeCoords [0] > 0 && (this.robotHeading > 3.0 * Math.PI / 2.0 || this.robotHeading < Math.PI / 2.0)) ||
+                (relativeCoords [0] < 0 && (this.robotHeading >= Math.PI / 2.0 && this.robotHeading <= 3.0 * Math.PI / 2.0))){ // Pointing at bottom wall
+
+            if(relativeCoords [0] > 0){
+                return new double [] {0.0, - Math.cos(robotHeading) * distanceSensor.getDistance(DistanceUnit.MM) / 1000.0};
+            }else{
+                return new double [] {0.0, Math.cos(robotHeading) * distanceSensor.getDistance(DistanceUnit.MM) / 1000.0};
+            }
 
         }else{ // Pointing at top wall
 
+            if(relativeCoords [0] > 0){
+                return new double [] {0.0, Math.cos(robotHeading) * distanceSensor.getDistance(DistanceUnit.MM) / 1000.0};
+            }else{
+                return new double [] {0.0, - Math.cos(robotHeading) * distanceSensor.getDistance(DistanceUnit.MM) / 1000.0};
+            }
         }
-
-        return new double[0];
     }
 
     @Override
