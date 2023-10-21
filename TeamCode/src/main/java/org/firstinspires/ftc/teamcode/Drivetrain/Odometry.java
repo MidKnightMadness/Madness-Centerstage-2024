@@ -24,7 +24,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     double inPerTickCenter = 0.00097656;
     double verticalWheelDistance = 1.5;
     // Need to retry this, somehow was not equalizing properly (centerDistanceTraveled - deltaRadians*distanceToFront)
-    double lateralWheelDistance = 13.50; // * 4.0 / 3.0;
+    double lateralWheelDistance = 13.5 * 4.0 / 3.0;
 
 
     //Tracking Time

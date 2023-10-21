@@ -32,20 +32,20 @@ public class PIDDrive{
 
 
     // For non-spline-path driving - Madness robot 2022
-    double [] P = {0.4, 0.4, 0.0};
-    double [] I = {0.1, 0.1, 0.0};
-    final double integralDecay = 0.9;
-    double [] D = {0.05, 0.06, 0.0};
-    double [] D2 = {0.0, 0.0, 0.0};
-    double [] cumulativeError = {0.0, 0.0, 0.0};
-
-    // For spline path driving - Madness robot 2022
 //    double [] P = {0.4, 0.4, 0.0};
 //    double [] I = {0.1, 0.1, 0.0};
 //    final double integralDecay = 0.9;
-//    double [] D = {0.0, 0.0, 0.0};
+//    double [] D = {0.05, 0.06, 0.0};
 //    double [] D2 = {0.0, 0.0, 0.0};
 //    double [] cumulativeError = {0.0, 0.0, 0.0};
+
+    // For spline path driving - Madness robot 2022
+    double [] P = {0.3, 0.3, 0.0};
+    double [] I = {0.1, 0.1, 0.0};
+    final double integralDecay = 0.9;
+    double [] D = {0.0, 0.0, 0.0};
+    double [] D2 = {0.0, 0.0, 0.0};
+    double [] cumulativeError = {0.0, 0.0, 0.0};
 
 
     // Navigational variables

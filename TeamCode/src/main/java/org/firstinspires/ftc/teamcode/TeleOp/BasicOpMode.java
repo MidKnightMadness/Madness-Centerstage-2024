@@ -65,6 +65,8 @@ public class BasicOpMode extends OpMode {
     IndepColorSensor indepColorSensor;
     ColorSensorWrapper colorSensorWrapper;
 
+    public PIDDrive pidDrive;
+    public SectionSpline spline;
 
     @Override
     public void init() {
@@ -75,8 +77,8 @@ public class BasicOpMode extends OpMode {
         // Drivetrain
         drive = new MecanumDrive(hardwareMap, telemetry);
         odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2(0.0, 0.0));
-//        pidDrive = new PIDDrive(this.odometry, 0.0, 0.0, - Math.PI, telemetry);
-//        spline = new SectionSpline(roots, 6.0);
+        pidDrive = new PIDDrive(this.odometry, 0.0, 0.0, - Math.PI, telemetry);
+        spline = new SectionSpline(roots, 6.0);
 
         // Aux data
         previousInputs = new double [3]; // left stick x, left stick y, right stick x
@@ -85,11 +87,14 @@ public class BasicOpMode extends OpMode {
 //        packet = new TelemetryPacket();
 //        dataDump = new MultipleTelemetry();
 
+        telemetry.addLine("init");
+        telemetry.update();
+
         //initializing the color sensors
 //        colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
-        indepColorSensor = new IndepColorSensor(hardwareMap, telemetry);
-        colorSensorWrapper = new ColorSensorWrapper(indepColorSensor.colorSensor, 2);
-        indepColorSensor.run();
+//        indepColorSensor = new IndepColorSensor(hardwareMap, telemetry);
+//        colorSensorWrapper = new ColorSensorWrapper(indepColorSensor.colorSensor, 2);
+//        indepColorSensor.run();
     }
 
 
@@ -101,17 +106,17 @@ public class BasicOpMode extends OpMode {
     public void loop() {
 
 //      BASE PROCEDURE =============================================================================
-        if(gamepad1.x){
-            drive.FL.setPower(0.0);
-            drive.FR.setPower(0.0);
-            drive.BL.setPower(0.0);
-            drive.BR.setPower(0.0);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        if(gamepad1.x){
+//            drive.FL.setPower(0.0);
+//            drive.FR.setPower(0.0);
+//            drive.BL.setPower(0.0);
+//            drive.BR.setPower(0.0);
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
 
         if(!encodersReset){
             odometry.resetEncoders();
@@ -120,7 +125,7 @@ public class BasicOpMode extends OpMode {
             timer.reset();
         }
 
-        odometry.updatePosition();
+//        odometry.updatePosition();
 
 //        POINT TO POINT PID DRIVING ===============================================================
 //        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
@@ -131,20 +136,21 @@ public class BasicOpMode extends OpMode {
 
         // SPLINE DRIVING CODE =====================================================================
 
-//        if(!(t <= 0.05 && -gamepad1.left_stick_y < 0.0) && !(t >= 0.95 && -gamepad1.left_stick_y > 0.0)){
-//            t -= gamepad1.left_stick_y * 0.01;
-//        }
-//        telemetry.addData("Time t", t);
-//        telemetry.addData("Tangent x component times 50", 50.0 * spline.tangent[0]);
-//        telemetry.addData("Tangent y component times 50", 50.0 * spline.tangent[1]);
-//        this.targetState [0] = spline.getState(t)[0];
-//        this.targetState [1] = spline.getState(t)[1];
-//        this.targetState [2] = spline.getTangentAngle(t);
-//
-//        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
-//        odometry.updatePosition();
-//        PIDOutputs = pidDrive.updatePID();
-//        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
+        if(!(t <= 0.05 && -gamepad1.left_stick_y < 0.0) && !(t >= 0.95 && -gamepad1.left_stick_y > 0.0)){
+            t -= gamepad1.left_stick_y * 0.01;
+        }
+        telemetry.addData("left stick y", gamepad1.left_stick_y);
+        telemetry.addData("Time t", t);
+        this.targetState [0] = spline.getState(t)[0];
+        this.targetState [1] = spline.getState(t)[1];
+        telemetry.addData("x target", targetState [0]);
+        telemetry.addData("y target", targetState [1]);
+        this.targetState [2] = spline.getTangentAngle(t);
+
+        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
+        PIDOutputs = pidDrive.updatePID();
+        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
+        telemetry.update();
 
 
         // Start running odometry thread as soon as started, no multi threading rn since running into issues
@@ -169,14 +175,13 @@ public class BasicOpMode extends OpMode {
 //                    previousInputs [2] * LOW_PASS_LATENCY + (1.0 - LOW_PASS_LATENCY) * gamepad1.right_stick_x,
 //                    telemetry);
 //
-//            telemetry.addData("x", odometry.getXCoordinate());
-//            telemetry.addData("y", odometry.getYCoordinate());
-//            telemetry.addData("angle", odometry.getRotationDegrees());
-//
-//            telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
-//            telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
-//            telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
-//            telemetry.update();
+            telemetry.addData("x", odometry.getXCoordinate());
+            telemetry.addData("y", odometry.getYCoordinate());
+            telemetry.addData("angle", odometry.getRotationDegrees());
+
+            telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
+            telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
+            telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
 //
 //        }
 //

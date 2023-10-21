@@ -81,7 +81,7 @@ public class IndepDrivetrain implements Runnable{
     }
 
     @Override
-    public void run() {
+    public void run() { // Might help with update rate
         timer.startTime();
         active = true;
 
