@@ -108,11 +108,8 @@ public class AprilTagTwoCameras extends LinearOpMode {
         // Save more CPU resources when camera is no longer needed.
         visionPortal.close();
 
-    }   // end runOpMode()
+    }
 
-    /**
-     * Initialize the AprilTag processor.
-     */
     private void initAprilTag() {
 
         // Create the AprilTag processor by using a builder.
@@ -129,11 +126,9 @@ public class AprilTagTwoCameras extends LinearOpMode {
             .addProcessor(aprilTag)
             .build();
 
-    }   // end method initAprilTag()
+    }
 
-    /**
-     * Add telemetry about camera switching.
-     */
+
     private void telemetryCameraSwitching() {
 
         if (visionPortal.getActiveCamera().equals(webcam1)) {
@@ -144,11 +139,8 @@ public class AprilTagTwoCameras extends LinearOpMode {
             telemetry.addData("Press LeftBumper", "to switch to Webcam 1");
         }
 
-    }   // end method telemetryCameraSwitching()
+    }
 
-    /**
-     * Add telemetry about AprilTag detections.
-     */
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -165,18 +157,15 @@ public class AprilTagTwoCameras extends LinearOpMode {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
             }
-        }   // end for() loop
+        }
 
         // Add "key" information to telemetry
         telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
 
-    }   // end method telemetryAprilTag()
+    }
 
-    /**
-     * Set the active camera according to input from the gamepad.
-     */
     private void doCameraSwitching() {
         if (visionPortal.getCameraState() == CameraState.STREAMING) {
             boolean newLeftBumper = gamepad1.left_bumper;
@@ -190,6 +179,6 @@ public class AprilTagTwoCameras extends LinearOpMode {
             oldRightBumper = newRightBumper;
         }
 
-    }   // end method doCameraSwitching()
+    }
 
-}   // end class
+}
