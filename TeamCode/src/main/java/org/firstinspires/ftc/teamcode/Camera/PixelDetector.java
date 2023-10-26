@@ -47,6 +47,7 @@ public class PixelDetector extends OpenCvPipeline {
                 for(int y = -1; y < 2; y++){ // 3x3 matrix for kernel
                     for(int x = -1; x < 2; x++){
 
+
                     }
                 }
             }
