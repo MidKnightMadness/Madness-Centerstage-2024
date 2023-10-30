@@ -120,7 +120,7 @@ public class AprilTagLocalizer extends Localizer{ // Currently runs on main thre
 
     }   // end method initAprilTag()
 
-    private void telemetryAprilTag() {
+    public void telemetryAprilTag() {
 
         List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
         this.telemetry.addData("# AprilTags Detected", currentDetections.size());
