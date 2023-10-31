@@ -82,6 +82,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     //Change X and Y position of robot
     double netX;
     double netY;
+    Vector2 lastVelocity = new Vector2();
 
 
     // Low pass filter used to smooth position
@@ -158,8 +159,11 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         this.position.y += (12.0 / 10.75) * netY;
 
         //getting x and y velocities
-        velocity.x = netX / deltaTime;
-        velocity.y = netY / deltaTime;
+        velocity.x = - 0.75 * netX / deltaTime + 0.25 * lastVelocity.x;
+        velocity.y = 0.75 * netY / deltaTime + 0.25 * lastVelocity.y;
+
+        lastVelocity.x = velocity.x;
+        lastVelocity.y = velocity.y;
     }
 
 

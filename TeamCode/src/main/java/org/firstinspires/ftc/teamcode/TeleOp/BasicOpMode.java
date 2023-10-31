@@ -62,8 +62,9 @@ public class BasicOpMode extends OpMode {
     public double t = 0.1;
 
 
-    IndepColorSensor indepColorSensor;
+//    IndepColorSensor indepColorSensor;
     ColorSensorWrapper colorSensorWrapper;
+    ColorSensor colorSensor;
 
     public PIDDrive pidDrive;
     public SectionSpline spline;
@@ -91,9 +92,9 @@ public class BasicOpMode extends OpMode {
         telemetry.update();
 
         //initializing the color sensors
-//        colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
+        colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
 //        indepColorSensor = new IndepColorSensor(hardwareMap, telemetry);
-//        colorSensorWrapper = new ColorSensorWrapper(indepColorSensor.colorSensor, 2);
+        colorSensorWrapper = new ColorSensorWrapper(colorSensor, 7);
 //        indepColorSensor.run();
     }
 
@@ -125,7 +126,7 @@ public class BasicOpMode extends OpMode {
             timer.reset();
         }
 
-//        odometry.updatePosition();
+        odometry.updatePosition();
 
 //        POINT TO POINT PID DRIVING ===============================================================
 //        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
@@ -135,22 +136,22 @@ public class BasicOpMode extends OpMode {
 //        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
 
         // SPLINE DRIVING CODE =====================================================================
-
-        if(!(t <= 0.05 && -gamepad1.left_stick_y < 0.0) && !(t >= 0.95 && -gamepad1.left_stick_y > 0.0)){
-            t -= gamepad1.left_stick_y * 0.01;
-        }
-        telemetry.addData("left stick y", gamepad1.left_stick_y);
-        telemetry.addData("Time t", t);
-        this.targetState [0] = spline.getState(t)[0];
-        this.targetState [1] = spline.getState(t)[1];
-        telemetry.addData("x target", targetState [0]);
-        telemetry.addData("y target", targetState [1]);
-        this.targetState [2] = spline.getTangentAngle(t);
-
-        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
-        PIDOutputs = pidDrive.updatePID();
-        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
-        telemetry.update();
+//
+//        if(!(t <= 0.05 && -gamepad1.left_stick_y < 0.0) && !(t >= 0.95 && -gamepad1.left_stick_y > 0.0)){
+//            t -= gamepad1.left_stick_y * 0.01;
+//        }
+//        telemetry.addData("left stick y", gamepad1.left_stick_y);
+//        telemetry.addData("Time t", t);
+//        this.targetState [0] = spline.getState(t)[0];
+//        this.targetState [1] = spline.getState(t)[1];
+//        telemetry.addData("x target", targetState [0]);
+//        telemetry.addData("y target", targetState [1]);
+//        this.targetState [2] = spline.getTangentAngle(t);
+//
+//        pidDrive.setTargetState(this.targetState [0], this.targetState [1], this.targetState [2]);
+//        PIDOutputs = pidDrive.updatePID();
+//        drive.FieldOrientedDrive(PIDOutputs [0], PIDOutputs [1], PIDOutputs [2], odometry.getRotationRadians(), telemetry);
+//        telemetry.update();
 
 
         // Start running odometry thread as soon as started, no multi threading rn since running into issues
@@ -179,6 +180,9 @@ public class BasicOpMode extends OpMode {
             telemetry.addData("y", odometry.getYCoordinate());
             telemetry.addData("angle", odometry.getRotationDegrees());
 
+            telemetry.addData("\nx velocity", odometry.getVelocity().x);
+            telemetry.addData("y velocity", odometry.getVelocity().y);
+
             telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
             telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
             telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
@@ -192,48 +196,51 @@ public class BasicOpMode extends OpMode {
 
 //        COLOR SENSOR TESTING =====================================================================
 //
-//        telemetry.addLine("RGB Values: " + indepColorSensor.colorSensorWrapper.getValue());
-//        if(indepColorSensor.red){
-//            telemetry.addLine("RED");
-//        }else{
-//            telemetry.addLine("NO RED DETECTED");
-//        }
-//        telemetry.addData("Power level:", powerLevel);
-//        telemetry.addData("Reverses", reverses);
-//        telemetry.addLine("Detections: [" + detections [0] + ", " + detections [1] + ", " + detections [2] + ", " + detections [3] + ", " + detections [4] + ", " + detections [5] + "]");
-//        telemetry.addLine("Velocities: [" + velocities [0] + "," + velocities [1] + "," + velocities [2] + "," + velocities [3] + "," + velocities [4] + "," + velocities [5] + "]");
-//        telemetry.addData("Time", timer.milliseconds() / 1000.00);
-//        telemetry.addData("FPS", 1.0 / odometry.deltaTime);
-//        telemetry.addLine("Updated2");
-//        telemetry.update();
-//
-//        drive.FieldOrientedDrive(0.0, powerLevel, 0.0, odometry.getRotationRadians(), telemetry);
-//        if(timer.milliseconds() > 2000 || odometry.getYCoordinate() > 50.0){
-//            timer.reset();
-//
-//            if(velocities [reverses] == 0.0){
-//                velocities [reverses] = odometry.getVelocity().y;
-//
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//
-//            if(reverses < 5){
-//                reverses++;
-//            }
-//
-//            powerLevel *= -0.8;
-//            timer.startTime();
-//        }
+        colorSensorWrapper.update();
+        telemetry.addLine("RGB Values: " + colorSensorWrapper.getValue());
+
+        if(0.78< colorSensorWrapper.getValue().b){
+            telemetry.addLine("BLUE");
+            detections [reverses] = true;
+        }else{
+            telemetry.addLine("NO BLUE DETECTED");
+        }
+        telemetry.addData("Power level:", powerLevel);
+        telemetry.addData("Reverses", reverses);
+        telemetry.addLine("Detections: [" + detections [0] + ", " + detections [1] + ", " + detections [2] + ", " + detections [3] + ", " + detections [4] + ", " + detections [5] + "]");
+        telemetry.addLine("Velocities: [" + velocities [0] + "," + velocities [1] + "," + velocities [2] + "," + velocities [3] + "," + velocities [4] + "," + velocities [5] + "]");
+        telemetry.addData("Time", timer.milliseconds() / 1000.00);
+        telemetry.addData("FPS", 1.0 / odometry.deltaTime);
+        telemetry.addLine("Updated2");
+        telemetry.update();
+
+        drive.FieldOrientedDrive(0.0, powerLevel, 0.0, odometry.getRotationRadians(), telemetry);
+        if(timer.milliseconds() > 2000 || odometry.getYCoordinate() > 50.0){
+            timer.reset();
+
+            if(velocities [reverses] == 0.0){
+                velocities [reverses] = odometry.getVelocity().y;
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if(reverses < 5){
+                reverses++;
+            }
+
+            powerLevel *= -0.8;
+            timer.startTime();
+        }
     }
 
     boolean [] detections = {false, false, false, false, false, false};
     double [] powerLevels = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double [] velocities = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    double powerLevel = 1.0;
+    double powerLevel = 0.4;
     int reverses = 0;
 
     public void telemetry(){
