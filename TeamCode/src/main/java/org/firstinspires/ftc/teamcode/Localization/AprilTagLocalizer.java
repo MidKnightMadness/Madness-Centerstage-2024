@@ -166,11 +166,11 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         this.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Reset list
-        if (sensorCoordinatesY != null) {
+        if (sensorCoordinatesY != null) {//null catch
             sensorCoordinatesX.clear();
             sensorCoordinatesY.clear();
         }
-        if (rangeCoefficients != null) {
+        if (rangeCoefficients != null) {//null catch
             rangeCoefficients.clear();
 
         }
@@ -195,41 +195,49 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
                 sensorCoordinatesX.add(-Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[0] - Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[1] + APRIL_TAG_COORDS[detection.id - 1][0]);
                 sensorCoordinatesY.add(Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[0] - Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[1] + APRIL_TAG_COORDS[detection.id - 1][1]);
 
-                if (rangeCoefficients != null) { //roy added OWO
+                if (rangeCoefficients != null) { //null catch
                     rangeCoefficients.add(detection.ftcPose.range);
                 }
             }
         }
 
-        if (currentDetections.size() == 0) {
+        if (currentDetections.size() == 0 || rangeCoefficients == null) {//null catch
             return null;
         }
 
         calculationsDouble = 0.0;
         for (int i = 0; i < sensorCoordinatesX.size(); i++) {
             // Convert sensor detection coordiantes
-
-            sensorCoordinatesX.set(i, sensorCoordinatesX.get(i) - Math.cos(robotHeading) * this.relativeCoords[0] - Math.sin(robotHeading) * this.relativeCoords[1]);
-            sensorCoordinatesY.set(i, sensorCoordinatesY.get(i) + Math.sin(robotHeading) * this.relativeCoords[0] - Math.cos(robotHeading) * this.relativeCoords[1]);
+            double calcStuffCos = Math.cos(robotHeading) * this.relativeCoords[0] - Math.sin(robotHeading) * this.relativeCoords[1];
+            double calcStuffSin = Math.sin(robotHeading) * this.relativeCoords[0] - Math.cos(robotHeading) * this.relativeCoords[1];
+            //just readability
+            sensorCoordinatesX.set(i, sensorCoordinatesX.get(i) - calcStuffCos);
+            sensorCoordinatesY.set(i, sensorCoordinatesY.get(i) + calcStuffSin);
 
             // Calculate coefficient of coordinate for inverse squared distance filter
             rangeCoefficients.set(i, 1 / (rangeCoefficients.get(i) * rangeCoefficients.get(i)));
             calculationsDouble += rangeCoefficients.get(i);
+
+            // Combine detected coordinates with basic inverse squared distance filter, assumes noise is minimal
+            calculationsVector[0] = 0.0;
+            calculationsVector[1] = 0.0;
+
+            for (int z = 0; z < sensorCoordinatesX.size(); z++) {
+                calculationsVector[0] += rangeCoefficients.get(z) * sensorCoordinatesX.get(z) / calculationsDouble;
+                calculationsVector[1] += rangeCoefficients.get(z) * sensorCoordinatesY.get(z) / calculationsDouble;
+            }
+        }
+            return calculationsVector;
+
+
         }
 
-        // Combine detected coordinates with basic inverse squared distance filter, assumes noise is minimal
-        calculationsVector[0] = 0.0;
-        calculationsVector[1] = 0.0;
-        for (int i = 0; i < sensorCoordinatesX.size(); i++) {
-            calculationsVector[0] += rangeCoefficients.get(i) * sensorCoordinatesX.get(i) / calculationsDouble;
-            calculationsVector[1] += rangeCoefficients.get(i) * sensorCoordinatesY.get(i) / calculationsDouble;
+
+        @Override
+        double[] getCoords ( double robotHeading, double currentX, double currentY){
+            return getRelCoords(robotHeading, currentX, currentY);
         }
-
-        return calculationsVector;
     }
 
-    @Override
-    double[] getCoords(double robotHeading, double currentX, double currentY) {
-        return getRelCoords(robotHeading, currentX, currentY);
-    }
-}
+
+
