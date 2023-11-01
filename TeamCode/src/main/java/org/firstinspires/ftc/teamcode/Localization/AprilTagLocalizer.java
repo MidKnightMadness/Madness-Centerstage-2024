@@ -235,7 +235,7 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
                 calculations [i][0] = 0.0;
                 calculations [i][1] = 0.0;
             }
-
+//hi
 
         }
 
