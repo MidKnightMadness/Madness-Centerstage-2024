@@ -33,21 +33,22 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
     public List<Double> sensorCoordinatesX;
     public List<Double> sensorCoordinatesY;
     public List<Double> rangeCoefficients;
+    double [] calculationsVector = {0.0, 0.0};
 
     public final double[][] APRIL_TAG_COORDS = { // hardcoded
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0},
-            {0.0, 0.0}
+            {29.25, 114.75},//id 1
+            {35.25, 108.75},//id 2
+            {41.25, 102.75},//id 3
+            {114.75, 29.25},//id 4
+            {108.75, 35.25},//id 5
+            {102.75, 41.25},//id 6
+            {30, 114},//id 7 not necesarilky accurate yet
+            {36, 108},//id 8 not necesarilky accurate yet
+            {108, 36},//id 9 not necesarilky accurate yet
+            {114, 30}//id 10 not necesarilky accurate y
     };
 
-    public double[] calculationsVector = {0.0, 0.0}; // Used as intermediate
+    public double[][] calculations;// Used as intermediate
 
     public double calculationsDouble = 0.0; // Used as intermediate
 
@@ -60,6 +61,11 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         sensorCoordinatesX = new ArrayList<Double>();
         sensorCoordinatesY = new ArrayList<Double>();
 
+        calculations = new double [10][];
+        for(int i = 0; i < calculations.length; i++){
+            calculations [i] = new double [2];
+        }
+
         initAprilTag();
         visionPortal.resumeStreaming(); // Assumes starts with no stream
 
@@ -69,6 +75,7 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         this.telemetry.update();
 
         this.running = true;
+        rangeCoefficients = new ArrayList<Double>();
     }
 
     private void initAprilTag() {
@@ -161,7 +168,11 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
     }
 
     @Override
-    public double[] getRelCoords(double robotHeading, double currentX, double currentY) {
+    public double[] getRelCoords(double robotHeading, double currentX, double currentY){
+        return null;
+    }
+
+    public double[][] getCoordsSet(double robotHeading, double currentX, double currentY) {
         List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
         this.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
@@ -169,10 +180,6 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         if (sensorCoordinatesY != null) {//null catch
             sensorCoordinatesX.clear();
             sensorCoordinatesY.clear();
-        }
-        if (rangeCoefficients != null) {//null catch
-            rangeCoefficients.clear();
-
         }
 
 
@@ -188,12 +195,14 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
                 sensorCoords2[1] = detection.ftcPose.range * Math.cos(detection.ftcPose.bearing);
 
                 // Combine relative coordinates, coefficients not determined yet
-                calculationsVector[0] = 0.5 * sensorCoords1[0] + 0.5 * sensorCoords2[0];
-                calculationsVector[1] = 0.5 * sensorCoords1[1] + 0.5 * sensorCoords2[1];
+                calculations[detection.id-1][0] = 0.5 * sensorCoords1[0] + 0.5 * sensorCoords2[0];
+                calculations[detection.id-1][1] = 0.5 * sensorCoords1[1] + 0.5 * sensorCoords2[1];
+
 
                 // Rotate negative of relative coordinates by -(heading - 90˚), add coordinates from this localization method
-                sensorCoordinatesX.add(-Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[0] - Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[1] + APRIL_TAG_COORDS[detection.id - 1][0]);
-                sensorCoordinatesY.add(Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[0] - Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculationsVector[1] + APRIL_TAG_COORDS[detection.id - 1][1]);
+                sensorCoordinatesX.add(-Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculations[detection.id-1][0] - Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculations[detection.id-1][1] + APRIL_TAG_COORDS[detection.id - 1][0]);
+                sensorCoordinatesY.add(Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculations[detection.id-1][0] - Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculations[detection.id-1][1] + APRIL_TAG_COORDS[detection.id - 1][1]);
+
 
                 if (rangeCoefficients != null) { //null catch
                     rangeCoefficients.add(detection.ftcPose.range);
@@ -202,7 +211,8 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         }
 
         if (currentDetections.size() == 0 || rangeCoefficients == null) {//null catch
-            return null;
+            telemetry.addLine("Detections list size is 0");
+            return new double [10][2];
         }
 
         calculationsDouble = 0.0;
@@ -217,19 +227,28 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
             // Calculate coefficient of coordinate for inverse squared distance filter
             rangeCoefficients.set(i, 1 / (rangeCoefficients.get(i) * rangeCoefficients.get(i)));
             calculationsDouble += rangeCoefficients.get(i);
-
-            // Combine detected coordinates with basic inverse squared distance filter, assumes noise is minimal
-            calculationsVector[0] = 0.0;
-            calculationsVector[1] = 0.0;
-
-            for (int z = 0; z < sensorCoordinatesX.size(); z++) {
-                calculationsVector[0] += rangeCoefficients.get(z) * sensorCoordinatesX.get(z) / calculationsDouble;
-                calculationsVector[1] += rangeCoefficients.get(z) * sensorCoordinatesY.get(z) / calculationsDouble;
-            }
         }
-            return calculationsVector;
+        int z = 0;
+
+        if(currentDetections.size() != 0){
+            for(int i = 0; i < calculations.length; i++){
+                calculations [i][0] = 0.0;
+                calculations [i][1] = 0.0;
+            }
 
 
+        }
+
+        for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+            calculations[detection.id-1][0] += rangeCoefficients.get(z) * sensorCoordinatesX.get(z) / calculationsDouble;
+            calculations[detection.id-1][1] += rangeCoefficients.get(z) * sensorCoordinatesY.get(z) / calculationsDouble;
+            z++;
+        }
+
+
+        telemetry.addData("Checking calculations output", calculations[9][0]);
+        telemetry.addData("Checking calculations output", calculations[9][1]);
+//        return calculations;
         }
 
 
