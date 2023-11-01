@@ -25,7 +25,19 @@ public class TestAprilTag extends OpMode {
     Float currentX;
     Float currentY;
 
-    double[] coordinates;
+    public double [][] coordinates =
+            {
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0},
+                    {0.0, 0.0}
+            };
 
     @Override
     public void init() {
@@ -37,7 +49,12 @@ public class TestAprilTag extends OpMode {
         imuParameters.calibrationDataFile = "BN0055IMUCalibration.json";//calibrate imu
         imu.initialize(imuParameters);//initialize imu to imu parameters
 
-        coordinates = new double[]{0.0, 0.0};
+       /* coordinates = new double [10][];
+        for(int i = 0; i < coordinates.length; i++){
+            coordinates [i] = new double [2];
+        }
+        */
+
     }
 
     @Override
@@ -50,11 +67,20 @@ public class TestAprilTag extends OpMode {
         currentX = angles.thirdAngle;
         currentY = angles.secondAngle;
 
+        for(int i = 0; i < 10; i++){
+            coordinates [i][0] = 0.0;
+            coordinates [i][1] = 0.0;
+        }
+
         //pass on values into getRelativeCoordinates function
-        coordinates = aprilTagLocalizer.getRelCoords(robotHeading, currentX, currentY);
+        coordinates = aprilTagLocalizer.getCoordsSet(robotHeading, currentX, currentY);
 
         if (coordinates != null){
-        telemetry.addLine(String.format("Coordinates of April Tag: [%f, %f] ", coordinates[0], coordinates[1]));
+            for(int i = 0;i<10;i++){
+                if(coordinates[i][0] != 0.0) {
+                    telemetry.addLine(String.format("Coordinates of April Tag(ID # %d [%3.2f, %3.2f] ", i+1, coordinates[i][0], coordinates[i][1]));
+                }
+            }
         }
         aprilTagLocalizer.telemetryAprilTag();
         telemetry.update();
