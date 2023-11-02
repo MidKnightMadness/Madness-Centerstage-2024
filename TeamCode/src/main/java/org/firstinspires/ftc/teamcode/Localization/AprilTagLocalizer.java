@@ -36,16 +36,16 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
     double [] calculationsVector = {0.0, 0.0};
 
     public final double[][] APRIL_TAG_COORDS = { // hardcoded
-            {29.25, 114.75},//id 1
-            {35.25, 108.75},//id 2
-            {41.25, 102.75},//id 3
-            {114.75, 29.25},//id 4
-            {108.75, 35.25},//id 5
-            {102.75, 41.25},//id 6
-            {30, 114},//id 7 not necesarilky accurate yet
-            {36, 108},//id 8 not necesarilky accurate yet
-            {108, 36},//id 9 not necesarilky accurate yet
-            {114, 30}//id 10 not necesarilky accurate y
+            {135, 114.75},//id 1
+            {135, 108.75},//id 2
+            {135, 102.75},//id 3
+            {135, 41.25},//id 4
+            {135, 35.25},//id 5
+            {135, 29.25},//id 6
+            {0.0, 114},//id 7 not necesarilky accurate yet
+            {0.0, 108},//id 8 not necesarilky accurate yet
+            {0.0, 36},//id 9 not necesarilky accurate yet
+            {0.0, 30}//id 10 not necesarilky accurate y
     };
 
     public double[][] calculations;// Used as intermediate
@@ -177,6 +177,7 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         this.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Reset list
+
         if (sensorCoordinatesY != null) {//null catch
             sensorCoordinatesX.clear();
             sensorCoordinatesY.clear();
@@ -195,9 +196,8 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
                 sensorCoords2[1] = detection.ftcPose.range * Math.cos(detection.ftcPose.bearing);
 
                 // Combine relative coordinates, coefficients not determined yet
-                calculations[detection.id-1][0] = 0.5 * sensorCoords1[0] + 0.5 * sensorCoords2[0];
-                calculations[detection.id-1][1] = 0.5 * sensorCoords1[1] + 0.5 * sensorCoords2[1];
-
+                calculations[detection.id-1][0] = sensorCoords1[0];// + 0.5 * sensorCoords2[0];
+                calculations[detection.id-1][1] = sensorCoords1[1];// + 0.5 * sensorCoords2[1];
 
                 // Rotate negative of relative coordinates by -(heading - 90˚), add coordinates from this localization method
                 sensorCoordinatesX.add(-Math.cos(-(robotHeading - Math.PI / 2.0)) * this.calculations[detection.id-1][0] - Math.sin(-(robotHeading - Math.PI / 2.0)) * this.calculations[detection.id-1][1] + APRIL_TAG_COORDS[detection.id - 1][0]);
@@ -210,7 +210,7 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
             }
         }
 
-        if (currentDetections.size() == 0 || rangeCoefficients == null) {//null catch
+        if (currentDetections.size() == 0) {//null catch
             telemetry.addLine("Detections list size is 0");
             return new double [10][2];
         }
@@ -230,25 +230,22 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         }
         int z = 0;
 
-        if(currentDetections.size() != 0){
-            for(int i = 0; i < calculations.length; i++){
-                calculations [i][0] = 0.0;
-                calculations [i][1] = 0.0;
-            }
-//hi
 
-        }
+
+        //}
 
         for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
-            calculations[detection.id-1][0] += rangeCoefficients.get(z) * sensorCoordinatesX.get(z) / calculationsDouble;
-            calculations[detection.id-1][1] += rangeCoefficients.get(z) * sensorCoordinatesY.get(z) / calculationsDouble;
+            calculations[detection.id-1][0] = sensorCoordinatesX.get(z);// / currentDetections.size();
+            calculations[detection.id-1][1] = sensorCoordinatesY.get(z);// / currentDetections.size();
             z++;
         }
 
 
-        telemetry.addData("Checking calculations output", calculations[9][0]);
-        telemetry.addData("Checking calculations output", calculations[9][1]);
-//        return calculations;
+
+
+    //    telemetry.addData("Checking calculations output", calculations[9][0]);
+     //   telemetry.addData("Checking calculations output", calculations[9][1]);
+        return calculations;
         }
 
 

@@ -26,7 +26,7 @@ public class TestAprilTag extends OpMode {
     Float currentY;
 
     public double [][] coordinates =
-            {
+            { //coordinates is 10 id arrays each with an array of 2(x and y)
                     {0.0, 0.0},
                     {0.0, 0.0},
                     {0.0, 0.0},
@@ -43,10 +43,14 @@ public class TestAprilTag extends OpMode {
     public void init() {
         aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, telemetry, 0, 0, 0);
 
+
         BNO055IMU.Parameters imuParameters = new BNO055IMU.Parameters();//set imu parameters
         imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;//set imu angle unit to degrees
-        imu = hardwareMap.get(BNO055IMU.class,"imu");//set imu to hardware map
+        imuParameters.loggingEnabled = true;
+        imuParameters.loggingTag = "imu";
         imuParameters.calibrationDataFile = "BN0055IMUCalibration.json";//calibrate imu
+
+        imu = hardwareMap.get(BNO055IMU.class,"imu");//set imu to hardware map
         imu.initialize(imuParameters);//initialize imu to imu parameters
 
        /* coordinates = new double [10][];
@@ -59,6 +63,8 @@ public class TestAprilTag extends OpMode {
 
     @Override
     public void loop() {
+        double averageX = 0;
+        double averageY = 0;
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         //set imu values to the values received
 
@@ -67,23 +73,41 @@ public class TestAprilTag extends OpMode {
         currentX = angles.thirdAngle;
         currentY = angles.secondAngle;
 
-        for(int i = 0; i < 10; i++){
-            coordinates [i][0] = 0.0;
-            coordinates [i][1] = 0.0;
-        }
-
         //pass on values into getRelativeCoordinates function
         coordinates = aprilTagLocalizer.getCoordsSet(robotHeading, currentX, currentY);
-
+        int numberOfAprilTags = 0;
         if (coordinates != null){
             for(int i = 0;i<10;i++){
                 if(coordinates[i][0] != 0.0) {
-                    telemetry.addLine(String.format("Coordinates of April Tag(ID # %d [%3.2f, %3.2f] ", i+1, coordinates[i][0], coordinates[i][1]));
+                    telemetry.addLine(String.format("Coordinates of April Tag(ID # %d [%3.2f, %3.2f] ", i + 1, coordinates[i][0], coordinates[i][1]));
+                    numberOfAprilTags++;
                 }
             }
         }
+
+
+        if(coordinates[3][0]!=0&&coordinates[4][0]!=0&&coordinates[5][0]!=0){
+           averageX = (coordinates[3][0]+coordinates[4][0] + coordinates[5][0])/3;
+           averageY = (coordinates[3][1] + coordinates[4][1] + coordinates[5][1])/3;
+        }
+        else if(coordinates[0][0]!=0&&coordinates[1][0]!=0&&coordinates[2][0]!=0){
+            averageX = (coordinates[0][0]+coordinates[1][0] + coordinates[2][0])/3;
+            averageY = (coordinates[0][1] + coordinates[1][1] + coordinates[2][1])/3;
+        }
+
+        telemetry.addLine(String.format("Average of 3 april tags: [%3.2f, %3.2f]", averageX, averageY));
+
+
+        telemetry.addData("Robot heading", angles.firstAngle);//uses imu to get the robot heading
         aprilTagLocalizer.telemetryAprilTag();
         telemetry.update();
+
+        for(int i = 0;i<10;i++){
+            coordinates[i][0] = 0;
+            coordinates[i][1] = 0;
+        }
+
+
     }
 }
 
