@@ -47,7 +47,7 @@ public class MecanumDrive {
     public static final double [] FORWARD = {1.0, -1.0, 1.0, 1.0};
     public static final double [] RIGHT = {1.0, 1.0, -1.0, 1.0};
     public static final double [] CLOCKWISE = {1.0, 1.0, 1.0, -1.0};
-    public static final double POWER_MULTIPLIER = 1.0;
+    public static final double POWER_MULTIPLIER = 0.25;
 
     // Inputs and power constraints
     private double [] motorInputs;

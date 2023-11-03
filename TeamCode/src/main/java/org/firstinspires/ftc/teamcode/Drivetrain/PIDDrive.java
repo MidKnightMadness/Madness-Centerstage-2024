@@ -43,7 +43,7 @@ public class PIDDrive{
     // Navigational variables
     double [] delta = {0.0, 0.0, 0.0};
     double [] targetState = {0.0, 0.0, 0.0};
-    double distanceToTarget = 0.0;
+    public double distanceToTarget = 0.0;
     double lastDistanceToTarget = 0.0;
 
     public  PIDDrive (Odometry odometry, double targetX, double targetY, double targetRadians, Telemetry telemetry){
