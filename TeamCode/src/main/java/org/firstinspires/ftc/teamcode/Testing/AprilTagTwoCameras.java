@@ -27,9 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Testing;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -49,9 +48,10 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
+import org.firstinspires.ftc.teamcode.Utility.Timer;
+
 @TeleOp(name = "Concept: AprilTag Switchable Cameras", group = "Concept")
-@Disabled
-public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
+public class AprilTagTwoCameras extends LinearOpMode {
 
     /*
      * Variables used for switching cameras.
@@ -69,10 +69,11 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
+    Timer timer;
 
     @Override
     public void runOpMode() {
-
+        timer = new Timer();
         initAprilTag();
 
         // Wait for the DS start button to be touched.
@@ -99,19 +100,16 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
                 doCameraSwitching();
 
-                // Share the CPU.
-                sleep(20);
+                timer.updateTime();
+                telemetry.addLine(String.format("Ticks per second: %.1f", 1 / timer.getDeltaTime()));
             }
         }
 
         // Save more CPU resources when camera is no longer needed.
         visionPortal.close();
 
-    }   // end runOpMode()
+    }
 
-    /**
-     * Initialize the AprilTag processor.
-     */
     private void initAprilTag() {
 
         // Create the AprilTag processor by using a builder.
@@ -128,11 +126,9 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
             .addProcessor(aprilTag)
             .build();
 
-    }   // end method initAprilTag()
+    }
 
-    /**
-     * Add telemetry about camera switching.
-     */
+
     private void telemetryCameraSwitching() {
 
         if (visionPortal.getActiveCamera().equals(webcam1)) {
@@ -143,11 +139,8 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
             telemetry.addData("Press LeftBumper", "to switch to Webcam 1");
         }
 
-    }   // end method telemetryCameraSwitching()
+    }
 
-    /**
-     * Add telemetry about AprilTag detections.
-     */
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -164,22 +157,17 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
             }
-        }   // end for() loop
+        }
 
         // Add "key" information to telemetry
         telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
 
-    }   // end method telemetryAprilTag()
+    }
 
-    /**
-     * Set the active camera according to input from the gamepad.
-     */
     private void doCameraSwitching() {
         if (visionPortal.getCameraState() == CameraState.STREAMING) {
-            // If the left bumper is pressed, use Webcam 1.
-            // If the right bumper is pressed, use Webcam 2.
             boolean newLeftBumper = gamepad1.left_bumper;
             boolean newRightBumper = gamepad1.right_bumper;
             if (newLeftBumper && !oldLeftBumper) {
@@ -191,6 +179,6 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
             oldRightBumper = newRightBumper;
         }
 
-    }   // end method doCameraSwitching()
+    }
 
-}   // end class
+}

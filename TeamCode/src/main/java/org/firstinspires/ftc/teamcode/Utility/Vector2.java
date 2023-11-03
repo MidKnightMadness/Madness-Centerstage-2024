@@ -16,7 +16,7 @@ public class Vector2 {
         return new Vector2(this.x - vec.x, this.y - vec.y);
     }
 
-    public double getMagnitude() {
+    public double getMagnitude() {//magnitude is the square root of the sum of the squares of x and y of vector
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
