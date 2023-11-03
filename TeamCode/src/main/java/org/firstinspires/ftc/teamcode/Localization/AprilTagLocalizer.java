@@ -53,6 +53,28 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
     public double calculationsDouble = 0.0; // Used as intermediate
 
 
+    double yAfterErrorChange = 0;
+
+    double xAfterErrorChange = 0;
+
+
+    public final double bThree = 24.89;
+
+    public final double mThree = 0.9832;
+
+    double realY = 0;
+
+    //bTwo and mTwo are b for x error
+    public final double bTwo = -0.284;
+    public final double mTwo = 0.069;
+    public final double bOne = -0.011;
+    public final double mOne = -0.002;
+
+    //bOne and mOne are m coefficient for x mX = mY + b
+    public double mFour = 0;
+    public double bFour = 0;
+
+
     public AprilTagLocalizer(HardwareMap hardwareMap, Telemetry telemetry, double relX, double relY, double cameraAngle) {
         // Match instance fields
         this.telemetry = telemetry;
@@ -188,12 +210,41 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 // METHOD 1 : USING RELATIVE X AND Y OF TAG TO CAMERA ==============================
-                sensorCoords1[0] = detection.ftcPose.x; // When pointing at 0˚, y with respects to robot is x with resepcts to field, vice versa for x
-                sensorCoords1[1] = detection.ftcPose.y;
+
+                //   public final double bThree = 24.89;
+                //
+                //    public final double mThree = 0.9832;
+                //
+                //bTwo and mTwo are b for x error
+                //    public final double bTwo = -0.284;
+                //    public final double mTwo = 0.069;
+                //bOne and mOne are m coefficient for x mX = mY + b
+                //    public final double bOne = -0.011;
+                //    public final double mOne = -0.002;
+
+
+                //bTwo and mTwo are already initiated
+                //setting the values for the realY
+                realY = (detection.ftcPose.y - bThree)/mThree;
+                 //RealY = (Perceived Y - bTwo)/mTwo
+
+                sensorCoords1[1] = realY;
+                //setting the sensor
+                bFour = mTwo * realY + bTwo;
+                mFour = mOne * realY + bOne;
+                sensorCoords1[0] = (((detection.ftcPose.x) - bFour)/(mFour));
+
+                //inverse of f(x) = (x-b)/m because regular f(x) = mx+b -> switch x and y-> x = my +b, y = (x-b)/m
+                //detection.ftcPose.y is the perceived y that it gets through april tag camera detection
+                // When pointing at 0˚, y with respects to robot is x with resepcts to field, vice versa for x
+
+                //finding the inverses of the functions to predict error
+
+
 
                 // METHOD 2 : USING BEARING AND RANGE ==============================================
-                sensorCoords2[0] = detection.ftcPose.range * Math.sin(detection.ftcPose.bearing);
-                sensorCoords2[1] = detection.ftcPose.range * Math.cos(detection.ftcPose.bearing);
+//                sensorCoords2[0] = detection.ftcPose.range * Math.sin(detection.ftcPose.bearing);
+//                sensorCoords2[1] = detection.ftcPose.range * Math.cos(detection.ftcPose.bearing);
 
                 // Combine relative coordinates, coefficients not determined yet
                 calculations[detection.id-1][0] = sensorCoords1[0];// + 0.5 * sensorCoords2[0];
@@ -239,6 +290,8 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
             calculations[detection.id-1][1] = sensorCoordinatesY.get(z);// / currentDetections.size();
             z++;
         }
+
+
 
 
 
