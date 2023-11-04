@@ -5,10 +5,14 @@ import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Utility.RGBColor;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
@@ -21,8 +25,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
-@TeleOp(name = "Robot Camera Benchmark", group = "Benchmark")
-public class RobotCameraBenchmark extends OpMode {
+@TeleOp(name = "Robot Chassis Sensor Benchmark", group = "Benchmark")
+public class RobotChassisSensorBenchmark extends OpMode {
     AverageBuffer timeBuffer;
     BufferedWriter bufferedWriter;
     FileWriter fileWriter;
@@ -40,6 +44,15 @@ public class RobotCameraBenchmark extends OpMode {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
+    ColorSensor cs1;
+    ColorSensor cs2;
+
+    AnalogInput us1;
+    AnalogInput us2;
+
+    DcMotor encoder1;
+    DcMotor encoder2;
+    DcMotor encoder3;
 
     @Override
     public void init() {
@@ -47,8 +60,19 @@ public class RobotCameraBenchmark extends OpMode {
         timer = new Timer();
         timeBuffer = new AverageBuffer(1);
         initAprilTag();
-        // file initialization
-//        String directory_path = Environment.getExternalStorageDirectory().getPath()+"/"+this.FOLDER;
+
+        cs1 = hardwareMap.get(ColorSensor.class, "cs1");
+        cs2 = hardwareMap.get(ColorSensor.class, "cs2");
+
+        us1 = hardwareMap.get(AnalogInput.class, "us1");
+        us2 = hardwareMap.get(AnalogInput.class, "us2");
+
+        encoder1 = hardwareMap.get(DcMotor.class, "encoder1");
+        encoder1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        encoder2 = hardwareMap.get(DcMotor.class, "encoder2");
+        encoder2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        encoder3 = hardwareMap.get(DcMotor.class, "encoder3");
+        encoder3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         String filePath = String.format("%s/FIRST/data/%s",
                 Environment.getExternalStorageDirectory().getAbsolutePath(), OUTPUT_FILE);
@@ -121,6 +145,14 @@ public class RobotCameraBenchmark extends OpMode {
             }
         }
         else {
+            log(cs1);
+            log(cs2);
+            log(us1);
+            log(us2);
+            log(encoder1);
+            log(encoder2);
+            log(encoder3);
+            telemetryAprilTag();
             log();
             datapoints ++;
         }
@@ -138,7 +170,6 @@ public class RobotCameraBenchmark extends OpMode {
 
     void log() {
         timer.updateTime();
-        telemetryAprilTag();
         writeData(timer.getTime(), timer.getDeltaTime(), 1.0 / timer.getDeltaTime(), 0, 0);
     }
 
@@ -165,7 +196,24 @@ public class RobotCameraBenchmark extends OpMode {
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
 
-    }   // end method telemetryAprilTag()
+    }
+
+    void log(ColorSensor in) {
+        RGBColor reading = new RGBColor(in.red(), in.green(), in.blue(), in.alpha());
+        telemetry.addData("RGBA", reading);
+        telemetry.addLine("-------------------------------");
+    }
+
+    void log(AnalogInput in) {
+        telemetry.addData("Voltage:", in.getVoltage());
+        telemetry.addLine("-------------------------------");
+    }
+
+    void log(DcMotor encoder) {
+        telemetry.addLine(String.format("Connection: %s", encoder.getConnectionInfo()));
+        telemetry.addLine(String.format("Position: %d", encoder.getCurrentPosition()));
+        telemetry.addLine("-------------------------------");
+    }
 
 
     void writeData(double elapsedTime, double deltaTime, double fps, double pipeline, double overhead) {
