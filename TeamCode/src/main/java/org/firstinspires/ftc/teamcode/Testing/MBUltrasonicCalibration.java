@@ -28,7 +28,7 @@ public class MBUltrasonicCalibration extends OpMode {
     boolean useTelemetry = false;
     final static String OUTPUT_FILE = "ultrasonic.csv";
 
-    double[] distances = {300, 400, 500};
+    double[] distances = {1100, 1200, 1300, 1400, 1500};
 
     @Override
     public void init() {
@@ -36,7 +36,7 @@ public class MBUltrasonicCalibration extends OpMode {
         timer = new Timer();
         timeBuffer = new AverageBuffer(1);
 
-        ultrasonicSensor = hardwareMap.get(AnalogInput.class, "us_sensor");
+        ultrasonicSensor = hardwareMap.get(AnalogInput.class, "us1");
 
         // file initialization
 //        String directory_path = Environment.getExternalStorageDirectory().getPath()+"/"+this.FOLDER;
@@ -80,7 +80,6 @@ public class MBUltrasonicCalibration extends OpMode {
             telemetry.addLine("Press X to continue");
             firstIteration = false;
         }
-
 
         if (this.gamepad1.x) {
             logAtDistance(distances[loggingIndex]);
@@ -134,7 +133,7 @@ public class MBUltrasonicCalibration extends OpMode {
                 telemetry.addLine("Error sleeping");
             }
         }
-
+        
         telemetry.addLine("Successfully logged at distance " + distance + "mm\n");
         telemetry.addLine("------------------");
         telemetry.update();
