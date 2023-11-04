@@ -8,6 +8,7 @@ public class MBUltrasonicSensor {
     AnalogInput analogInput;
     int bufferSize;
 
+
     public MBUltrasonicSensor(AnalogInput input, int bufferSize){
         this.analogInput = input;
     }
