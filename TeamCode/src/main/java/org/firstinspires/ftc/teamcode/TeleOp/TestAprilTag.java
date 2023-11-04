@@ -87,8 +87,8 @@ public class TestAprilTag extends OpMode {
 
 
         if(coordinates[3][0]!=0&&coordinates[4][0]!=0&&coordinates[5][0]!=0){
-           averageX = (coordinates[3][0]+coordinates[4][0] + coordinates[5][0])/3;
-           averageY = (coordinates[3][1] + coordinates[4][1] + coordinates[5][1])/3;
+            averageX = (coordinates[3][0]+coordinates[4][0] + coordinates[5][0])/3;
+            averageY = (coordinates[3][1] + coordinates[4][1] + coordinates[5][1])/3;
         }
         else if(coordinates[0][0]!=0&&coordinates[1][0]!=0&&coordinates[2][0]!=0){
             averageX = (coordinates[0][0]+coordinates[1][0] + coordinates[2][0])/3;
@@ -110,7 +110,5 @@ public class TestAprilTag extends OpMode {
 
     }
 }
-
-
 
 
