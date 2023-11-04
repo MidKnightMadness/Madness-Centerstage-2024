@@ -27,7 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Testing;
+
+import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -115,7 +117,7 @@ public class ConceptAprilTag extends LinearOpMode {
             // == CAMERA CALIBRATION ==
             // If you do not manually specify calibration parameters, the SDK will attempt
             // to load a predefined calibration for your camera.
-            //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+//            .setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
 
             // ... these parameters are fx, fy, cx, cy.
 
@@ -132,7 +134,7 @@ public class ConceptAprilTag extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(640, 360));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         //builder.enableCameraMonitoring(true);
@@ -169,9 +171,9 @@ public class ConceptAprilTag extends LinearOpMode {
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addLine(String.format("XYZ %6.3f %6.3f %6.3f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.3f %6.3f %6.3f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.3f %6.3f %6.3f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));

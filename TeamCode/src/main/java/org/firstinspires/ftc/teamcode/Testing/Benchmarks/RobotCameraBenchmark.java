@@ -13,11 +13,13 @@ import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.List;
 
 @TeleOp(name = "Robot Camera Benchmark", group = "Benchmark")
 public class RobotCameraBenchmark extends OpMode {
@@ -41,7 +43,7 @@ public class RobotCameraBenchmark extends OpMode {
 
     @Override
     public void init() {
-        telemetry.setAutoClear(false);
+        telemetry.setAutoClear(true);
         timer = new Timer();
         timeBuffer = new AverageBuffer(1);
         initAprilTag();
@@ -136,8 +138,35 @@ public class RobotCameraBenchmark extends OpMode {
 
     void log() {
         timer.updateTime();
+        telemetryAprilTag();
         writeData(timer.getTime(), timer.getDeltaTime(), 1.0 / timer.getDeltaTime(), 0, 0);
     }
+
+    private void telemetryAprilTag() {
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.3f %6.3f %6.3f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.3f %6.3f %6.3f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.3f %6.3f %6.3f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }   // end for() loop
+
+        // Add "key" information to telemetry
+        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+        telemetry.addLine("RBE = Range, Bearing & Elevation");
+
+    }   // end method telemetryAprilTag()
+
 
     void writeData(double elapsedTime, double deltaTime, double fps, double pipeline, double overhead) {
         try {
