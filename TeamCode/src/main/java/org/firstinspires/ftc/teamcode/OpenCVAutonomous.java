@@ -11,7 +11,7 @@ public class OpenCVAutonomous extends LinearOpMode {
     private OpenCvInternalCamera robotCam;
     @Override
     public void runOpMode() throws InterruptedException {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier();
+       // int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier();
         robotCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK);
         robotCam.openCameraDevice();
 
