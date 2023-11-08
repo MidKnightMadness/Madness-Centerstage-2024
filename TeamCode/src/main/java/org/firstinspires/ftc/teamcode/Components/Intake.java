@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 public class Intake {
-    // Units are MM
+    // Units are millimeters
     final double LENGTH_SERVO_WHEEL = 216.88;
     final double HEIGHT_SERVO = 108.717;
 
