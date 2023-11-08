@@ -41,7 +41,7 @@ public class TestAprilTag extends OpMode {
 
     @Override
     public void init() {
-        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, telemetry, 0, 0, 0);
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, telemetry, 0, 0);
 
 
         BNO055IMU.Parameters imuParameters = new BNO055IMU.Parameters();//set imu parameters

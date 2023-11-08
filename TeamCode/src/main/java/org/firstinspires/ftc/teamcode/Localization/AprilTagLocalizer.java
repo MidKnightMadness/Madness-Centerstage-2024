@@ -7,7 +7,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.apriltag.AprilTagDetection;
@@ -75,7 +74,7 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
     public double bFour = 0;
 
 
-    public AprilTagLocalizer(HardwareMap hardwareMap, Telemetry telemetry, double relX, double relY, double cameraAngle) {
+    public AprilTagLocalizer(HardwareMap hardwareMap, Telemetry telemetry, double relX, double relY) {
         // Match instance fields
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
