@@ -58,16 +58,16 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
             {0, 0, 0}
 
 
-    }
+    };
     DistanceSensor distSensor;
 
     int teamColor = 0; //put this somewhere else; red is 1, blue is 0
     int numberOfPointsReached = 0;
-    if(teamColor ==2)
+    /*if (teamColor ==2)
 
     {
         numberOfPointsReached += 8;
-    }
+    }*/
 
 
     int releasedNum = 0; //arbitrary value for outtake
