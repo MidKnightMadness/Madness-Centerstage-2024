@@ -11,14 +11,10 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
-import org.firstinspires.ftc.teamcode.Localization.ColorSensorWrapper;
-import org.firstinspires.ftc.teamcode.Localization.IndepColorSensor;
-import org.firstinspires.ftc.teamcode.Localization.RGBColor;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import java.lang.reflect.Field;

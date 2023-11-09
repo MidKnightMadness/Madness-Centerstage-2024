@@ -4,6 +4,9 @@ package org.firstinspires.ftc.teamcode.Utility;
 
 public class ButtonToggle {
     boolean lastState;
+    public ButtonToggle(){
+
+    }
     public boolean update(boolean currentState) {
         // if lastState is false
         if (currentState && !lastState) {

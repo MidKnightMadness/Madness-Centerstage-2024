@@ -52,7 +52,7 @@ public class MecanumDrive {
     // Inputs and power constraints
     private double [] motorInputs;
 
-    public MecanumDrive(HardwareMap hardwareMap, Telemetry telmeetry){
+    public MecanumDrive(HardwareMap hardwareMap, Telemetry telemetry){
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         FR = hardwareMap.get(DcMotorEx.class, "FR");
         BL = hardwareMap.get(DcMotorEx.class, "BL");
