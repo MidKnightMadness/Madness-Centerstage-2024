@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
@@ -18,10 +21,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 public class Autonomous extends OpMode {
 
     /*
-    NOTES FOR NEXT CODING: if put in two completely different cases, for starting in backdrop and starting in stack, and make a route with three additional coordinates that get inverted for the other way around
-5
-When at backdrop: if (currentTimeMillis()-startTime) > 23) (estimating that 7 seconds max to get pixels and come back):
-Park at backstage
 
 Cycle
 
@@ -38,23 +37,23 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
             {84, 12, 0},
             {120, 36, 0},
             {84, 12, 0},
-            {12, 12, 0},
+            {24, 12, 0},
             {12, 36, 0},
-            {36, 12, 0},
+            {24, 12, 0},
             {84, 12, 0},
             //and repeat
-            {120, 36, 0}, {84, 12, 0}, {12, 12, 0}, {12, 36, 0}, {36, 12, 0}, {84, 12, 0}, {120, 36, 0}, {84, 12, 0}, {12, 12, 0}, {12, 36, 0}, {36, 12, 0}, {84, 12, 0},
+            {120, 36, 0}, {84, 12, 0}, {24, 12, 0}, {12, 36, 0}, {24, 12, 0}, {84, 12, 0}, {120, 36, 0}, {84, 12, 0}, {24, 12, 0}, {12, 36, 0}, {24, 12, 0}, {84, 12, 0},
             //blue starting here
             //front blue also has {36, 132}
             {84, 132, 0},
             {120, 108, 0},
             {84, 132, 0},
-            {12, 132, 0},
-            {12, 68, 0},
-            {36, 132, 0},
+            {24, 132, 0},
+            {12, 108, 0},
+            {24, 132, 0},
             {84, 132, 0},
             //and repeat
-            {84, 132, 0}, {120, 108, 0}, {84, 132, 0}, {12, 132, 0}, {12, 68, 0}, {36, 132, 0}, {84, 132, 0}, {84, 132, 0}, {120, 108, 0}, {84, 132, 0}, {12, 132, 0}, {12, 68, 0}, {36, 132, 0}, {84, 132, 0}
+           {120, 108, 0}, {84, 132, 0}, {24, 132, 0}, {12, 108, 0}, {24, 132, 0}, {84, 132, 0},  {120, 108, 0}, {84, 132, 0}, {24, 132, 0}, {12, 108, 0}, {24, 132, 0}, {84, 132, 0}
 
 
     };
@@ -70,7 +69,9 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
     MecanumDrive drive;
     Odometry odometry;
     PIDDrive PIDDrive;
-
+    DcMotorEx IntakeMotor;
+    Servo servoBox;
+    Servo armIntake;
     ElapsedTime timer;
     boolean taskComplete = false; //just to make a few things run for now
     boolean teamPropTask = false;
@@ -80,12 +81,18 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
     @Override
     public void init() {
+        IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
+        IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         drive = new MecanumDrive(hardwareMap, telemetry);
         odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2(0.0, 0.0));
         PIDDrive = new PIDDrive(odometry, 0, 0, 0, telemetry);
         timer = new ElapsedTime();
         timer.startTime();
         distSensor = hardwareMap.get(DistanceSensor.class, "distSensor");
+
+        servoBox = hardwareMap.get(Servo.class, "servoBox");
+        armIntake = hardwareMap.get(Servo.class,"armIntakeServo");
 
         PIDDrive.setTargetState(targetStates[numberOfPointsReached][0], targetStates[numberOfPointsReached][1], targetStates[numberOfPointsReached][2]);
     }
@@ -98,6 +105,7 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
         PIDDrive.updatePID();
         if (timer.time() < 23) {
             if (teamPropTask == false) {
+                //set 3 if statements and leniency for each one
                 PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
                 if (PIDDrive.distanceToTarget < 0.1) {
                     teamPropTask = true;
@@ -119,16 +127,37 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                     if (nextTask == 1) {//if currently we're in stacks
                         //intake
                         //stored++ for each intake
+                        while (stored != 2){
+                            IntakeMotor.setPower(1);
+                            armIntake.setPosition(armIntake.getPosition()-0.1);
+                            //lower at rate
+                            if (pixel Passes){
+                                stored++;
+                            }
+
+                        }
 
                         taskComplete = true;
                         nextTask = 2;
+                        armIntake.setPosition(1);
+
                     }
                 } else {
                     //outtake
                     //stored-- each time
-                    if (stored == 0) {
+                    if (stored != 0){
+                        if (not at position){
+                            linear slides
+                        }
+                        else{
+                            servoBox.setPosition(1);
+                        }
+
+                    }
+                    else{
                         taskComplete = true;
                         nextTask = 1;
+                        servoBox.setPosition(0);
 
                     }
                 }
