@@ -41,10 +41,10 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
             {135, 41.25},//id 4
             {135, 35.25},//id 5
             {135, 29.25},//id 6
-            {0.0, 114},//id 7 not necesarilky accurate yet
-            {0.0, 108},//id 8 not necesarilky accurate yet
-            {0.0, 36},//id 9 not necesarilky accurate yet
-            {0.0, 30}//id 10 not necesarilky accurate y
+            {0.0, 114},//id 7
+            {0.0, 108},//id 8
+            {0.0, 36},//id 9
+            {0.0, 30}//id 10
     };
 
     public double[][] calculations;// Used as intermediate
@@ -198,7 +198,6 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
         this.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Reset list
-
         if (sensorCoordinatesY != null) {//null catch
             sensorCoordinatesX.clear();
             sensorCoordinatesY.clear();
