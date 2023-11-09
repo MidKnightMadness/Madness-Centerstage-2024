@@ -44,9 +44,10 @@ public class MecanumDrive {
     // Turning right is FL clockwise, FR clockwise, BL clockwise, BR clockwise
 
     // FR was being weird
-    public static final double [] FORWARD = {1.0, -1.0, 1.0, 1.0};
-    public static final double [] RIGHT = {1.0, 1.0, -1.0, 1.0};
-    public static final double [] CLOCKWISE = {1.0, 1.0, 1.0, -1.0};
+    public static final double [] FORWARD = {-1.0, 1.0, -1.0, -1.0};
+    ///forward: -1.0, 1.0, -1.0, -1.0
+    public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
+    public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
     public static final double POWER_MULTIPLIER = .5;
 
     // Inputs and power constraints
