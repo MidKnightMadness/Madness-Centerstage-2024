@@ -38,35 +38,39 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
     double[][] targetStates = {
             //red
-            //4 total points: Outtake, rightmost (or leftmost), down past trusses, intake stacks
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
+            //5 total points: Outtake, rightmost (or leftmost), down past trusses, intake stacks
+            //front red also has {36, 12}
+            {84, 12, 0},
+            {120, 36, 0},
+            {84, 12, 0},
+            {12, 12, 0},
+            {12, 36, 0},
+            {36, 12, 0},
+            {84, 12, 0},
+            //and repeat
+            {120, 36, 0},{84, 12, 0},{12, 12, 0}, {12, 36, 0}, {36, 12, 0}, {84, 12, 0},{120, 36, 0},{84, 12, 0},{12, 12, 0}, {12, 36, 0}, {36, 12, 0}, {84, 12, 0},
             //blue starting here
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0}
+            //front blue also has {36, 132}
+            {84, 132, 0},
+            {120, 108, 0},
+            {84, 132, 0},
+            {12, 132, 0},
+            {12, 68, 0},
+            {36, 132, 0},
+            {84, 132, 0},
+            //and repeat
+            {84, 132, 0}, {120, 108, 0}, {84, 132, 0}, {12, 132, 0}, {12, 68, 0}, {36, 132, 0}, {84, 132, 0},{84, 132, 0}, {120, 108, 0}, {84, 132, 0}, {12, 132, 0}, {12, 68, 0}, {36, 132, 0}, {84, 132, 0}
 
 
     };
     DistanceSensor distSensor;
 
-    int teamColor = 0; //put this somewhere else; red is 1, blue is 0
+    int teamColor = 0; //put this somewhere else; red is 3, blue is 1
     int numberOfPointsReached = 0;
     /*if (teamColor ==2)
 
     {
-        numberOfPointsReached += 8;
+        numberOfPointsReached += a lot;
     }*/
 
 
@@ -82,10 +86,10 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
     boolean taskComplete = false; //just to make a few things run for now
     boolean overriding = false;
-    int nextTask = 1; //1 is for intake, and 2 is for outtake
-    int intook = 0;
-    int outtook = 0;
-    int outTakeMax = 1; //the starting pixel in robot
+    boolean teamPropTask = false;
+    int nextTask =2; //1 is for intake, and 2 is for outtake
+
+    int stored = 1; //the starting pixel in robot
 
     @Override
     public void init() {
@@ -103,27 +107,28 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
     public void loop() {
 
         //while the task at location is complete
-
-        if (targetStates[numberOfPointsReached][0] == 0 ||targetStates[numberOfPointsReached][0] == 1){ //arbitrary numbers check if it's one of the points where you run intake or outtake
+        if (teamPropTask == false) {
 
         }
 
-        if (taskComplete == false) { //for both intake and outtake
-            if (nextTask == 1) {//if currently we're in backdrop
+        else{
+        if (targetStates[numberOfPointsReached][0] == 0 ||targetStates[numberOfPointsReached][0] == 1){ //arbitrary numbers check if it's one of the points where you run intake or outtake
+            taskComplete = false;
+        }
 
+        if (taskComplete == false) { //for both intake and outtake
+            if (nextTask == 1) {//if currently we're in staks
                 //intake
-                //outTakeMax++ for each intake
-                if (intook == 2){
-                    intook = 0;
+                //stored++ for each intake
+
                     taskComplete = true;
                     nextTask = 2;
                 }
             }
             else{
                 //outtake
-                if (outtook == outTakeMax){
-                    outtook = 0;
-                    outTakeMax = 0;
+                //stored-- each time
+                if (stored == 0){
                     taskComplete =true;
                     nextTask = 1;
 
@@ -154,8 +159,8 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                 }
 
 
-
             }
+
+        }
         }
     }
-}
