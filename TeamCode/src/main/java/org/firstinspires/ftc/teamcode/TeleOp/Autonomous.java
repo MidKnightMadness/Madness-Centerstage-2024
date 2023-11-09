@@ -1,27 +1,21 @@
-package org.firstinspires.ftc.teamcode.Testing;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Drivetrain.IndepDrivetrain;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 
-import org.firstinspires.ftc.teamcode.Localization.Localizer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-
 
 @TeleOp(name = "AutonomousPixels")
-public class AutonomousTestingPixelCycle extends OpMode {
+public class Autonomous extends OpMode {
 
     /*
     NOTES FOR NEXT CODING: if put in two completely different cases, for starting in backdrop and starting in stack, and make a route with three additional coordinates that get inverted for the other way around
@@ -37,6 +31,7 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
      */
 
     double[][] targetStates = {
+            //add additional coords for getting 'close enough' for intake and outtake
             //red
             //5 total points: Outtake, rightmost (or leftmost), down past trusses, intake stacks
             //front red also has {36, 12}
@@ -67,25 +62,17 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
     int teamColor = 0; //put this somewhere else; red is 3, blue is 1
     int numberOfPointsReached = 0;
-    /*if (teamColor ==2)
+    /*if (teamColor ==3)
 
     {
         numberOfPointsReached += a lot;
     }*/
-
-
-    int releasedNum = 0; //arbitrary value for outtake
-
-
-    //Cycle
     MecanumDrive drive;
     Odometry odometry;
     PIDDrive PIDDrive;
 
     ElapsedTime timer;
-
     boolean taskComplete = false; //just to make a few things run for now
-    boolean overriding = false;
     boolean teamPropTask = false;
     int nextTask = 2; //1 is for intake, and 2 is for outtake
 
@@ -111,7 +98,6 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
         PIDDrive.updatePID();
         if (timer.time() < 23) {
             if (teamPropTask == false) {
-
                 PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
                 if (PIDDrive.distanceToTarget < 0.1) {
                     teamPropTask = true;
@@ -122,16 +108,15 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                         throw new RuntimeException(e);
                     }
                     intake.setPower(0);
-
                 }
 
             } else {
-                if (targetStates[numberOfPointsReached][0] == 0 || targetStates[numberOfPointsReached][0] == 1) { //arbitrary numbers check if it's one of the points where you run intake or outtake
+                if (targetStates[numberOfPointsReached-1][0] == 12 || targetStates[numberOfPointsReached-1][0] == 120) { //arbitrary numbers check if it's one of the points where you run intake or outtake
                     taskComplete = false;
                 }
 
                 if (taskComplete == false) { //for both intake and outtake
-                    if (nextTask == 1) {//if currently we're in staks
+                    if (nextTask == 1) {//if currently we're in stacks
                         //intake
                         //stored++ for each intake
 
@@ -151,36 +136,27 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
 
                 if (taskComplete == true) {
-
                     if (PIDDrive.distanceToTarget < 0.1) { //when we reach the desired point, then our next point is queued
                         numberOfPointsReached++;
                     }
                     //above is the exact same thing but when on backstage
                     if (numberOfPointsReached < targetStates.length) { //movement
-
                             PIDDrive.setTargetState(targetStates[numberOfPointsReached][0], targetStates[numberOfPointsReached][1], targetStates[numberOfPointsReached][2]);
-
-
-
                     }
-
                 }
             }
 
         }else{
             if (teamColor == 3){
                 PIDDrive.setTargetState(odometry.getXCoordinate(), 12, 0);
-                if (PIDDrive.distanceToTarget() < 0.1){
+                if (PIDDrive.distanceToTarget < 0.1){
                     PIDDrive.setTargetState(130, 12, 0);
-
                 }
-
             }
             else{
                 PIDDrive.setTargetState(odometry.getXCoordinate(), 132, 0);
-                if (PIDDrive.distanceToTarget() < 0.1){
+                if (PIDDrive.distanceToTarget < 0.1){
                     PIDDrive.setTargetState(130, 132, 0);
-
                 }
 
             }
