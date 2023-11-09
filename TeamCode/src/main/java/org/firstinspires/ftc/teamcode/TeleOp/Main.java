@@ -100,6 +100,8 @@ public class Main extends OpMode {
     //float currentLinearSlidesHeight = 0F;//current linear slides height
     public void handleManipulatorControls() {
 
+        //set for gamepad 2, checking to see if gamepad had any changes
+
         //linear slides -> left stick y     -> seperate class
         //intake -> servo -> d pad down and up -> height
         //button two to start roller intake             -> done

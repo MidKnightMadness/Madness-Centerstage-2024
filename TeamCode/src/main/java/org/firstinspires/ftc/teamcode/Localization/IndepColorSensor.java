@@ -5,12 +5,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.Utility.RGBColor;
 
 import java.util.concurrent.TimeUnit;
 
 public class IndepColorSensor implements Runnable{
     public ColorSensor colorSensor;
     public ColorSensorWrapper colorSensorWrapper;
+
     private final double regulatedFrameInterval = 20; // Milliseconds, currently at 50 hertz
     public boolean active = false;
 
