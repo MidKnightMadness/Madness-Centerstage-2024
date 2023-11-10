@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 
+import org.firstinspires.ftc.teamcode.Intake.Intake;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -72,6 +73,8 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
     DcMotorEx IntakeMotor;
     Servo servoBox;
     Servo armIntake;
+    Servo ManipulatorServoLeft;
+            Servo ManiuplatorServoRight;
     ElapsedTime timer;
     boolean taskComplete = false; //just to make a few things run for now
     boolean teamPropTask = false;
@@ -93,6 +96,8 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
         servoBox = hardwareMap.get(Servo.class, "servoBox");
         armIntake = hardwareMap.get(Servo.class,"armIntakeServo");
+        ManiuplatorServoRight = hardwareMap.get(Servo.class,"ManipulatorServoRight");
+        ManipulatorServoLeft = hardwareMap.get(Servo.class,"ManipulatorServoLeft");
 
         PIDDrive.setTargetState(targetStates[numberOfPointsReached][0], targetStates[numberOfPointsReached][1], targetStates[numberOfPointsReached][2]);
     }
@@ -109,13 +114,13 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                 PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
                 if (PIDDrive.distanceToTarget < 0.1) {
                     teamPropTask = true;
-                    intake.setPower(-1);
+                    IntakeMotor.setPower(-1);
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    intake.setPower(0);
+                    IntakeMotor.setPower(0);
                 }
 
             } else {
@@ -134,31 +139,28 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                             if (pixel Passes){
                                 stored++;
                             }
-
                         }
-
                         taskComplete = true;
                         nextTask = 2;
                         armIntake.setPosition(1);
-
                     }
                 } else {
                     //outtake
                     //stored-- each time
                     if (stored != 0){
-                        if (not at position){
-                            linear slides
+                        if (ManipulatorServoLeft.getPosition() != 0.5){
+
+                                    ManiuplatorServoRight.setPosition(0.5);
+                            ManipulatorServoLeft.setPosition(0.5);
                         }
                         else{
                             servoBox.setPosition(1);
                         }
-
                     }
                     else{
                         taskComplete = true;
                         nextTask = 1;
                         servoBox.setPosition(0);
-
                     }
                 }
                 //help how do i
