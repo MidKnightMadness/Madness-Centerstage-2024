@@ -19,7 +19,8 @@ public class IndepColorSensor implements Runnable{
 
     public Telemetry telemetry;
     private ElapsedTime timer;
-    private RGBColor color;
+
+    RGBColor color;
 
     // Simplified color checking procedure
     public final double RedMin = 0.6;
@@ -52,7 +53,7 @@ public class IndepColorSensor implements Runnable{
                 //color sensor is from 1 inch away
                 //in the color sensor wrapper
                 //when updating the color sensor wrapper, add the values of rgb to the rgbColor,
-                color = colorSensorWrapper.getValue();//passing on the csw.values into rgbcolor color
+                // color = colorSensorWrapper.getValue();//passing on the csw.values into rgbcolor color
                 boolean condition = false;
 
                 if(color.r>=RedMin && color.r <= RedMax) {// && color.g >= GreenMin[i] && color.g <=GreenMax[i] && color.b>=BlueMin[i]&&color.b<=BlueMax[i]) {

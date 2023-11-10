@@ -14,7 +14,7 @@ public class ButtonToggle {
             return true;
         }
 
-        lastState = false;
+        lastState = currentState;
 
         return false;
     }

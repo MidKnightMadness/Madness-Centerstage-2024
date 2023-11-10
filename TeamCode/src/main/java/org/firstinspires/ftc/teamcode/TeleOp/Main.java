@@ -17,17 +17,13 @@ import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
 import org.firstinspires.ftc.teamcode.Drivetrain.SplinePath;
-import org.firstinspires.ftc.teamcode.Outtake.EndEffector;
-import org.firstinspires.ftc.teamcode.Outtake.Manipulator;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
-@TeleOp(name = "hi")
+@TeleOp(group= "[Game]", name = "Driver Controlled TeleOp")
 public class Main extends OpMode {
 
     public ColorSensorWrapper colorSensorWrapper;
     public PixelDetector pixelDetector;
-    public EndEffector endEffector;
-    public Manipulator manipulator;
 
     MecanumDrive mecanumDrive;
 
@@ -50,33 +46,27 @@ public class Main extends OpMode {
     //just using driver controlled
     @Override
     public void init() {
-
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
 
         //initiate servo intake motor
-         IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
-         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-         IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//         IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
+//         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//         IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        //initialization of color sensors
+//          colorSensorOutake = hardwareMap.get(ColorSensor.class, "colorSensorOutake");
+//          colorSensorChasis = hardwareMap.get(ColorSensor.class, "colorSensorChasis");
+//
+//
+//          servoBox = hardwareMap.get(Servo.class, "servoBox");
+//          armIntake = hardwareMap.get(Servo.class,"armIntakeServo");
 
-        //initialization of color sensors
-          colorSensorOutake = hardwareMap.get(ColorSensor.class, "colorSensorOutake");
-          colorSensorChasis = hardwareMap.get(ColorSensor.class, "colorSensorChasis");
-
-
-          servoBox = hardwareMap.get(Servo.class, "servoBox");
-          armIntake = hardwareMap.get(Servo.class,"armIntakeServo");
-
-       //initialization of wrappers
-        colorSensorWrapper = new ColorSensorWrapper(colorSensorOutake);
-        pixelDetector = new PixelDetector();
-        endEffector = new EndEffector();
-        manipulator = new Manipulator();
-
-
-
-
-        //initialize the button togglers
-        buttonToggleA = new ButtonToggle();
+//       //initialization of wrappers
+//        colorSensorWrapper = new ColorSensorWrapper(colorSensorOutake);
+//        pixelDetector = new PixelDetector();
+//
+//        //initialize the button togglers
+//        buttonToggleA = new ButtonToggle();
 
 
         telemetry.addLine("Initialized");
@@ -137,14 +127,9 @@ public class Main extends OpMode {
 
 
 
-    }
-
-    @Override
-    public void loop() {
-
         //update gamepad button A
 
-        if(buttonToggleA.update(gamepad2.a)==true) {
+        if (buttonToggleA.update(gamepad2.a)) {
             isIntakeRunning = !isIntakeRunning;
             //second time button is clicked, it will stop intake motor running
         }
@@ -152,36 +137,29 @@ public class Main extends OpMode {
 
 
         //outake box left and right
-        if(gamepad2.b==true){
+        if(gamepad2.b){
             outakeBoxLeft = true;
         }
 
-        else if(gamepad2.x ==true){
+        else if(gamepad2.x){
             outakeBoxRight = true;
         }
         // linear slides going to have a seperate classif(gamepad2.left_stick_y!=previouslinearSlidesHeight){
-       //     currentLinearSlidesHeight = gamepad2.left_stick_y;
+        //     currentLinearSlidesHeight = gamepad2.left_stick_y;
         //}
 
-        if(gamepad2.dpad_down==true) {
+        if(gamepad2.dpad_down) {
             down = true;
         }
 
-        else if(gamepad2.dpad_up==true){
+        else if(gamepad2.dpad_up){
             up = true;
         }
+    }
 
-
-        handleManipulatorControls();
-
-
-
-
-        //reset all the values to false
-        outakeBoxLeft = false;
-        outakeBoxRight = false;
-        down = false;
-        up = false;
+    @Override
+    public void loop() {
+        mecanumDrive.normalDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
 }
 
