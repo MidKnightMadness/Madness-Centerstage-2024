@@ -103,7 +103,7 @@ public class AprilTagLocalizerTwo extends Localizer {
 //                                            -APRIL_TAG_COORDS [detection.id - 1][0];
                 calculationsVector [1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
                                             -APRIL_TAG_COORDS [detection.id - 1][1]
-                                            -3.0d * detection.ftcPose.range /22.375d; // Correction for backdrop tags, error proportional to range
+                                            +2.75d * detection.ftcPose.range /22.375d; // Correction for backdrop tags, error proportional to range
 //                        Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
 //                                            -APRIL_TAG_COORDS [detection.id - 1][1];
 
