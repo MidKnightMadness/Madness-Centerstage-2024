@@ -109,9 +109,9 @@ public class MecanumDrive {
 //        telemetry.addData("BR", motorInputs [3]);
 
         FL.setPower( motorInputs [0]);
-        FR.setPower( motorInputs [1]);
-        BL.setPower( motorInputs [2]);
-        BR.setPower( motorInputs [3]);
+        FR.setPower( motorInputs [1] * RPMs[0] / RPMs[1]);
+        BL.setPower( motorInputs [2] * (4.0d/5.0d) * RPMs[0] / RPMs[2]);
+        BR.setPower( motorInputs [3] * RPMs[0] / RPMs[3]);
     }
 
     // Built-in ow pass for autonomous purposes
@@ -161,9 +161,9 @@ public class MecanumDrive {
 //        telemetry.addData("BR", motorInputs [3]);
 //        telemetry.addData("Low pass latency", 0.5);
 
-        FL.setPower(motorInputs [0]);
-        FR.setPower(motorInputs [1]);
-        BL.setPower(motorInputs [2]);
-        BR.setPower(motorInputs [3]);
+        FL.setPower( motorInputs [0]);
+        FR.setPower( motorInputs [1] * RPMs[0] / RPMs[1]);
+        BL.setPower( motorInputs [2] * (4.0d/5.0d) * RPMs[0] / RPMs[2]);
+        BR.setPower( motorInputs [3] * RPMs[0] / RPMs[3]);
     }
 }
