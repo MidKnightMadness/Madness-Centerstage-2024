@@ -93,7 +93,8 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
         timer = new ElapsedTime();
         timer.startTime();
         distSensor = hardwareMap.get(DistanceSensor.class, "distSensor");
-
+        //implement color or touch sensor for intake/storage box
+        //put in camera for localization
         servoBox = hardwareMap.get(Servo.class, "servoBox");
         armIntake = hardwareMap.get(Servo.class,"armIntakeServo");
         ManiuplatorServoRight = hardwareMap.get(Servo.class,"ManipulatorServoRight");
