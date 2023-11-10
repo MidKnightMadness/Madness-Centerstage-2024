@@ -52,6 +52,7 @@ public class MecanumDrive {
 
     // Inputs and power constraints
     private double [] motorInputs;
+    double [] RPMs = {191.821, 254.655, 250.833, 254.095};
 
     public MecanumDrive(HardwareMap hardwareMap, Telemetry telemetry){
         FL = hardwareMap.get(DcMotorEx.class, "FL");
