@@ -19,12 +19,12 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
     //Constants
     // Same for now
-    double inPerTickLeft = 0.00097656;
-    double inPerTickRight = 0.00097656;
-    double inPerTickCenter = 0.00097656;
-    double verticalWheelDistance = 1.5;
+    double inPerTickLeft = 30.0d / 35574d;
+    double inPerTickRight = 30.0d / 38888d;
+    double inPerTickCenter = 20.0d / 25423d;
+    double verticalWheelDistance = 3.0;
     // Need to retry this, somehow was not equalizing properly (centerDistanceTraveled - deltaRadians*distanceToFront)
-    double lateralWheelDistance = 13.5 * 4.0 / 3.0;
+    double lateralWheelDistance = 12.5;
 
 
     //Tracking Time
@@ -96,9 +96,9 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         elapsedTime = new ElapsedTime();
 
         //Initialize Motors
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
-        rightEncoder = hardwareMap.get(DcMotorEx.class, "Right Encoder");
-        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "Center Encoder");
+        leftEncoder = hardwareMap.get(DcMotorEx.class, "encoder1");
+        rightEncoder = hardwareMap.get(DcMotorEx.class, "encoder2");
+        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "encoder3");
 
         //Reset Position
         this.rotationRadians = startingAngleRadians;
@@ -155,7 +155,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         //Calculating final x and y
         //Note: Changed signs since was reversed, had to re-swap variables
-        this.position.x -= (12.0 / 10.75) * netX;
+        this.position.x += (12.0 / 10.75) * netX;
         this.position.y += (12.0 / 10.75) * netY;
 
         //getting x and y velocities
