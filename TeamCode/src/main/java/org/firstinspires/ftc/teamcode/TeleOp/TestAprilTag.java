@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,7 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
 
 
-@TeleOp(name = "hi")
+@TeleOp(name = "TestAprilTag")
+@Disabled
 public class TestAprilTag extends OpMode {
     AprilTagLocalizer aprilTagLocalizer;
 
