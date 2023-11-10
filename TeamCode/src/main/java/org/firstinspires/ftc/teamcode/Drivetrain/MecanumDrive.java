@@ -113,6 +113,8 @@ public class MecanumDrive {
         BR.setPower( motorInputs [3]);
     }
 
+    double [] RPMs = {191.821, 254.655, 250.833, 254.095};
+
     // Built-in ow pass for autonomous purposes
     public double previousX = 0.0;
     public double previousY = 0.0;
