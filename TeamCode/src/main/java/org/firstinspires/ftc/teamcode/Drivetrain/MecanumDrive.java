@@ -36,7 +36,7 @@ public class MecanumDrive {
     public DcMotorEx FR;
     public DcMotorEx BL;
     public DcMotorEx BR;
-
+    Telemetry telemetry;
     // Static motor power multiplier constants
     // Assumes all motors pointing outwards
     // Forward is side left clockwise, right side counterclockwise
@@ -64,6 +64,7 @@ public class MecanumDrive {
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.telemetry = telemetry;
 
 //        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -79,7 +80,7 @@ public class MecanumDrive {
     }
 
     // Driving code for TeleOp
-    public void NormalDrive(double x, double y, double rotation, Telemetry telemetry){
+    public void normalDrive(double x, double y, double rotation){
         double maxPowerLevel = 0.0;
 
         // Linear combination of drive vectors
@@ -103,11 +104,11 @@ public class MecanumDrive {
 //        telemetry.addData("Max Power", maxPowerLevel);
 //        telemetry.addData("X", x);
 //        telemetry.addData("Y", y);
-//
-//        telemetry.addData("FL", motorInputs [0]);
-//        telemetry.addData("FR", motorInputs [1]);
-//        telemetry.addData("BL", motorInputs [2]);
-//        telemetry.addData("BR", motorInputs [3]);
+
+        telemetry.addData("FL", motorInputs [0]);
+        telemetry.addData("FR", motorInputs [1]);
+        telemetry.addData("BL", motorInputs [2]);
+        telemetry.addData("BR", motorInputs [3]);
 
         FL.setPower( motorInputs [0]);
         FR.setPower( motorInputs [1] * RPMs[0] / RPMs[1]);

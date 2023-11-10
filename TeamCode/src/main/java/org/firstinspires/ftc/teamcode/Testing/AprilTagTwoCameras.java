@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -51,6 +52,7 @@ import java.util.List;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 
 @TeleOp(name = "Concept: AprilTag Switchable Cameras", group = "Concept")
+@Disabled
 public class AprilTagTwoCameras extends LinearOpMode {
 
     /*
