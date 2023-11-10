@@ -96,21 +96,23 @@ public class AprilTagLocalizerTwo extends Localizer {
                 double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
 
                 // Combine detection coordinates with inverse square coefficients based on range
-                calculationsVector [0] -= Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
-                                            -APRIL_TAG_COORDS [detection.id - 1][0];
-                calculationsVector [1] -= Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
-                                            -APRIL_TAG_COORDS [detection.id - 1][1];
+                calculationsVector [0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
+                                            -APRIL_TAG_COORDS [detection.id - 1][0]
+                                            -0.804d * detection.ftcPose.range /22.375d; // Correction for backdrop tags, error proportional to range
+//                        Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
+//                                            -APRIL_TAG_COORDS [detection.id - 1][0];
+                calculationsVector [1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
+                                            -APRIL_TAG_COORDS [detection.id - 1][1]
+                                            -3.0d * detection.ftcPose.range /22.375d; // Correction for backdrop tags, error proportional to range
+//                        Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
+//                                            -APRIL_TAG_COORDS [detection.id - 1][1];
 
                 calculationsVector [0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
                 calculationsVector [1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
             }
         }
 
-        if(currentDetections.size() == 0){
-            return null;
-        }else{
-            return calculationsVector;
-        }
+        return calculationsVector;
     }
 
     @Override
