@@ -155,6 +155,16 @@ public class AprilTagLocalizer extends Localizer { // Currently runs on main thr
 
     }   // end method initAprilTag()
 
+    /*public void coordsWithRange(){
+        List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections){
+
+
+        }
+
+    }
+*/
+
     public void telemetryAprilTag() {
 
         List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
