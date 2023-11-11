@@ -54,7 +54,7 @@ public class MecanumDrive {
     // Inputs and power constraints
     private double [] motorInputs;
     double [] RPMs = {191.821, 254.655, 250.833, 254.095};
-    double[] RPMMultipliers = { 1.0d, RPMs[0] / RPMs[1], (4.0d/5.0d) * RPMs[0] / RPMs[2], RPMs[0] / RPMs[3]};
+    double[] RPMMultipliers = { 1.0d, RPMs[0] / RPMs[1], (16.0d/25.0) * RPMs[0] / RPMs[2], (16.0d/25.0) * RPMs[0] / RPMs[3]};
 
 
     public MecanumDrive(HardwareMap hardwareMap, Telemetry telemetry){
