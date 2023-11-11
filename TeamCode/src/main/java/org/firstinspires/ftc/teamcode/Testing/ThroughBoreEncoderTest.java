@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 
 @TeleOp
+@Disabled
 public class ThroughBoreEncoderTest extends OpMode {
     DcMotor encoder1;
     DcMotor encoder2;
