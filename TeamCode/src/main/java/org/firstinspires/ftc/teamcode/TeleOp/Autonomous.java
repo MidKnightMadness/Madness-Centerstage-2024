@@ -1,3 +1,5 @@
+
+
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 
@@ -112,7 +114,7 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
         PIDDrive.updatePID();
         if (timer.time() < 23) {
             if (teamPropTask == false) {
-                PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
+               /* PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
                 if (PIDDrive.distanceToTarget < 0.1) {
                     teamPropTask = true;
                     intake.setPower(-1);
@@ -122,7 +124,7 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                         throw new RuntimeException(e);
                     }
                     intake.setPower(0);
-                }
+                }*/
 
             } else {
                 if (targetStates[numberOfPointsReached-1][0] == 12 || targetStates[numberOfPointsReached-1][0] == 120) { //arbitrary numbers check if it's one of the points where you run intake or outtake
