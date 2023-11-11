@@ -14,14 +14,17 @@ import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 @TeleOp(group= "Test", name = "DrivingTest")
 public class DrivingTest extends OpMode {
 
+    MecanumDrive mecanumDrive;
+
     @Override
     public void init() {
-
+        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
 
     }
 
     @Override
     public void loop() {
+        mecanumDrive.normalDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
     }
 }

@@ -33,7 +33,6 @@ public class Main extends OpMode {
 
     ButtonToggle buttonToggleA;
 
-
     Servo servoBox;
     Servo armIntake;
     DcMotorEx IntakeMotor;
@@ -66,7 +65,7 @@ public class Main extends OpMode {
 //        pixelDetector = new PixelDetector();
 //
 //        //initialize the button togglers
-//        buttonToggleA = new ButtonToggle();
+        buttonToggleA = new ButtonToggle();
 
 
         telemetry.addLine("Initialized");
@@ -74,10 +73,8 @@ public class Main extends OpMode {
 
     // Uses gamepad1
     public void handleDriverControls() {
-
+        mecanumDrive.normalDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
-
-
 
     // Uses gamepad2
     boolean isIntakeRunning = false;
@@ -92,7 +89,7 @@ public class Main extends OpMode {
 
         //set for gamepad 2, checking to see if gamepad had any changes
 
-        //linear slides -> left stick y     -> seperate class
+        //linear slides -> left stick y     -> separate class
         //intake -> servo -> d pad down and up -> height
         //button two to start roller intake             -> done
         //button x and b for outake box left and right  -> done
@@ -105,61 +102,20 @@ public class Main extends OpMode {
             IntakeMotor.setPower(0);
         }
 
-
-        //outake box left and right
-        if(outakeBoxLeft==true){
-            servoBox.setPosition(-1.0);
-        }
-        else if(outakeBoxRight==true){
-            servoBox.setPosition(1.0);
-        }
-
-        //each time it is clicked it moves up or down by 0.1
-        if(down==true){
-            armIntake.setPosition(armIntake.getPosition()-0.1);
-        }//0 is going down
-
-        else if(up==true){
-            armIntake.setPosition(armIntake.getPosition()+0.1);
-        }
-
-        //Intake d pad down and up height
-
-
-
-        //update gamepad button A
-
-        if (buttonToggleA.update(gamepad2.a)) {
+        if (buttonToggleA.update(gamepad1.a)) {
             isIntakeRunning = !isIntakeRunning;
-            //second time button is clicked, it will stop intake motor running
         }
 
 
-
-        //outake box left and right
-        if(gamepad2.b){
-            outakeBoxLeft = true;
-        }
-
-        else if(gamepad2.x){
-            outakeBoxRight = true;
-        }
-        // linear slides going to have a seperate classif(gamepad2.left_stick_y!=previouslinearSlidesHeight){
-        //     currentLinearSlidesHeight = gamepad2.left_stick_y;
-        //}
-
-        if(gamepad2.dpad_down) {
-            down = true;
-        }
-
-        else if(gamepad2.dpad_up){
-            up = true;
-        }
     }
 
     @Override
     public void loop() {
-        mecanumDrive.normalDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        handleDriverControls();
     }
+
+
+
+
 }
 

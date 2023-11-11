@@ -17,6 +17,9 @@ public class WheelCalibration extends OpMode {
     public DcMotorEx BL;
     public DcMotorEx BR;
 
+    double [] RPMs = {191.821, 254.655, 250.833, 254.095};
+    double[] RPMMultipliers = { 1.0d, RPMs[0] / RPMs[1], (4.0d/5.0d) * RPMs[0] / RPMs[2], RPMs[0] / RPMs[3]};
+
     RollingAverage[] wheelRPMS = {
         new RollingAverage("FL"),
         new RollingAverage("FR"),
@@ -61,8 +64,10 @@ public class WheelCalibration extends OpMode {
         logAverages();
     }
     void setPowers(double power) {
-        for (DcMotorEx motor : motors) {
-            motor.setPower(power);
+        for (int i = 0; i < motors.length; i++) {
+            double adjustPower = power * RPMMultipliers[i];
+            motors[i].setPower(adjustPower);
+            telemetry.addData(wheelRPMS[i].getName(), adjustPower);
         }
     }
     void updateWheelRPMS() {
