@@ -49,13 +49,18 @@ public class MecanumDrive {
     ///forward: -1.0, 1.0, -1.0, -1.0
     public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
     public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
-    public static final double POWER_MULTIPLIER = .5;
+    public static final double POWER_MULTIPLIER = 1;
 
     // Inputs and power constraints
     private double [] motorInputs;
-    double [] RPMs = {191.821, 254.655, 250.833, 254.095};
-    double[] RPMMultipliers = { 1.0d, RPMs[0] / RPMs[1], (16.0d/25.0) * RPMs[0] / RPMs[2], (16.0d/25.0) * RPMs[0] / RPMs[3]};
 
+    double [] RPMs = {398.8,
+            186.5,
+            389.5,
+            186};
+    double min = RPMs[3];
+    double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
+//    double[] RPMMultipliers = { 1, 1 ,1 , 1};
 
     public MecanumDrive(HardwareMap hardwareMap, Telemetry telemetry){
         FL = hardwareMap.get(DcMotorEx.class, "FL");
@@ -63,10 +68,10 @@ public class MecanumDrive {
         BL = hardwareMap.get(DcMotorEx.class, "BL");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
 
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.telemetry = telemetry;
 
         FL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -93,25 +98,20 @@ public class MecanumDrive {
         // Linear combination of drive vectors
         for(int i = 0; i < 4; i++){
             motorInputs [i] = ((FORWARD [i] * y) + (RIGHT [i] * x) + (CLOCKWISE [i] * rotation));
-
-            if(Math.abs(motorInputs [i]) > maxPowerLevel){
-                maxPowerLevel = Math.abs(motorInputs [i]);
-            }
+            motorInputs[i] *= POWER_MULTIPLIER * RPMMultipliers[i];
+//
+//            if(Math.abs(motorInputs [i]) > maxPowerLevel){
+//                maxPowerLevel = Math.abs(motorInputs [i]);
+//            }
         }
 
         // Normalize power inputs within envelope, dead zone 0.2
-        double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]) / 2.0;
-        if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
-            for(int i = 0; i < 4; i++){
-                if(motorInputs [i] > 0.0){
-                    motorInputs [i] *= 0.5 * POWER_MULTIPLIER * RPMMultipliers[i] / maxPowerLevel;
-                    motorInputs[i] += 0.5;
-                }else{
-                    motorInputs [i] = 0.5 * POWER_MULTIPLIER * RPMMultipliers[i] / maxPowerLevel;
-                    motorInputs[i] -= 0.5;
-                }
-            }
-        }
+//        double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]) / 2.0;
+//        if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
+//            for(int i = 0; i < 4; i++){
+//                motorInputs [i] /= maxPowerLevel;
+//            }
+//        }
 
 //        telemetry.addData("Power envelope", powerEnvelope);
 //        telemetry.addData("Max Power", maxPowerLevel);
@@ -124,10 +124,14 @@ public class MecanumDrive {
         telemetry.addData("BR", motorInputs [3]);
 
         telemetry.addData("FL spin", FL.getVelocity());
-        telemetry.addData("FL spin", FR.getVelocity());
-        telemetry.addData("FL spin", BL.getVelocity());
-        telemetry.addData("FL spin", BR.getVelocity());
+        telemetry.addData("FR spin", FR.getVelocity());
+        telemetry.addData("BL spin", BL.getVelocity());
+        telemetry.addData("BR spin", BR.getVelocity());
 
+        setMotorPowers();
+    }
+
+    void setMotorPowers() {
         FL.setPower( motorInputs [0]);
         FR.setPower( motorInputs [1]);
         BL.setPower( motorInputs [2]);
@@ -144,7 +148,6 @@ public class MecanumDrive {
         double lowPassX = 0.05 * x + 0.95 * previousX;
         double lowPassY = 0.05 * y + 0.95 * previousY;
 
-        
 
         // Rotate x and y by negative of angle
         double newX = lowPassX*Math.cos(angle - (Math.PI / 2.0)) + lowPassY*Math.sin(angle - (Math.PI / 2.0));
@@ -156,7 +159,8 @@ public class MecanumDrive {
 
         // Linear combination of drive vectors
         for(int i = 0; i < 4; i++){
-            motorInputs [i] = ((FORWARD [i] * newY) + (RIGHT [i] * newX) + (CLOCKWISE [i] * rotation));
+            motorInputs [i] = ((FORWARD [i] * newY) + (RIGHT [i] * newX) + (CLOCKWISE [i] * rotation)) * POWER_MULTIPLIER * RPMMultipliers[i] ;
+
             if(Math.abs(motorInputs [i]) > maxPowerLevel){
                 maxPowerLevel = Math.abs(motorInputs [i]);
             }
@@ -166,7 +170,7 @@ public class MecanumDrive {
         double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]);
         if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
             for(int i = 0; i < 4; i++){
-                motorInputs [i] *=  POWER_MULTIPLIER * 1.41 / maxPowerLevel;
+                motorInputs [i] /= maxPowerLevel;
             }
         }
 
@@ -181,9 +185,6 @@ public class MecanumDrive {
 //        telemetry.addData("BR", motorInputs [3]);
 //        telemetry.addData("Low pass latency", 0.5);
 
-        FL.setPower( motorInputs [0]);
-        FR.setPower( motorInputs [1] * RPMs[0] / RPMs[1]);
-        BL.setPower( motorInputs [2] * (4.0d/5.0d) * RPMs[0] / RPMs[2]);
-        BR.setPower( motorInputs [3] * RPMs[0] / RPMs[3]);
+        setMotorPowers();
     }
 }

@@ -28,6 +28,7 @@
  */
 
 package org.firstinspires.ftc.teamcode.Testing;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -35,6 +36,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
 
 @TeleOp(name = "Sensor: Color", group = "Sensor")
+@Disabled
 public class SensorMRColor extends LinearOpMode {
   ColorSensor colorSensor;
   ColorSensorWrapper colorSensorWrapper;

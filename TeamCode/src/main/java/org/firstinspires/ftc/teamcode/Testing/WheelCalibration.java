@@ -17,8 +17,13 @@ public class WheelCalibration extends OpMode {
     public DcMotorEx BL;
     public DcMotorEx BR;
 
-    double [] RPMs = {191.821, 254.655, 250.833, 254.095};
-    double[] RPMMultipliers = { 1.0d, RPMs[0] / RPMs[1], (4.0d/5.0d) * RPMs[0] / RPMs[2], RPMs[0] / RPMs[3]};
+    double [] RPMs = {398.8,
+            186.5,
+            389.5,
+            186};
+    double min = RPMs[3];
+    double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
+//    double[] RPMMultipliers = { 1, 1 ,1 , 1};
 
     RollingAverage[] wheelRPMS = {
         new RollingAverage("FL"),

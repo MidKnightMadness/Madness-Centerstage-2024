@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Testing;
 
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @TeleOp(name = "Ultrasonic Sensor Calibration")
+@Disabled
 public class MBUltrasonicCalibration extends OpMode {
     public AnalogInput ultrasonicSensor;
     AverageBuffer timeBuffer;

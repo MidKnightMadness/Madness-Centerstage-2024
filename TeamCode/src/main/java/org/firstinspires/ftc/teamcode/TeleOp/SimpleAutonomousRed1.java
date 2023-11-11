@@ -37,6 +37,6 @@ public class SimpleAutonomousRed1 extends OpMode {
     @Override
     public void loop() {
         odometry.updatePosition();
-        mecanumDrive.normalDrive();
+//        mecanumDrive.normalDrive();
     }
 }
