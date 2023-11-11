@@ -99,10 +99,6 @@ public class AprilTagLocalizer extends Localizer {
                 if (detection.metadata != null) {
                     telemetry.addData("Detection", detection.id);
 
-                    // Intermediates
-                    double correctedY = correctY(detection.ftcPose.y);
-                    double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
-
                     // Combine detection coordinates with inverse square coefficients based on range
                     calculationsVector [0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
                             -APRIL_TAG_COORDS [detection.id - 1][0];
@@ -131,14 +127,10 @@ public class AprilTagLocalizer extends Localizer {
                     double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
 
                     // Combine detection coordinates with inverse square coefficients based on range
-                    calculationsVector [0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                            -APRIL_TAG_COORDS [detection.id - 1][0];
-//                        Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
-//                                            -APRIL_TAG_COORDS [detection.id - 1][0];
-                    calculationsVector [1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                            -APRIL_TAG_COORDS [detection.id - 1][1];
-//                        Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
-//                                            -APRIL_TAG_COORDS [detection.id - 1][1];
+                    calculationsVector [0] -= Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
+                                            -APRIL_TAG_COORDS [detection.id - 1][0];
+                    calculationsVector [1] -= Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
+                                            -APRIL_TAG_COORDS [detection.id - 1][1];
 
                     calculationsVector [0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
                     calculationsVector [1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
