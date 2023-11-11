@@ -5,6 +5,7 @@ import static java.lang.Thread.sleep;
 //import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -53,6 +54,8 @@ public class MecanumDrive {
     // Inputs and power constraints
     private double [] motorInputs;
     double [] RPMs = {191.821, 254.655, 250.833, 254.095};
+    double[] RPMMultipliers = { 1.0d, RPMs[0] / RPMs[1], (4.0d/5.0d) * RPMs[0] / RPMs[2], RPMs[0] / RPMs[3]};
+
 
     public MecanumDrive(HardwareMap hardwareMap, Telemetry telemetry){
         FL = hardwareMap.get(DcMotorEx.class, "FL");
@@ -60,16 +63,20 @@ public class MecanumDrive {
         BL = hardwareMap.get(DcMotorEx.class, "BL");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
 
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.telemetry = telemetry;
 
-//        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //        FL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0.5, 0.25, 0.25, 0));
 //        FR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0.5, 0.25, 0.25, 0));
@@ -96,7 +103,13 @@ public class MecanumDrive {
         double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]) / 2.0;
         if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
             for(int i = 0; i < 4; i++){
-                motorInputs [i] *=  POWER_MULTIPLIER / maxPowerLevel;
+                if(motorInputs [i] > 0.0){
+                    motorInputs [i] *= 0.5 * POWER_MULTIPLIER * RPMMultipliers[i] / maxPowerLevel;
+                    motorInputs[i] += 0.5;
+                }else{
+                    motorInputs [i] = 0.5 * POWER_MULTIPLIER * RPMMultipliers[i] / maxPowerLevel;
+                    motorInputs[i] -= 0.5;
+                }
             }
         }
 
@@ -110,10 +123,15 @@ public class MecanumDrive {
         telemetry.addData("BL", motorInputs [2]);
         telemetry.addData("BR", motorInputs [3]);
 
+        telemetry.addData("FL spin", FL.getVelocity());
+        telemetry.addData("FL spin", FR.getVelocity());
+        telemetry.addData("FL spin", BL.getVelocity());
+        telemetry.addData("FL spin", BR.getVelocity());
+
         FL.setPower( motorInputs [0]);
-        FR.setPower( motorInputs [1] * RPMs[0] / RPMs[1]);
-        BL.setPower( motorInputs [2] * (4.0d/5.0d) * RPMs[0] / RPMs[2]);
-        BR.setPower( motorInputs [3] * RPMs[0] / RPMs[3]);
+        FR.setPower( motorInputs [1]);
+        BL.setPower( motorInputs [2]);
+        BR.setPower( motorInputs [3]);
     }
 
     // Built-in ow pass for autonomous purposes
