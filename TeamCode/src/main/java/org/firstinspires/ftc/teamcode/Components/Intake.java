@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,7 +9,7 @@ public class Intake {
     // Drawing:
     // https://docs.google.com/drawings/d/1y0ESeoueBK8GQwIP18MR_x3pGB41Nf1QV6QQpi0wvFI/edit
 
-    final double LENGTH_SERVO_WHEEL = 216.88;
+    final double LENGTH_TO_SERVO_WHEEL = 216.88;
     final double HEIGHT_SERVO = 108.717;
 
     final double WHEEL_RADIUS = 25.4;
@@ -28,7 +27,7 @@ public class Intake {
     }
 
     double getIntakeHeight(double servoAngle) {
-        return HEIGHT_SERVO - WHEEL_RADIUS - LENGTH_SERVO_WHEEL * Math.cos(servoAngle);
+        return HEIGHT_SERVO - WHEEL_RADIUS - LENGTH_TO_SERVO_WHEEL * Math.cos(servoAngle);
     }
 
 
@@ -36,6 +35,7 @@ public class Intake {
         double servoAngle = servoPosToAngle(servoPosition);
         double currentHeight = getIntakeHeight(servoAngle);
         double heightDifference = targetHeight - currentHeight;
+        double angleDifference = Math.acos(heightDifference / LENGTH_TO_SERVO_WHEEL);
     }
 
     final int MAX_SERVO_BOUND = 1;
