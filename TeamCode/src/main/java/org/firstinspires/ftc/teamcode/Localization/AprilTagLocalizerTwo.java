@@ -78,13 +78,16 @@ public class AprilTagLocalizerTwo extends Localizer {
         calculationsVector [0] = 0.0;
         calculationsVector [1] = 0.0;
         calculationsDouble = 0.0;
+        double averageRange = 0.0;
 
         // Get range coefficients normalizing factor
         for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 calculationsDouble += 1 / (detection.ftcPose.range * detection.ftcPose.range); // Add up coefficients, divide everything by sum to normalize
+                averageRange += detection.ftcPose.range;
             }
         }
+        averageRange /= currentDetections.size();
 
         // Step through the list of detections and combine coordinates from each one
         for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
@@ -97,13 +100,12 @@ public class AprilTagLocalizerTwo extends Localizer {
 
                 // Combine detection coordinates with inverse square coefficients based on range
                 calculationsVector [0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                                            -APRIL_TAG_COORDS [detection.id - 1][0]
-                                            -0.804d * detection.ftcPose.range /22.375d; // Correction for backdrop tags, error proportional to range
+                                            -APRIL_TAG_COORDS [detection.id - 1][0];
 //                        Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
 //                                            -APRIL_TAG_COORDS [detection.id - 1][0];
                 calculationsVector [1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                                            -APRIL_TAG_COORDS [detection.id - 1][1]
-                                            +2.75d * detection.ftcPose.range /22.375d; // Correction for backdrop tags, error proportional to range
+                                            -APRIL_TAG_COORDS [detection.id - 1][1];
+
 //                        Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
 //                                            -APRIL_TAG_COORDS [detection.id - 1][1];
 
@@ -111,6 +113,9 @@ public class AprilTagLocalizerTwo extends Localizer {
                 calculationsVector [1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
             }
         }
+
+        calculationsVector [0] += 0.804d * averageRange /22.375d; // Correction for backdrop tags, error proportional to range
+        calculationsVector [1] -= 2.75d * averageRange /22.375d; // Correction for backdrop tags, error proportional to range
 
         return calculationsVector;
     }
