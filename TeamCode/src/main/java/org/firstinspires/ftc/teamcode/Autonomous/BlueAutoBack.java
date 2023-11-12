@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+@Autonomous
 public class BlueAutoBack extends Auto {
 
     @Override
