@@ -26,11 +26,4 @@ public class LinearSlides {
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-
-
-
-    public void setHeight() {
-
-    }
-
 }
