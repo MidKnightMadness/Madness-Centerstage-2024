@@ -8,8 +8,13 @@ public class LinearSlides {
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
 
-    int extendedPosition;
-    int retractPosition;
+    // Internal use variables
+    public int [] leftBounds = {0, 0}; // Retracted, extended
+    public int [] rightBounds = {0, 0}; // Retracted, extended
+    public double inPerTickLeft = 0.0;
+    public double inPerTickRight = 0.0;
+    public double extensionDifferenceTolerance = 0.0;
+    public double [] extendedLengths = {0.0, 0.0}; // Left, right
 
     public LinearSlides(HardwareMap hardwareMap) {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
@@ -26,11 +31,10 @@ public class LinearSlides {
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-
-
-
-    public void setHeight() {
-
+    public void setHeight(double height) { // Run every tick when you want motors to go to this
+//        while (Math.abs(extendedLengths [0] - extendedLengths [1]) < extensionDifferenceTolerance && ) {
+//
+//        }
     }
 
 }

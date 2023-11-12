@@ -3,18 +3,18 @@ package org.firstinspires.ftc.teamcode.Components;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class OuttakeBox {
+public class Outtake {
 
     final double LEFT_BOUND = 0.5;
     final double RIGHT_BOUND = 0;
     final double MIDDLE = 0.25;
     Servo servo;
 
-    public OuttakeBox(Servo servo) {
+    public Outtake(Servo servo) {
         this.servo = servo;
     }
 
-    public OuttakeBox(HardwareMap hardwareMap, String name) {
+    public Outtake(HardwareMap hardwareMap, String name) {
         servo = hardwareMap.get(Servo.class, name);
 
     }
