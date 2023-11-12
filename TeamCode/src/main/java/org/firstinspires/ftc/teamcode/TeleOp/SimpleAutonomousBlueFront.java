@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "autonomous")
+@TeleOp(name = "BLUE FRONT")
 public class SimpleAutonomousBlueFront extends LinearOpMode {
     MecanumDrive mecanumDrive;
     Odometry odometry;
