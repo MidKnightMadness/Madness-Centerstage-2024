@@ -92,13 +92,14 @@ public class MecanumDrive {
     }
 
     // Driving code for TeleOp
-    public void normalDrive(double x, double y, double rotation){
+    public void normalDrive(double power, double x, double y, double rotation) {
+
         double maxPowerLevel = 0.0;
 
         // Linear combination of drive vectors
         for(int i = 0; i < 4; i++){
             motorInputs [i] = ((FORWARD [i] * y) + (RIGHT [i] * x) + (CLOCKWISE [i] * rotation));
-            motorInputs[i] *= POWER_MULTIPLIER * RPMMultipliers[i];
+            motorInputs[i] *= POWER_MULTIPLIER * RPMMultipliers[i] * power;
 //
 //            if(Math.abs(motorInputs [i]) > maxPowerLevel){
 //                maxPowerLevel = Math.abs(motorInputs [i]);

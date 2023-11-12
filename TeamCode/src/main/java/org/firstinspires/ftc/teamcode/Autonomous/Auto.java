@@ -3,12 +3,17 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
+import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 @TeleOp
 public class Auto extends OpMode {
     Odometry odometry;
+    Timer timer;
+
+    MecanumDrive mecanumDrive;
 
     public int getDirection() {
         return -1;
@@ -20,11 +25,10 @@ public class Auto extends OpMode {
 
     double lateralDistance = getDirection()* 24 * getNumTilesToPark();
 
-
-
     @Override
     public void init()
     {
+        timer = new Timer();
         odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
     }
 
@@ -35,7 +39,21 @@ public class Auto extends OpMode {
     }
 
     void park() {
+        // drive forward for one second
+        drive(1, new Vector2(0, 1), 0.5);
 
+        // drive left/right for (getNumTiles * 2) seconds
+        drive(getNumTilesToPark() * 2, new Vector2(getDirection(), 0), 0.5);
+    }
+
+    void drive(double seconds, Vector2 direction, double power) {
+        timer.updateTime();
+        double startTime = timer.getTime();
+        Vector2 normalizedDirection = direction.getNormalized();
+        while (timer.getTime() - startTime < seconds) {
+            mecanumDrive.normalDrive(power, normalizedDirection.x, normalizedDirection.y, 0);
+            timer.updateTime();
+        }
     }
 
 }
