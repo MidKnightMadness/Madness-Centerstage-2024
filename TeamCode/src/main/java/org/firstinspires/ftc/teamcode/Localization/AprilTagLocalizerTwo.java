@@ -30,7 +30,7 @@ public class AprilTagLocalizerTwo extends Localizer {
     private VisionPortal visionPortal;
 
     // CLASS SPECIFIC VARIABLES ====================================================================
-    public ArrayList<Vector2<Double>> sensorCoordinates;
+    public ArrayList<Vector2> sensorCoordinates;
     public ArrayList<Double> rangeCoefficients;
 
     public final double[][] APRIL_TAG_COORDS = { // hardcoded
@@ -54,7 +54,7 @@ public class AprilTagLocalizerTwo extends Localizer {
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
 
-        sensorCoordinates = new ArrayList<Vector2<Double>>();
+        sensorCoordinates = new ArrayList<Vector2>();
         rangeCoefficients = new ArrayList<Double>();
 
         initAprilTag();

@@ -40,7 +40,7 @@ public class IndepDrivetrain implements Runnable{
         this.telemetry = telemetry;
 
         this.mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-        this.odometry = new Odometry(hardwareMap, startingAngle, new Vector2<Double>(x0, y0));
+        this.odometry = new Odometry(hardwareMap, startingAngle, new Vector2(x0, y0));
 
         timer = new ElapsedTime();
         operationalMode = 0;
@@ -50,7 +50,7 @@ public class IndepDrivetrain implements Runnable{
         this.telemetry = telemetry;
 
         this.mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-        this.odometry = new Odometry(hardwareMap, startingAngle, new Vector2<Double>(x0, y0));
+        this.odometry = new Odometry(hardwareMap, startingAngle, new Vector2(x0, y0));
         this.PIDDrive = new PIDDrive(odometry, targetX0, targetY0, targetAngle0, telemetry);
 
         this.PIDDrive.P = this.P;
@@ -66,7 +66,7 @@ public class IndepDrivetrain implements Runnable{
         this.telemetry = telemetry;
 
         this.mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-        this.odometry = new Odometry(hardwareMap, startingAngle, new Vector2<Double>(x0, y0));
+        this.odometry = new Odometry(hardwareMap, startingAngle, new Vector2(x0, y0));
         this.PIDDrive = new PIDDrive(odometry, x0, y0, startingAngle, telemetry);
 
         this.PIDDrive.P = this.PSpline;

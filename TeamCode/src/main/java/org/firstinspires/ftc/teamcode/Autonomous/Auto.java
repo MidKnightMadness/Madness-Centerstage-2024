@@ -31,7 +31,7 @@ public class Auto extends OpMode {
     public void init()
     {
         timer = new Timer();
-        odometry = new Odometry(hardwareMap, 0, new Vector2<Double>(0, 0));
+        odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
     }
 
     @Override
@@ -42,18 +42,18 @@ public class Auto extends OpMode {
 
     void park() {
         // drive forward for one second
-        drive(0.25, new Vector2<Double>(0, 1), 0.5);
+        drive(0.25, new Vector2(0, 1), 0.5);
 
         // drive left/right for (getNumTiles * 2) seconds
-        drive(getNumTilesToPark() * 2, new Vector2<Double>(getDirection(), 0), 0.5);
+        drive(getNumTilesToPark() * 2, new Vector2(getDirection(), 0), 0.5);
 
         // reverse intake preloaded pixels?
     }
 
-    void drive(double seconds, Vector2<Double> direction, double power) {
+    void drive(double seconds, Vector2 direction, double power) {
         timer.updateTime();
         double startTime = timer.getTime();
-        Vector2<Double> normalizedDirection = direction.getNormalized();
+        Vector2 normalizedDirection = direction.getNormalized();
         while (timer.getTime() - startTime < seconds) {
             mecanumDrive.normalDrive(power, normalizedDirection.x, normalizedDirection.y, 0);
             timer.updateTime();

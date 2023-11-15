@@ -71,7 +71,7 @@ public class BasicOpMode extends OpMode {
 
         // Drivetrain
 //        drive = new MecanumDrive(hardwareMap, telemetry);
-        odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2<Double>(0.0, 0.0));
+        odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2(0.0, 0.0));
 //        pidDrive = new PIDDrive(this.odometry, 0.0, 0.0, - Math.PI, telemetry);
 //        spline = new SectionSpline(roots, 6.0);
 
