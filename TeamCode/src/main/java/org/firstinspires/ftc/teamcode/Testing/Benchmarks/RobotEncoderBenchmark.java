@@ -1,20 +1,14 @@
 package org.firstinspires.ftc.teamcode.Testing.Benchmarks;
 
 import android.os.Environment;
-import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -30,7 +24,7 @@ public class RobotEncoderBenchmark extends OpMode {
     final int NUM_DATAPOINTS = 5000;
     int datapoints = 0;
 
-    Vector2 cameraResolution = new Vector2(800, 600);
+    Vector2<Double> cameraResolution = new Vector2<Double>(800, 600);
 
     final static String OUTPUT_FILE = "benchmark.csv";
 

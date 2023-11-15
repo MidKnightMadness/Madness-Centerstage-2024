@@ -6,18 +6,15 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
-import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
-import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -74,7 +71,7 @@ public class BasicOpMode extends OpMode {
 
         // Drivetrain
 //        drive = new MecanumDrive(hardwareMap, telemetry);
-        odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2(0.0, 0.0));
+        odometry = new Odometry(hardwareMap, Math.PI / 2.0, new Vector2<Double>(0.0, 0.0));
 //        pidDrive = new PIDDrive(this.odometry, 0.0, 0.0, - Math.PI, telemetry);
 //        spline = new SectionSpline(roots, 6.0);
 

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
 //import com.acmerobotics.dashboard.config.Config;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -33,8 +32,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     ElapsedTime elapsedTime;
 
     //Pose Tracking Variables
-    public Vector2 position = new Vector2();
-    Vector2 velocity = new Vector2();
+    public Vector2<Double> position = new Vector2<Double>();
+    Vector2<Double> velocity = new Vector2<Double>();
     public double angularVelocity = 0.0;
     public double rotationRadians;
 
@@ -82,7 +81,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     //Change X and Y position of robot
     double netX;
     double netY;
-    Vector2 lastVelocity = new Vector2();
+    Vector2<Double> lastVelocity = new Vector2<Double>();
 
 
     // Low pass filter used to smooth position
@@ -91,7 +90,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     double prevFront = 0.0;
 
 
-    public Odometry(HardwareMap hardwareMap, double startingAngleRadians, Vector2 startingPosition) {
+    public Odometry(HardwareMap hardwareMap, double startingAngleRadians, Vector2<Double> startingPosition) {
         OpModeIsActive = true;
         elapsedTime = new ElapsedTime();
 
@@ -172,7 +171,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         horizontalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        position = new Vector2();
+        position = new Vector2<Double>();
         rotationRadians = 0;
 
         leftEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -205,7 +204,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     }
 
 
-    public void setPostion(Vector2 pos) {
+    public void setPostion(Vector2<Double> pos) {
         this.position = pos;
     }
 
@@ -233,7 +232,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         return rotationRadians * 180 / Math.PI;
     }
 
-    public Vector2 getVelocity() {
+    public Vector2<Double> getVelocity() {
         return velocity;
     }
 
