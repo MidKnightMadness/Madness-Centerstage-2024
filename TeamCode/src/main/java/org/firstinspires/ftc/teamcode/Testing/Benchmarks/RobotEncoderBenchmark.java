@@ -24,7 +24,7 @@ public class RobotEncoderBenchmark extends OpMode {
     final int NUM_DATAPOINTS = 5000;
     int datapoints = 0;
 
-    Vector2<Double> cameraResolution = new Vector2<Double>(800, 600);
+    Vector2 cameraResolution = new Vector2(800, 600);
 
     final static String OUTPUT_FILE = "benchmark.csv";
 
