@@ -54,10 +54,10 @@ public class MecanumDrive {
     // Inputs and power constraints
     private double [] motorInputs;
 
-    double [] RPMs = {398.8,
-            186.5,
-            389.5,
-            186};
+    double [] RPMs = {435.3,
+            218.8,
+            415.1,
+            219.5};
     double min = RPMs[3];
     double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
 //    double[] RPMMultipliers = { 1, 1 ,1 , 1};
