@@ -40,8 +40,16 @@ public class PIDDrive{
 //    double [] cumulativeError = {0.0, 0.0, 0.0};
 
     // For spline path driving - Madness robot 2022
+//    double [] P = {0.3, 0.3, 0.0};
+//    double [] I = {0.1, 0.1, 0.0};
+//    final double integralDecay = 0.9;
+//    double [] D = {0.0, 0.0, 0.0};
+//    double [] D2 = {0.0, 0.0, 0.0};
+//    double [] cumulativeError = {0.0, 0.0, 0.0};
+
+    // For non-spline-path driving - Madness robot 2023
     double [] P = {0.3, 0.3, 0.0};
-    double [] I = {0.1, 0.1, 0.0};
+    double [] I = {0.0, 0.0, 0.0};
     final double integralDecay = 0.9;
     double [] D = {0.0, 0.0, 0.0};
     double [] D2 = {0.0, 0.0, 0.0};
@@ -112,6 +120,10 @@ public class PIDDrive{
         delta [0] = (targetState [0] - odometry.getXCoordinate()) * P [0];
         delta [1] = (targetState [1] - odometry.getYCoordinate()) * P [1];
 
+        // Alternate method, assuming power application in robot x and y are significantly different
+        delta [0] = (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0]) + (Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+        delta [1] = -(Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0]) + (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+
         // Proportional component, angle
         if(odometry.getRotationRadians() % (2.0 * Math.PI) > 0.0) { // Enables rotation clockwise or counterclockwise, depending on which way is closer to angle target
             delta[2] = (targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2];
@@ -127,18 +139,23 @@ public class PIDDrive{
 
         // Will slow robot more by increasing damping term (P term) on approach to target for x and y
         // Meant to solve issue of integral term building up too much when robot starts far away from target, causing robot overshoot
-        double distanceToTargetChangeRate = (distanceToTarget - lastDistanceToTarget) / odometry.deltaTime;
-        if(distanceToTargetChangeRate < 0.0){ // If approaching target
-            // Profiles d term on approach (jacks up term to increase "braking" gain)
-            double XDerivativeMultiplier = 4.0 * Math.exp(-(distanceToTarget - 5.0) * (distanceToTarget - 6.0) / (initialDistanceToTarget / 2.0)) -
-                    3.0 * Math.exp(-(distanceToTarget) * (distanceToTarget) / 9.0);
-            delta [0] -= (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] * XDerivativeMultiplier) + (Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
-            delta [1] -= -(Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] * XDerivativeMultiplier) + (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
-        }else{ // If overshooting target
-            // Overshoot handled here (will affect first tick leaving a target point to go to next target)
-//            delta [0] -= Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] + Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1];
-//            delta [1] -= -Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] + Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1];
-        }
+//        double distanceToTargetChangeRate = (distanceToTarget - lastDistanceToTarget) / odometry.deltaTime;
+//        if(distanceToTargetChangeRate < 0.0){ // If approaching target
+//            // Profiles d term on approach (jacks up term to increase "braking" gain)
+//            double XDerivativeMultiplier = 4.0 * Math.exp(-(distanceToTarget - 5.0) * (distanceToTarget - 6.0) / (initialDistanceToTarget / 2.0)) -
+//                    3.0 * Math.exp(-(distanceToTarget) * (distanceToTarget) / 9.0);
+//            delta [0] -= (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] * XDerivativeMultiplier) + (Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+//            delta [1] -= -(Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] * XDerivativeMultiplier) + (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+//        }else{ // If overshooting target
+//            // Overshoot handled here (will affect first tick leaving a target point to go to next target)
+////            delta [0] -= Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] + Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1];
+////            delta [1] -= -Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0] + Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1];
+//        }
+
+        // Without lag, on newer control hub, x and y still relativec to robot
+        delta [0] -= (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0]) + (Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+        delta [1] -= -(Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0]) + (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
+
         // Turning doesn't have have the same overshooting issues, so just do velocity gain calculations
         delta [2] += odometry.angularVelocity * D [2];
 

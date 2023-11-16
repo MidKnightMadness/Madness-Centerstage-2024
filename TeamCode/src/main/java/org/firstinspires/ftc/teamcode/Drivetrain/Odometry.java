@@ -19,12 +19,12 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
     //Constants
     // Same for now
-    double inPerTickLeft = 30.0d / 35574d;
-    double inPerTickRight = 30.0d / 38888d;
-    double inPerTickCenter = 20.0d / 25423d;
+    double inPerTickLeft = 30.0d / 38828d;
+    double inPerTickRight = 30.0d / 38358d;
+    double inPerTickCenter = 30.0d / 38493d;
     double verticalWheelDistance = 3.0;
     // Need to retry this, somehow was not equalizing properly (centerDistanceTraveled - deltaRadians*distanceToFront)
-    double lateralWheelDistance = 12.5;
+    double lateralWheelDistance = 12.5 * 72.0d / 90.0d;
 
 
     //Tracking Time
@@ -83,6 +83,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     double netX;
     double netY;
     Vector2 lastVelocity = new Vector2();
+    double lastExternalInputAngle = 0.0;
+    double externalInputAngle = 0.0;
 
 
     // Low pass filter used to smooth position
@@ -96,13 +98,15 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         elapsedTime = new ElapsedTime();
 
         //Initialize Motors
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "encoder1");
-        rightEncoder = hardwareMap.get(DcMotorEx.class, "encoder2");
-        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "encoder3");
+        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
+        rightEncoder = hardwareMap.get(DcMotorEx.class, "BL");
+        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "FR");
 
         //Reset Position
         this.rotationRadians = startingAngleRadians;
         this.position = startingPosition;
+        externalInputAngle = startingAngleRadians;
+        lastExternalInputAngle = startingAngleRadians;
     }
 
     public void updatePosition() {
@@ -116,7 +120,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         //Note: change coefficients to make filter more/less responsive
         leftTicks = (int) (-0.9 * leftEncoder.getCurrentPosition()+ 0.1 * lastLeftTicks);
         rightTicks = (int) (-0.9 * rightEncoder.getCurrentPosition() + 0.1 * lastRightTicks);
-        topTicks = (int) (-0.9 * horizontalEncoder.getCurrentPosition() + 0.1 * lastTopTicks);
+        topTicks = (int) (0.9 * horizontalEncoder.getCurrentPosition() + 0.1 * lastTopTicks);
 
         //calculate change in tick reading
         deltaLeftTicks = leftTicks - lastLeftTicks;
@@ -134,7 +138,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         topDistanceMoved = inPerTickCenter * deltaTopTicks;
 
         // calculate change in angles
-        deltaRadians = getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
+        deltaRadians = getDeltaRotation(leftDistanceMoved, rightDistanceMoved); //externalInputAngle - lastExternalInputAngle; // Added calibration for systematic error
+//        lastExternalInputAngle = externalInputAngle;
         angularVelocity = deltaRadians / deltaTime;
         rotationRadians += deltaRadians; //Finding integral part 1
 
@@ -214,7 +219,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     }
 
     public double getDeltaRotation(double leftChange, double rightChange) {
-        return (rightChange - leftChange) / lateralWheelDistance;
+        return (rightChange - leftChange) / (lateralWheelDistance * 2.0d);
     }
 
     public double getXCoordinate() {
