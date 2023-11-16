@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import android.graphics.Camera;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
+import org.firstinspires.ftc.teamcode.Localization.SimpleProcessor;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
+import org.openftc.easyopencv.OpenCvCamera;
 
 @TeleOp
 public class Auto extends OpMode {
@@ -15,8 +19,14 @@ public class Auto extends OpMode {
     Timer timer;
     MecanumDrive mecanumDrive;
 
+    SimpleProcessor simpleProcessor;
     DcMotor intakeMotor;
 
+    Camera camera;
+    OpenCvCamera cam;
+
+
+    Vector2 teamPropLocation = new Vector2(0,0);
     public int getDirection() {
         return -1;
     }
@@ -25,13 +35,30 @@ public class Auto extends OpMode {
         return 4;
     }
 
+    public int getRobotPositionNumber(){
+        return 1;
+    }
+    public int teamPropPosition = 3;
+    public int robotPositionNumber = 1;
+
     double lateralDistance = getDirection()* 24 * getNumTilesToPark();
 
     @Override
     public void init()
     {
+
+        cam.setPipeline(simpleProcessor.processFrame());
         timer = new Timer();
         odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
+        simpleProcessor = new SimpleProcessor();
+
+        //get the team prop and robot postion
+        teamPropPosition  = simpleProcessor.processFrame(frame, 0);
+        robotPositionNumber = getRobotPositionNumber();
+
+        //get the vector that the team prop is on
+        teamPropLocation = simpleProcessor.getVector(teamPropPosition,robotPositionNumber);
+
     }
 
     @Override
@@ -59,5 +86,7 @@ public class Auto extends OpMode {
             timer.updateTime();
         }
     }
+
+
 
 }

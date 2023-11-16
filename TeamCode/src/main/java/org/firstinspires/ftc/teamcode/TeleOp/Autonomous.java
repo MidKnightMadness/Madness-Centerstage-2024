@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
@@ -78,6 +79,8 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
 
     int stored = 1; //the starting pixel in robot
 
+    Intake intake;
+
     @Override
     public void init() {
         drive = new MecanumDrive(hardwareMap, telemetry);
@@ -86,6 +89,7 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
         timer = new ElapsedTime();
         timer.startTime();
         distSensor = hardwareMap.get(DistanceSensor.class, "distSensor");
+        intake = new Intake(hardwareMap);
 
         PIDDrive.setTargetState(targetStates[numberOfPointsReached][0], targetStates[numberOfPointsReached][1], targetStates[numberOfPointsReached][2]);
     }
@@ -101,13 +105,13 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
                 PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
                 if (PIDDrive.distanceToTarget < 0.1) {
                     teamPropTask = true;
-                    intake.setPower(-1);
+                    intake.setMotorPower(-1);
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    intake.setPower(0);
+                    intake.setMotorPower(0);
                 }
 
             } else {

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous
 public class BlueAutoBack extends Auto {
+    final int positionNumber = 4;
 
     @Override
     public int getDirection() {
@@ -13,5 +14,10 @@ public class BlueAutoBack extends Auto {
     @Override
     public int getNumTilesToPark() {
         return 4;
+    }
+
+    @Override
+    public int getPositionNumber(){
+        return positionNumber;//Position Number is 4
     }
 }
