@@ -1,30 +1,46 @@
-//package org.firstinspires.ftc.teamcode.TeleOp;
-//
-//
-//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-//import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-//import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-//
-//import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
-//import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
-//import org.firstinspires.ftc.teamcode.Utility.Vector2;
-//
-//import com.qualcomm.robotcore.util.ElapsedTime;
-//
-//@TeleOp(name = "autonomous")
-//public class SimpleAutonomousBlueBack extends LinearOpMode {
-//    MecanumDrive mecanumDrive;
-//    Odometry odometry;
-//    //no pid drive this time PIDDrive pidDrive;
-//    ElapsedTime timer;
-//
-//
-//    //no target states double[][] targetStates{
-//
-//    // }
-//
-//    @Override
-//    public void runOpMode() throws InterruptedException {
+package org.firstinspires.ftc.teamcode.TeleOp;
+
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
+import org.firstinspires.ftc.teamcode.Utility.Vector2;
+
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Autonomous(name = "blue back")
+public class SimpleAutonomousBlueBack extends LinearOpMode {
+    MecanumDrive mecanumDrive;
+    Odometry odometry;
+    //no pid drive this time PIDDrive pidDrive;
+    ElapsedTime timer;
+
+
+    //no target states double[][] targetStates{
+
+    // }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        waitForStart();
+
+        timer = new ElapsedTime();
+        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
+
+        timer.startTime();
+        while (timer.time() < 0.5){
+            mecanumDrive.normalDrive(0.7, -1.0, 0.0, 0.0);
+        }
+        Thread.sleep(1000);
+        while(timer.time() < 3){
+            mecanumDrive.normalDrive(.7, 0.0, 1.0, 0.0);
+        }
+        mecanumDrive.normalDrive(0.0, 0.0, 0.0, 0.0);
+
 //        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
 //        odometry = new Odometry(hardwareMap, Math.PI/2, new Vector2(0,0));
 //        // pidDrive = new PIDDrive(odometry, 0, 0, 0, telemetry);
@@ -46,8 +62,8 @@
 //            odometry.updatePosition();
 //            mecanumDrive.normalDrive(0, 0.5, 0);
 //        }
-//    }
-//
-//
-//
-//}
+    }
+
+
+
+}
