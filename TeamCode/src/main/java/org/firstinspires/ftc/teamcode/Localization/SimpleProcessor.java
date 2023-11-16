@@ -32,14 +32,14 @@ public class SimpleProcessor implements VisionProcessor {
             //first number = position#
             //second number = team prop placement
             //third number and 4th: x and y
-            {1, 1, 24, 30},
-            {1, 2, 36, 24},
-            {1, 3, 48, 30},
+            {1, 1, 24, 42},
+            {1, 2, 36, 48},
+            {1, 3, 48, 42},
 
             //red side back
-            {2, 1, 72, 30},
-            {2, 2, 84, 24},
-            {2, 3, 96, 30},
+            {2, 1, 72, 42},
+            {2, 2, 84, 48},
+            {2, 3, 96, 42},
 
             //blue side front
             {3, 1, 24, 102},
@@ -49,7 +49,7 @@ public class SimpleProcessor implements VisionProcessor {
             //blue side back
             {4, 1, 72, 102},
             {4, 2, 84, 96},
-            {4, 3, 96, 96}
+            {4, 3, 96, 102}
     };
 
 
