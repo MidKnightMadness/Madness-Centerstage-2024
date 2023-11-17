@@ -24,7 +24,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     double inPerTickCenter = 30.0d / 38493d;
     double verticalWheelDistance = 3.0;
     // Need to retry this, somehow was not equalizing properly (centerDistanceTraveled - deltaRadians*distanceToFront)
-    double lateralWheelDistance = 12.5 * 72.0d / 90.0d;
+    double lateralWheelDistance = 12.5 * 68.84d / 90.0d;
 
 
     //Tracking Time
@@ -153,15 +153,15 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         rotCosine = Math.cos(rotationRadians);
 
         //Calculating change X and Y position of robot
-        netX = forwardMovement * rotCosine + trueLateralMovement * rotSin;
-        netY = forwardMovement * rotSin - trueLateralMovement * rotCosine;
+        netX = -forwardMovement * rotCosine + trueLateralMovement * rotSin;
+        netY = forwardMovement * rotSin + trueLateralMovement * rotCosine;
 
         rotationRadians += .5 * deltaRadians; //Finding integral part 2
 
         //Calculating final x and y
         //Note: Changed signs since was reversed, had to re-swap variables
-        this.position.x += (12.0 / 10.75) * netX;
-        this.position.y += (12.0 / 10.75) * netY;
+        this.position.x -= (12.0 / 10.75) * netX * (3.0d / 3.4d);
+        this.position.y += (12.0 / 10.75) * netY * (3.0d / 3.4d);
 
         //getting x and y velocities
         velocity.x = - 0.75 * netX / deltaTime + 0.25 * lastVelocity.x;
@@ -219,7 +219,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     }
 
     public double getDeltaRotation(double leftChange, double rightChange) {
-        return (rightChange - leftChange) / (lateralWheelDistance * 2.0d);
+        return (rightChange - leftChange) * 180.0d / (lateralWheelDistance * 2.0d * 178.1822d);
     }
 
     public double getXCoordinate() {

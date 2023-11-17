@@ -49,7 +49,7 @@ public class MecanumDrive {
     ///forward: -1.0, 1.0, -1.0, -1.0
     public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
     public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
-    public static final double POWER_MULTIPLIER = 1;
+    public static final double POWER_MULTIPLIER = .75;
 
     // Inputs and power constraints
     private double [] motorInputs;
@@ -78,10 +78,15 @@ public class MecanumDrive {
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 //        FL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0.5, 0.25, 0.25, 0));
 //        FR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0.5, 0.25, 0.25, 0));
@@ -171,7 +176,7 @@ public class MecanumDrive {
         double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]);
         if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
             for(int i = 0; i < 4; i++){
-                motorInputs [i] /= maxPowerLevel;
+                motorInputs [i] = POWER_MULTIPLIER / maxPowerLevel;
             }
         }
 
