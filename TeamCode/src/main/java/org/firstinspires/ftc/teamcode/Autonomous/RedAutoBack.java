@@ -15,6 +15,10 @@ public class RedAutoBack extends Auto {
     {84, 12, 0}
 
     };
+    @Override
+    public double[][] setTargetStates(){
+        return targetStates;
+    }
     final int positionNumber = 2;
     @Override
     public int getDirection() {

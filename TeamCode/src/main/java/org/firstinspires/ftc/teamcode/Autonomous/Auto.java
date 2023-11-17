@@ -46,9 +46,12 @@ public class Auto extends OpMode {
     }
     public int teamPropPosition = 3;
     public int robotPositionNumber = 1;
+    double [][] targetStates = {{0, 0, 0}};
 
     double lateralDistance = getDirection()* 24 * getNumTilesToPark();
-
+    public int getPositionNumber(){
+        return robotPositionNumber;
+    }
     @Override
     public void init()
     {
@@ -57,6 +60,7 @@ public class Auto extends OpMode {
         timer = new Timer();
         odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
         simpleProcessor = new SimpleProcessor();
+
 
         servoBox = new OuttakeBox(hardwareMap, "servoBox");
         intake = new Intake(hardwareMap);
@@ -67,8 +71,11 @@ public class Auto extends OpMode {
         robotPositionNumber = getRobotPositionNumber();
 
         //get the vector that the team prop is on
-        teamPropLocation = simpleProcessor.getVector(teamPropPosition,robotPositionNumber);
-
+        teamPropLocation = simpleProcessor.getVector(teamPropPosition, getPositionNumber());
+        targetStates = setTargetStates();
+    }
+    public double[][] setTargetStates(){
+        return targetStates;
     }
 
     @Override
@@ -106,7 +113,7 @@ public class Auto extends OpMode {
     }
     void pixelCycle() {
 
-        {preset coordinates}
+        //{preset coordinates}
     }
 
 
