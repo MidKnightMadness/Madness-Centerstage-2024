@@ -25,7 +25,7 @@ public class Auto extends OpMode {
 
     SimpleProcessor simpleProcessor;
     PIDDrive PIDDrive;
-    DcMotor intakeMotor;
+
     OuttakeBox servoBox;
     Camera camera;
     OpenCvCamera cam;
@@ -81,10 +81,9 @@ public class Auto extends OpMode {
     @Override
     public void loop()
     {
-
         teamProp();
+        pixelCycle();
         park();
-
     }
 
     void park() {
@@ -99,7 +98,7 @@ public class Auto extends OpMode {
 
     void teamProp(){
 
-        PIDDrive.setTargetState(teamPropPosition, 3*Math.PI/2); //fix to wanted orient
+        PIDDrive.setTargetState(teamPropLocation.x, teamPropLocation.y, 3*Math.PI/2); //fix to wanted orient
         while (PIDDrive.distanceToTarget < 0.1){
             //wait
         }
@@ -109,6 +108,7 @@ public class Auto extends OpMode {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        intake.setMotorPower(0);
 
     }
     void pixelCycle() {
