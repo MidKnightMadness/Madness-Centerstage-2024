@@ -21,7 +21,7 @@ public class Intake {
         motor = hardwareMap.get(DcMotor.class, "intakeMotor");
         servo = hardwareMap.get(Servo.class, "servo");
     }
-    void setMotorPower(double power) {
+    public void setMotorPower(double power) {
         motor.setPower(power);
 
     }

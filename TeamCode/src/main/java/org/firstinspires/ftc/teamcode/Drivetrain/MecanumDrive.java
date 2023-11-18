@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
-import static java.lang.Thread.sleep;
+//import static java.lang.Thread.sleep;
 
 //import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+//import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 /*
 Configuration:
@@ -58,7 +58,7 @@ public class MecanumDrive {
             218.8,
             415.1,
             219.5};
-    double min = RPMs[3];
+    double min = RPMs[1];
     double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
 //    double[] RPMMultipliers = { 1, 1 ,1 , 1};
 

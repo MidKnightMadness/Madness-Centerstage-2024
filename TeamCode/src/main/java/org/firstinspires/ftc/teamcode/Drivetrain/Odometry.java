@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
 //import com.acmerobotics.dashboard.config.Config;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
