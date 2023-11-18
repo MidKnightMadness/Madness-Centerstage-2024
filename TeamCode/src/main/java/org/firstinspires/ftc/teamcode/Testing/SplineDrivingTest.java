@@ -22,14 +22,14 @@ public class SplineDrivingTest extends OpMode {
     double [] driveInputs = {0.0, 0.0, 0.0};
     double [][] targetStates = {
             {5.0, 0.0, Math.PI / 2.0d},
-            {5.0, 27.0, Math.PI},
-            {-22.0 - 40.0, 27.0, Math.PI},
+            {5.0, 27.0, Math.PI / 2.0d},
+            {-22.0 - 40.0, 27.0, Math.PI / 2.0d},
             {-22.0 - 40.0, 27.0 + 30.0, Math.PI / 2.0d},
             {5.0, 27.0 + 30.0, Math.PI / 2.0d},
-            {5.0, 0.0, Math.PI}
+            {5.0, 0.0, Math.PI / 2.0d}
     };
 
-    double NAVIGATIONAL_TOLERANCE = 0.25; // Inches to target
+    double NAVIGATIONAL_TOLERANCE = 0.5; // Inches to target
     int numberOfPointsReached = 0;
 
     @Override
@@ -98,6 +98,10 @@ public class SplineDrivingTest extends OpMode {
         telemetry.addData("\nx", odometry.getXCoordinate());
         telemetry.addData("y", odometry.getYCoordinate());
         telemetry.addData("heading", odometry.getRotationDegrees());
+
+        telemetry.addData("\nx velocity", odometry.getVelocity().x);
+        telemetry.addData("y velocity", odometry.getVelocity().y);
+        telemetry.addData("angular velocity", odometry.angularVelocity * 180 / Math.PI);
 
         telemetry.update();
     }

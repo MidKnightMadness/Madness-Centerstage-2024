@@ -36,14 +36,14 @@ public class SimpleAutonomousBlueFront extends LinearOpMode {
         timer.reset();
         while(timer.time() < 1000){
             odometry.updatePosition();
-            mecanumDrive.normalDrive(0.5, 0, 0.0);
+            mecanumDrive.normalDrive(1.0, 0.5, 0, 0.0);
         }
-        mecanumDrive.normalDrive(0.0, 0.0, 0.0);
+        mecanumDrive.normalDrive(1.0, 0.0, 0.0, 0.0);
         Thread.sleep(500);
 
         while(timer.time() < 3500){
             odometry.updatePosition();
-            mecanumDrive.normalDrive(0, 0.5, 0);
+            mecanumDrive.normalDrive(1.0, 0, 0.5, 0);
         }
     }
 

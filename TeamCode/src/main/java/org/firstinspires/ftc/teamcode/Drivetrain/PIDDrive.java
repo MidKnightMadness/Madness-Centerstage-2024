@@ -48,10 +48,10 @@ public class PIDDrive{
 //    double [] cumulativeError = {0.0, 0.0, 0.0};
 
     // For non-spline-path driving - Madness robot 2023
-    public double [] P = {0.62576378, 0.62576378, -3.3};
-    public double [] I = {0.03234029, 0.03234029, -.15};
+    public double [] P = {0.62576378, 0.62576378, 0.0};// -0.65};
+    public double [] I = {0.0, 0.0, 0.0};//{0.03234029, 0.03234029, -0.65};
     final double integralDecay = 0.9;
-    public double [] D = {0.0699999, 0.0699999, 0.0};
+    public double [] D = {0.0699999, 0.0699999, 0.0};// 0.25};
     public double [] D2 = {0.0, 0.0, 0.0};
     double [] cumulativeError = {0.0, 0.0, 0.0};
 
@@ -104,6 +104,11 @@ public class PIDDrive{
 
         telemetry.addData("\nproportional x gain", (targetState [0] - odometry.getXCoordinate()) * P [0]);
         telemetry.addData("proportional y gain", (targetState [1] - odometry.getYCoordinate()) * P [1]);
+        if (Math.abs(targetState[2] - odometry.getRotationRadians() % (Math.PI * 2.0)) < Math.PI) {
+            telemetry.addData("proportional angular gain", (targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2]);
+        } else {
+            telemetry.addData("proportional angular gain", (targetState[2] - 2.0 * Math.PI - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2]);
+        }
 
         telemetry.addData("\nintegral x gain", cumulativeError [0]);
         telemetry.addData("integral y gain", cumulativeError [1]);
@@ -123,7 +128,13 @@ public class PIDDrive{
 
 
         // Proportional component, angle
-        delta[2] = -(targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2];
+//        if(distanceToTarget < 10.0) {
+            if (Math.abs(targetState[2] - odometry.getRotationRadians() % (Math.PI * 2.0)) < Math.PI) {
+                delta[2] = (targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2];
+            } else {
+                delta[2] = (targetState[2] - 2.0 * Math.PI - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2];
+            }
+//        }
 //        if((targetState[2] - odometry.getRotationRadians() % (Math.PI * 2.0)) < Math.PI * 2.0){ // Rotating counterclockwise
 //            delta[2] = -(targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))) * P[2];
 //        }else{ // Rotating clockwise
@@ -135,7 +146,14 @@ public class PIDDrive{
             integralTermMultiplier = 4.0 * Math.exp(-2.0 * (distanceToTarget) * (distanceToTarget)); // Only activates to correct minute errors
             cumulativeError[0] += integralTermMultiplier * I[0] * delta[0];
             cumulativeError[1] += integralTermMultiplier * I[1] * delta[1];
-            cumulativeError[2] += I[2] * ((targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))));
+        }
+
+        if(Math.abs(targetState[2] - odometry.getRotationRadians() % (Math.PI * 2.0d)) % Math.PI < Math.PI * 0.25) {
+            if(Math.abs(targetState[2] - odometry.getRotationRadians() % (Math.PI * 2.0)) < Math.PI) {
+                cumulativeError[2] += I[2] * ((targetState[2] - (odometry.getRotationRadians() % (2.0 * Math.PI))));
+            }else{
+                cumulativeError[2] += I[2] * ((targetState[2] - 2.0 * Math.PI - (odometry.getRotationRadians() % (2.0 * Math.PI))));
+            }
         }
 
         // Will slow robot more by increasing damping term (P term) on approach to target for x and y
@@ -163,7 +181,9 @@ public class PIDDrive{
 //        delta [1] -= -(Math.sin(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().x * D [0]) + (Math.cos(odometry.getRotationRadians() - Math.PI / 2.0) * odometry.getVelocity().y * D [1]);
 
         // Turning doesn't have have the same overshooting issues, so just do velocity gain calculations
-        delta [2] += odometry.angularVelocity * D [2];
+//        if(distanceToTarget < 2.0) {
+            delta[2] += odometry.angularVelocity * D[2];
+//        }
 
         // Add cumulative error up seperately from PID, since P and D components are reset every tick
         delta [0] += cumulativeError [0];
@@ -173,8 +193,8 @@ public class PIDDrive{
         // Since inputting gain values into FieldOrientedDrive (made to take inputs from -1 to 1), need to normalize magnitude of x, y, angle inputs
         double maxInputValue = 0.0;
         delta [0] *= P [0];
-        delta [1] *= P [0];
-        delta [2] *= P [0];
+        delta [1] *= P [1];
+        delta [2] *= Math.abs(P [2]);
         for(double num : delta){
             if (Math.abs(num) > maxInputValue) {
                 maxInputValue = Math.abs(num);
