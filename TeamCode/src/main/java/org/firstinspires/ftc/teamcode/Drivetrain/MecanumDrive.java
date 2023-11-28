@@ -49,15 +49,15 @@ public class MecanumDrive {
     ///forward: -1.0, 1.0, -1.0, -1.0
     public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
     public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
-    public static final double POWER_MULTIPLIER = .5;
+    public static final double POWER_MULTIPLIER = 0.85;
 
     // Inputs and power constraints
     private double [] motorInputs;
 
-    double [] RPMs = {435.3 * 169.0d / 175.0d,
-            218.8,
-            415.1,
-            219.5};
+    double [] RPMs = {456.8,
+            223.8,
+            426.9,
+            223.1};
     double min = RPMs[3];
     double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
 //    double[] RPMMultipliers = { 1, 1 ,1 , 1};

@@ -81,8 +81,8 @@ public class SplineDrivingTest extends OpMode {
         mecanumDrive.FieldOrientedDrive(-driveInputs [0], -driveInputs [1], -driveInputs [2], odometry.getRotationRadians(), telemetry);
 
         if(PIDDrive.distanceToTarget < NAVIGATIONAL_TOLERANCE
-                && numberOfPointsReached < targetStates.length - 1
-                && Math.abs(odometry.getRotationRadians() - targetStates[numberOfPointsReached][2]) * 180.0d / Math.PI < 2.0d){
+                && numberOfPointsReached < targetStates.length - 1){
+//                && Math.abs(odometry.getRotationRadians() - targetStates[numberOfPointsReached][2]) * 180.0d / Math.PI < 2.0d){
             numberOfPointsReached ++;
             PIDDrive.setTargetState(targetStates [numberOfPointsReached][0], targetStates [numberOfPointsReached][1], targetStates [numberOfPointsReached][2]);
         }
@@ -98,6 +98,7 @@ public class SplineDrivingTest extends OpMode {
         telemetry.addData("\nx", odometry.getXCoordinate());
         telemetry.addData("y", odometry.getYCoordinate());
         telemetry.addData("heading", odometry.getRotationDegrees());
+        telemetry.addData("number of points reached", numberOfPointsReached);
 
         telemetry.addData("\nx velocity", odometry.getVelocity().x);
         telemetry.addData("y velocity", odometry.getVelocity().y);
