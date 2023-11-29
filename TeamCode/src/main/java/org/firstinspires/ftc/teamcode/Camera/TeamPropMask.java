@@ -29,6 +29,11 @@ public class TeamPropMask extends OpenCvPipeline {
     Scalar redLower2 = new Scalar(160, 100, 100);
     Scalar redUpper2 = new Scalar(180, 255, 255);
 
+
+    Rect leftRect = RectangleFactory.generateRectFromPercentages(width, height, 0, 50, 27, 100);
+    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
+    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
+
     // 0: red
     // 1: blue
     int mode = 0;
@@ -50,6 +55,12 @@ public class TeamPropMask extends OpenCvPipeline {
         }
         else if (mode.equals("red")) {
             this.mode = 0;
+        }
+    }
+
+    void setMode(int mode) {
+        if (mode == 1 || mode == 0) {
+            this.mode = mode;
         }
     }
 
@@ -75,14 +86,13 @@ public class TeamPropMask extends OpenCvPipeline {
         }
 
 
-        Rect leftRect = new Rect(1, 1, width - 1, height - 1);
-        Rect rightRect = new Rect(width / 2, 1, width / 2 - 1, height - 1);
-
         Mat leftRectMat = hsvMat.submat(leftRect);
         Mat rightRectMat = hsvMat.submat(rightRect);
+        Mat centerRectMat = hsvMat.submat(centerRect);
 
         Imgproc.rectangle(output, leftRect, rectColor, 2);
         Imgproc.rectangle(output, rightRect, rectColor, 2);
+        Imgproc.rectangle(output, centerRect, rectColor, 2);
 
         return output;
     }

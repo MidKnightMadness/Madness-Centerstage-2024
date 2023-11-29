@@ -56,7 +56,6 @@ public class Auto extends OpMode {
     public void init()
     {
 
-        cam.setPipeline(simpleProcessor.processFrame());
         timer = new Timer();
         odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
         simpleProcessor = new SimpleProcessor();
@@ -67,7 +66,7 @@ public class Auto extends OpMode {
         PIDDrive = new PIDDrive(odometry, 0, 0, 0, telemetry);
 
         //get the team prop and robot postion
-        teamPropPosition  = simpleProcessor.processFrame(frame, 0); //implement a frame: we need to use the camera
+        // teamPropPosition  = simpleProcessor.processFrame(frame, 0); //implement a frame: we need to use the camera
         robotPositionNumber = getRobotPositionNumber();
 
         //get the vector that the team prop is on

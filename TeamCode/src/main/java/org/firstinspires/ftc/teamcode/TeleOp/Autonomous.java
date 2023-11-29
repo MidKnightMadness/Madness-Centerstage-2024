@@ -102,7 +102,7 @@ Opcode 3 and 4 are team color blue -> teamColor = 2
         PIDDrive.updatePID();
         if (timer.time() < 23) {
             if (teamPropTask == false) {
-                PIDDrive.setTargetState(teamProp.x, teamProp.y, teamColor * Math.PI / 2);
+                PIDDrive.setTargetState(1, 1, teamColor * Math.PI / 2);
                 if (PIDDrive.distanceToTarget < 0.1) {
                     teamPropTask = true;
                     intake.setMotorPower(-1);
