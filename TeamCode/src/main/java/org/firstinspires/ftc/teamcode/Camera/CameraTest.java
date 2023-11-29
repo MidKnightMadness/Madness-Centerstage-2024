@@ -5,16 +5,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.Locale;
+
 @TeleOp
 public class CameraTest extends OpMode {
     OpenCvWebcam webcam;
 
-    int[] dimensions = new int[] {640, 360 };
+    int[] dimensions = new int[] { 640, 360 };
 
     TeamPropMask teamPropMask =  new TeamPropMask(dimensions[0], dimensions[1]);
 
@@ -46,11 +49,17 @@ public class CameraTest extends OpMode {
             }
         });
     }
+    int width = 640;
+    int height = 360;
 
+    Rect leftRect = RectangleFactory.generateRectFromPercentages(width, height, 0, 50, 27, 100);
+    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
+    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
     @Override
     public void init_loop() {
         telemetry.addData(">", "Press X to set Default vs mask");
         telemetry.addData(">", "Press Y to set red or blue when in masked mode");
+        telemetry.addData("Left", String.format(Locale.ENGLISH, "(%d, %d), %d by %d", leftRect.x, leftRect.y, leftRect.width, leftRect.height));
         xToggle.update(gamepad1.x);
         yToggle.update(gamepad1.y);
 

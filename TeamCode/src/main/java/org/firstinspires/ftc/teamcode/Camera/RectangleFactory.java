@@ -17,7 +17,7 @@ public class RectangleFactory {
         int y1 = (int) (height * yPercent1 / 100d);
         int y2 = (int) (height * yPercent2 / 100d);
 
-        return new Rect(x1, y1, x2, y2);
+        return generateRectFrom2Points(x1, y1, x2, y2);
     }
 
 }

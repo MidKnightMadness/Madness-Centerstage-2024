@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
-import org.firstinspires.ftc.teamcode.R;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -10,6 +9,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class TeamPropMask extends OpenCvPipeline {
     Mat hsvMat = new Mat();
@@ -30,9 +30,13 @@ public class TeamPropMask extends OpenCvPipeline {
     Scalar redUpper2 = new Scalar(180, 255, 255);
 
 
-    Rect leftRect = RectangleFactory.generateRectFromPercentages(width, height, 0, 50, 27, 100);
-    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
-    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
+//    Rect leftRect = RectangleFactory.generateRectFromPercentages(width, height, 0, 50, 27, 100);
+//    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
+//    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
+
+    Rect leftRect = new Rect(90, 150, 95, 70);
+    Rect rightRect = new Rect(300, 135, 70, 55);
+    Rect centerRect = new Rect(495, 130, 95, 75);
 
     // 0: red
     // 1: blue
@@ -47,7 +51,8 @@ public class TeamPropMask extends OpenCvPipeline {
         this.height = (int) height;
     }
 
-    Scalar rectColor = new Scalar(255, 255, 255);
+    Scalar defaultRectColor = new Scalar(10, 255, 255);
+    Scalar detectedRectColor = new Scalar(50, 255, 255);
 
     void setMode(String mode) {
         if (mode.equals("blue")) {
@@ -68,6 +73,12 @@ public class TeamPropMask extends OpenCvPipeline {
         return mode == 0 ? "red" : mode == 1 ? "blue" : "unknown";
     }
 
+    Mat getGrayScaleHsv(Mat hsvMat) {
+        ArrayList<Mat> channels = new ArrayList<>(3);
+        Core.split(hsvMat, channels);
+        return channels.get(2);
+    }
+
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
@@ -85,14 +96,36 @@ public class TeamPropMask extends OpenCvPipeline {
             Core.inRange(hsvMat, blueLower, blueUpper, output);
         }
 
+        Scalar leftColor = defaultRectColor;
+        Scalar rightColor  = defaultRectColor;
+        Scalar centerColor = defaultRectColor;
 
-        Mat leftRectMat = hsvMat.submat(leftRect);
-        Mat rightRectMat = hsvMat.submat(rightRect);
-        Mat centerRectMat = hsvMat.submat(centerRect);
+        // convert output to grayscale (V value)
+//        Imgproc.cvtColor(output, output, Imgproc.COLOR_HSV2RGB);
+//        Imgproc.cvtColor(output, output, Imgproc.COLOR_RGB2GRAY);
 
-        Imgproc.rectangle(output, leftRect, rectColor, 2);
-        Imgproc.rectangle(output, rightRect, rectColor, 2);
-        Imgproc.rectangle(output, centerRect, rectColor, 2);
+        Mat leftRectMat = getGrayScaleHsv(output.submat(leftRect));
+        Mat rightRectMat = getGrayScaleHsv(output.submat(leftRect));
+        Mat centerRectMat = getGrayScaleHsv(output.submat(leftRect));
+
+        int left = Core.countNonZero(leftRectMat);
+        int right = Core.countNonZero(rightRectMat);
+        int center = Core.countNonZero(centerRectMat);
+
+//        int max = Arrays.stream(new int[] {right, left, center}).max().getAsInt();
+        if (left > right && left > center) {
+            leftColor = detectedRectColor;
+        }
+        else if (right > left && right > center) {
+            rightColor = detectedRectColor;
+        }
+        else {
+            centerColor = detectedRectColor;
+        }
+
+        Imgproc.rectangle(output, leftRect, leftColor, 4);
+        Imgproc.rectangle(output, rightRect, rightColor, 4);
+        Imgproc.rectangle(output, centerRect, centerColor, 4);
 
         return output;
     }
