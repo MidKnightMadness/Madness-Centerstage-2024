@@ -12,21 +12,24 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Camera.PixelDetector;
 import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
 import org.firstinspires.ftc.teamcode.Drivetrain.SplinePath;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Components.LinearSlides;
+import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 
 @TeleOp(group= "[Game]", name = "Driver Controlled TeleOp")
 public class Main extends OpMode {
 
     public ColorSensorWrapper colorSensorWrapper;
     public PixelDetector pixelDetector;
-
+//    LinearSlides slides;
     MecanumDrive mecanumDrive;
-
+    OuttakeBox OuttakeServo;
     ColorSensor colorSensorOutake;
 
     ColorSensor colorSensorChasis;
@@ -37,6 +40,7 @@ public class Main extends OpMode {
     Servo armIntake;
     DcMotorEx IntakeMotor;
 
+
     public int numberOfTimesATrue = 0;
 
     public boolean down;
@@ -45,12 +49,14 @@ public class Main extends OpMode {
     //just using driver controlled
     @Override
     public void init() {
+//        slides = new LinearSlides(hardwareMap);
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-
+        IntakeMotor = hardwareMap.get(DcMotorEx.class, "intake motor");
+//        OuttakeServo= new OuttakeBox(hardwareMap, "Outtake Servo");
         //initiate servo intake motor
 //         IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
-//         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//         IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //
 //        //initialization of color sensors
 //          colorSensorOutake = hardwareMap.get(ColorSensor.class, "colorSensorOutake");
@@ -73,7 +79,18 @@ public class Main extends OpMode {
 
     // Uses gamepad1
     public void handleDriverControls() {
-        mecanumDrive.normalDrive(1, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        mecanumDrive.normalDrive(1, gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
+
+        if(gamepad1.left_bumper && !gamepad1.right_bumper){ // Run forwards
+            telemetry.addLine("intake running forwards");
+            IntakeMotor.setPower(1.0);
+        }else if(gamepad1.right_bumper && !gamepad1.left_bumper){
+            telemetry.addLine("intake running in reverse");
+            IntakeMotor.setPower(-1.0);
+        }else{
+            telemetry.addLine("intake not running");
+            IntakeMotor.setPower(0.0);
+        }
     }
 
     // Uses gamepad2
@@ -86,7 +103,7 @@ public class Main extends OpMode {
 
     //float currentLinearSlidesHeight = 0F;//current linear slides height
     public void handleManipulatorControls() {
-
+//        slides.extendWithPower(-gamepad2.right_stick_y);
         //set for gamepad 2, checking to see if gamepad had any changes
 
         //linear slides -> left stick y     -> separate class
@@ -95,23 +112,35 @@ public class Main extends OpMode {
         //button x and b for outake box left and right  -> done
 
         //button a to run intake running to get pixels
-        if (isIntakeRunning) {
-            IntakeMotor.setPower(1);
+      /*  if (gamepad2.x){
+        OuttakeServo.outtakePixelLeft();}
+        else if (gamepad2.y) {
+            OuttakeServo.outtakePixelRight();
+        }
+        else{
+            OuttakeServo.outtakePixelMiddle();
+        }*/
+
+        /*if (isIntakeRunning) {
+            telemetry.addLine("intake running forwards");
+            IntakeMotor.setPower(1.0);
         }
         else {
-            IntakeMotor.setPower(0);
+            telemetry.addLine("intake running in reverse");
+            IntakeMotor.setPower(-1.0);
         }
 
         if (buttonToggleA.update(gamepad1.a)) {
             isIntakeRunning = !isIntakeRunning;
         }
-
+*/
 
     }
 
     @Override
     public void loop() {
         handleDriverControls();
+        handleManipulatorControls();
     }
 
 

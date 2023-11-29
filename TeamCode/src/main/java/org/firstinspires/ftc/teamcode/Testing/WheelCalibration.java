@@ -22,7 +22,7 @@ public class WheelCalibration extends OpMode {
             389.5,
             186};
     double min = RPMs[3];
-    double[] RPMMultipliers = {1.0, 1.0, 1.0, 1.0};//{ min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
+    double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
 //    double[] RPMMultipliers = { 1, 1 ,1 , 1};
 
     RollingAverage[] wheelRPMS = {

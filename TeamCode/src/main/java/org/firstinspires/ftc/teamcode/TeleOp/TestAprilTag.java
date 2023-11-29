@@ -43,7 +43,7 @@ public class TestAprilTag extends OpMode {
 
     @Override
     public void init() {
-        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, telemetry, 0, 0);
+        aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, telemetry, 0, 0, 0);
 
 
         BNO055IMU.Parameters imuParameters = new BNO055IMU.Parameters();//set imu parameters
@@ -76,7 +76,7 @@ public class TestAprilTag extends OpMode {
         currentY = angles.secondAngle;
 
         //pass on values into getRelativeCoordinates function
-//        coordinates = aprilTagLocalizer.getCoordsSet(robotHeading, currentX, currentY);
+        coordinates = aprilTagLocalizer.getCoordsSet(robotHeading, currentX, currentY);
         int numberOfAprilTags = 0;
         if (coordinates != null){
             for(int i = 0;i<10;i++){

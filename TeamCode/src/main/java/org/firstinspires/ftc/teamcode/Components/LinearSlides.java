@@ -2,39 +2,52 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class LinearSlides {
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
 
-    // Internal use variables
-    public int [] leftBounds = {0, 0}; // Retracted, extended
-    public int [] rightBounds = {0, 0}; // Retracted, extended
-    public double inPerTickLeft = 0.0;
-    public double inPerTickRight = 0.0;
-    public double extensionDifferenceTolerance = 0.0;
-    public double [] extendedLengths = {0.0, 0.0}; // Left, right
+    int [] leftBounds = {0, 0};
+    int [] rightBounds = {0, 0};
+    double inPerTickLeft = 0.0;
+    double inPerTickRight = 0.0;
+    double slidesDistanceDifferenceLimit = 0.0;
 
     public LinearSlides(HardwareMap hardwareMap) {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
-        resetEncoders();
-    }
-
-    public void resetEncoders() {
-        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void setHeight(double height) { // Run every tick when you want motors to go to this
-//        while (Math.abs(extendedLengths [0] - extendedLengths [1]) < extensionDifferenceTolerance && ) {
-//
-//        }
-    }
+    public void extendWithPower(double powerLevel){
+        if(motorLeft.getCurrentPosition() < leftBounds [0] && powerLevel > 0.0 && // If out of bounds and trying to get back into bounds
+                motorRight.getCurrentPosition() < rightBounds [0]){
+//                Math.abs(motorLeft.getCurrentPosition() * inPerTickLeft - motorRight.getCurrentPosition() * inPerTickRight) < slidesDistanceDifferenceLimit){
 
+            motorLeft.setPower(powerLevel);
+            motorRight.setPower(powerLevel);
+
+        }else if(motorLeft.getCurrentPosition() > leftBounds [1] && powerLevel < 0.0 && // If out of bounds and trying to get back into bounds
+                motorRight.getCurrentPosition() > rightBounds [1]){
+//                Math.abs(motorLeft.getCurrentPosition() * inPerTickLeft - motorRight.getCurrentPosition() * inPerTickRight) < slidesDistanceDifferenceLimit){
+
+            motorLeft.setPower(powerLevel);
+            motorRight.setPower(powerLevel);
+
+        }else if(motorLeft.getCurrentPosition() < leftBounds [0] && motorLeft.getCurrentPosition() < leftBounds [1] && // If out of bounds and trying to get back into bounds
+                motorRight.getCurrentPosition() < rightBounds [0] && motorRight.getCurrentPosition() < rightBounds [1]){
+
+            motorLeft.setPower(powerLevel);
+            motorRight.setPower(powerLevel);
+        }else{ // Last out of bounds case
+            motorRight.setPower(0);
+            motorLeft.setPower(0);
+        }
+    }
 }

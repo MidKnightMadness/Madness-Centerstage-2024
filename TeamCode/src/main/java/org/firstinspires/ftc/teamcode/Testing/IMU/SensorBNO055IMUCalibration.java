@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Testing.IMU;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -97,12 +97,9 @@ import java.util.Locale;
  * The BNO055 datasheet: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
  */
 @TeleOp(name = "Sensor: BNO055 IMU Calibration", group = "Sensor")
-@Disabled                            // Uncomment this to add to the OpMode list
+@Disabled
 public class SensorBNO055IMUCalibration extends LinearOpMode
     {
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
 
     // Our sensors, motors, and other devices go here, along with other long term state
     BNO055IMU imu;
@@ -131,7 +128,7 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
         parameters.loggingTag     = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu = hardwareMap.get(BNO055IMU.class, "imuOld");
         imu.initialize(parameters);
 
         composeTelemetry();

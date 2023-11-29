@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
-import static java.lang.Thread.sleep;
+//import static java.lang.Thread.sleep;
 
 //import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+//import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 /*
 Configuration:
@@ -49,7 +49,7 @@ public class MecanumDrive {
     ///forward: -1.0, 1.0, -1.0, -1.0
     public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
     public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
-    public static final double POWER_MULTIPLIER = .75;
+    public static final double POWER_MULTIPLIER = 1;
 
     // Inputs and power constraints
     private double [] motorInputs;
@@ -58,7 +58,7 @@ public class MecanumDrive {
             218.8,
             415.1,
             219.5};
-    double min = RPMs[3];
+    double min = RPMs[1];
     double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
 //    double[] RPMMultipliers = { 1, 1 ,1 , 1};
 
@@ -78,15 +78,10 @@ public class MecanumDrive {
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //        FL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0.5, 0.25, 0.25, 0));
 //        FR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0.5, 0.25, 0.25, 0));
@@ -176,7 +171,7 @@ public class MecanumDrive {
         double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]);
         if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
             for(int i = 0; i < 4; i++){
-                motorInputs [i] = POWER_MULTIPLIER / maxPowerLevel;
+                motorInputs [i] /= maxPowerLevel;
             }
         }
 

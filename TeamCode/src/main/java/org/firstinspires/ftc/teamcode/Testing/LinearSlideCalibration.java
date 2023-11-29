@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
@@ -13,6 +14,8 @@ import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 public class LinearSlideCalibration extends OpMode {
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
+    public Servo ElbowJoint;
+    public Servo WristJoint;
 
     ButtonToggle dPadUp;
     ButtonToggle dPadDown;
@@ -33,6 +36,8 @@ public class LinearSlideCalibration extends OpMode {
 
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+//        ElbowJoint = hardwareMap.get(Servo.class, "");
+
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
 
@@ -41,19 +46,20 @@ public class LinearSlideCalibration extends OpMode {
     }
 
     public void loop() {
-        if (dPadUp.update(this.gamepad1.y)) {
-            targetPos += 500;
-        }
-        if (dPadDown.update(this.gamepad1.a)) {
-            targetPos -= 500;
-        }
-
+//        if (dPadUp.update(this.gamepad1.y)) {
+//            targetPos += 500;
+//        }
+//        if (dPadDown.update(this.gamepad1.a)) {
+//            targetPos -= 500;
+//        }
+//
         motorLeft.setPower(this.gamepad1.left_stick_y);
-        motorRight.setPower(this.gamepad1.right_stick_y);
+        motorRight.setPower(this.gamepad1.left_stick_y);
+//
+//
+//        motorLeft.setTargetPosition(targetPos);
+//        motorRight.setTargetPosition(targetPos);
 
-
-        motorLeft.setTargetPosition(targetPos);
-        motorRight.setTargetPosition(targetPos);
 
         telemetry.addData("Target pos", targetPos);
         telemetry.addData("Left motor Power", motorLeft.getPower());
