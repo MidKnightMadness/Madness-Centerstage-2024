@@ -49,9 +49,9 @@ public class PIDDrive{
 
     // For non-spline-path driving - Madness robot 2023
     public double [] P = {0.62576378, 0.62576378, 0.0};// -0.65};
-    public double [] I = {0.0, 0.0, 0.0};//{0.03234029, 0.03234029, -0.65};
+    public double [] I = {-0.03234029, -0.03234029, -0.65};
     final double integralDecay = 0.9;
-    public double [] D = {0.0699999, 0.0699999, 0.0};// 0.25};
+    public double [] D = {0.0, 0.0, 0.0};//{0.0699999, 0.0699999, 0.0};// 0.25};
     public double [] D2 = {0.0, 0.0, 0.0};
     double [] cumulativeError = {0.0, 0.0, 0.0};
 

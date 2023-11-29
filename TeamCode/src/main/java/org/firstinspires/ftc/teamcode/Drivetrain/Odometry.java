@@ -118,8 +118,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         //Implementing low pass filter for smoothing
         //Note: change coefficients to make filter more/less responsive
-        leftTicks = (int) (-0.95 * leftEncoder.getCurrentPosition()+ 0.05 * lastLeftTicks);
-        rightTicks = (int) (-0.95 * rightEncoder.getCurrentPosition() + 0.05 * lastRightTicks);
+        leftTicks = (int) (0.95 * leftEncoder.getCurrentPosition()+ 0.05 * lastLeftTicks);
+        rightTicks = (int) (0.95 * rightEncoder.getCurrentPosition() + 0.05 * lastRightTicks);
         topTicks = (int) (0.95 * horizontalEncoder.getCurrentPosition() + 0.05 * lastTopTicks);
 
         //calculate change in tick reading
@@ -161,7 +161,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         //Calculating final x and y
         //Note: Changed signs since was reversed, had to re-swap variables
         this.position.x -= (12.0 / 10.75) * netX * (3.0d / 3.4d);
-        this.position.y += (12.0 / 10.75) * netY * (3.0d / 3.4d);
+        this.position.y -= (12.0 / 10.75) * netY * (3.0d / 3.4d);
 
         //getting x and y velocities
         velocity.x = -0.95 * netX / deltaTime + 0.05 * lastVelocity.x;
@@ -219,7 +219,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     }
 
     public double getDeltaRotation(double leftChange, double rightChange) {
-        return (rightChange - leftChange) * 180.0d / (lateralWheelDistance * 2.0d * 178.1822d);
+        return -(rightChange - leftChange) * 180.0d / (lateralWheelDistance * 2.0d * 178.1822d);
     }
 
     public double getXCoordinate() {

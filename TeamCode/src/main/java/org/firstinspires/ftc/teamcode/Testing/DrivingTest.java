@@ -40,7 +40,7 @@ public class DrivingTest extends OpMode {
         odometry.setRotation(Math.PI / 2.0d);
 
         // OTHER INIT ==============================================================================
-        PIDDrive = new PIDDrive(odometry, 43.0, 5.0, Math.PI / 2.0d, telemetry);
+        PIDDrive = new PIDDrive(odometry, 50.0, 1.0, Math.PI / 2.0d, telemetry);
 //        PIDDrive.setTargetState(0.0, 20.0, Math.PI / 2.0d);
     }
 
@@ -51,33 +51,34 @@ public class DrivingTest extends OpMode {
 //            odometry.resetEncoders();
 //        }
 
-        // PID Adjustment
-        if(gamepad1.dpad_down){
-            PIDDrive.D [0] -= 0.001;
-            PIDDrive.D [1] -= 0.001;
-        }else if(gamepad1.dpad_up){
-            PIDDrive.D [0] += 0.001;
-            PIDDrive.D [1] += 0.001;
-        }
-
-        PIDDrive.P [2] -= 0.001 * gamepad1.left_stick_y;
-//        PIDDrive.P [1] -= 0.001 * gamepad1.left_stick_y;
-
-        PIDDrive.I [0] -= 0.001 * gamepad1.right_stick_y;
-        PIDDrive.I [1] -= 0.001 * gamepad1.right_stick_y;
-
-        telemetry.addData("D", PIDDrive.D [0]);
-        telemetry.addData("P", PIDDrive.P [2]);
-        telemetry.addData("I", PIDDrive.I [0]);
-
-        odometry.updatePosition();
-        driveInputs = PIDDrive.updatePID();
-
         // NORMAL DRIVER CONTROL ===================================================================
 //        mecanumDrive.normalDrive(1, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
         // PID TUNING ==============================================================================
-        mecanumDrive.FieldOrientedDrive(-driveInputs [0], -driveInputs [1], -driveInputs [2], odometry.getRotationRadians(), telemetry);
+            // PID Adjustment
+            if(gamepad1.dpad_down){
+                PIDDrive.D [0] -= 0.001;
+                PIDDrive.D [1] -= 0.001;
+            }else if(gamepad1.dpad_up){
+                PIDDrive.D [0] += 0.001;
+                PIDDrive.D [1] += 0.001;
+            }
+
+            PIDDrive.P [0] -= 0.001 * gamepad1.left_stick_y;
+            PIDDrive.P [1] -= 0.001 * gamepad1.left_stick_y;
+
+            PIDDrive.I [0] -= 0.001 * gamepad1.right_stick_y;
+            PIDDrive.I [1] -= 0.001 * gamepad1.right_stick_y;
+
+            telemetry.addData("D", PIDDrive.D [0]);
+            telemetry.addData("P", PIDDrive.P [0]);
+            telemetry.addData("I", PIDDrive.I [0]);
+
+            odometry.updatePosition();
+            driveInputs = PIDDrive.updatePID();
+        if(PIDDrive.distanceToTarget > 0.5) {
+            mecanumDrive.FieldOrientedDrive(-driveInputs[0], -driveInputs[1], -driveInputs[2], odometry.getRotationRadians(), telemetry);
+        }
 
         telemetry();
     }

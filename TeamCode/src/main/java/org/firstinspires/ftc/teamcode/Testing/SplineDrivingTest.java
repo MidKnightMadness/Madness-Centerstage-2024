@@ -23,10 +23,10 @@ public class SplineDrivingTest extends OpMode {
     double [][] targetStates = {
             {5.0, 0.0, Math.PI / 2.0d},
             {5.0, 27.0, Math.PI / 2.0d},
-            {-22.0 - 40.0, 27.0, Math.PI / 2.0d},
-            {-22.0 - 40.0, 27.0 + 30.0, Math.PI / 2.0d},
-            {5.0, 27.0 + 30.0, Math.PI / 2.0d},
-            {5.0, 0.0, Math.PI / 2.0d}
+//            {-22.0 - 40.0, 27.0, Math.PI / 2.0d},
+//            {-22.0 - 40.0, 27.0 + 30.0, Math.PI / 2.0d},
+//            {5.0, 27.0 + 30.0, Math.PI / 2.0d},
+//            {5.0, 0.0, Math.PI / 2.0d}
     };
 
     double NAVIGATIONAL_TOLERANCE = 0.5; // Inches to target
