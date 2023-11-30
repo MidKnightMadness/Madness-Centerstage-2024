@@ -50,23 +50,10 @@ public class TeamPropMask extends OpenCvPipeline {
     Rect rightRect = new Rect(300, 135, 70, 55);
     Rect centerRect = new Rect(495, 130, 95, 75);
 
-    public double[][] coordinates = {
-            {1,0,24,42},
-            {1,1,36,48},
-            {1,2,48,42},
 
-            {2,0,72,42},
-            {2,1,84,48},
-            {2,2,96,42},
+    //position of robot: {36,6.75}
+    public Vector2[] coordinatesLines = {new Vector2(-12,35.25), new Vector2(0, 41.25), new Vector2(12,35.25)};
 
-            {3,0,24,102},
-            {3,1,36,96},
-            {3,2,48,102},
-
-            {4,0,72,102},
-            {4,1,84,96},
-            {4,2,96,102}
-    };
 
     public TeamPropMask(int width, int height, Telemetry telemetry) {
         this.width = width;
@@ -166,20 +153,19 @@ public class TeamPropMask extends OpenCvPipeline {
         return teamPropPosition;
     }
 
-    public Vector2 getCoordinates(int teamPropPosition, int robotPosition) {
-        for(int i = 0;i<coordinates.length;i+=3){
-            if(robotPosition==i){
-
-                for(int j =0;j<3;j++){
-                    if(coordinates[i+j][1]==teamPropPosition){
-
-                        return new Vector2(coordinates[i+j][3],coordinates[i+j][4]);
-
-                    }
-                }
+    public Vector2 getCoordinates(int teamPropPosition) {
+        if (this.mode == CameraModes.BLUE) {//inverted
+            if (teamPropPosition == 0) {//left side
+                return coordinatesLines[2];
+            } else if (teamPropPosition == 2) {//right side
+                return coordinatesLines[0];
+            } else {
+                return coordinatesLines[1];
             }
-
+        } else {//camera mode regular
+            return coordinatesLines[teamPropPosition];
         }
-        return null;
+
+
     }
 }

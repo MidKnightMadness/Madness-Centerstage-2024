@@ -46,18 +46,19 @@ public class CameraTest extends OpMode {
         webcam.setPipeline(teamPropMask);
 
         teamPropPosition = teamPropMask.getTeamPropPosition();
-        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+        telemetry.addLine("teamProp position" + teamPropPosition);
+       // telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
                 webcam.startStreaming(dimensions[0], dimensions[1], OpenCvCameraRotation.UPRIGHT);
-                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+               // telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
 
             @Override
             public void onError(int errorCode) {
                 telemetry.addData("Error " + errorCode, "error accessing camera stream");
-                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+             //   telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
         });
     }
@@ -88,14 +89,14 @@ public class CameraTest extends OpMode {
 
         if (yToggle.getValue()) {
             if (teamPropMask.getMode().equals("red")) {
-                teamPropMask.setMode(CameraModes.BLUE);
+                teamPropMask.setMode(CameraModes.RED);
             }
             else {
-                teamPropMask.setMode(CameraModes.RED);
+                teamPropMask.setMode(CameraModes.BLUE);
             }
         }
 
-        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition));
 
 //        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
 
