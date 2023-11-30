@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -15,8 +18,12 @@ public class TeamPropMask extends OpenCvPipeline {
     Mat hsvMat = new Mat();
     Mat output = new Mat();
 
+
+
     int width;
     int height;
+
+    Telemetry telemetry;
 
 
     // blue bounds
@@ -42,17 +49,21 @@ public class TeamPropMask extends OpenCvPipeline {
     // 1: blue
     int mode = 0;
 
-    public TeamPropMask(int width, int height) {
+    public TeamPropMask(int width, int height, Telemetry telemetry) {
         this.width = width;
         this.height = height;
+        this.telemetry = telemetry;
     }
-    public TeamPropMask(double width, double height) {
+    public TeamPropMask(double width, double height, Telemetry telemetry) {
         this.width = (int) width;
         this.height = (int) height;
+        this.telemetry = telemetry;
     }
 
-    Scalar defaultRectColor = new Scalar(10, 255, 255);
-    Scalar detectedRectColor = new Scalar(50, 255, 255);
+    Scalar defaultRectColor = new Scalar(255, 255, 255); // white
+    Scalar detectedRectColor = new Scalar(100, 150, 255); // gray
+
+
 
     void setMode(String mode) {
         if (mode.equals("blue")) {
@@ -76,7 +87,7 @@ public class TeamPropMask extends OpenCvPipeline {
     Mat getGrayScaleHsv(Mat hsvMat) {
         ArrayList<Mat> channels = new ArrayList<>(3);
         Core.split(hsvMat, channels);
-        return channels.get(2);
+        return channels.get(0);
     }
 
     @Override
@@ -104,15 +115,23 @@ public class TeamPropMask extends OpenCvPipeline {
 //        Imgproc.cvtColor(output, output, Imgproc.COLOR_HSV2RGB);
 //        Imgproc.cvtColor(output, output, Imgproc.COLOR_RGB2GRAY);
 
-        Mat leftRectMat = getGrayScaleHsv(output.submat(leftRect));
-        Mat rightRectMat = getGrayScaleHsv(output.submat(leftRect));
-        Mat centerRectMat = getGrayScaleHsv(output.submat(leftRect));
+        Mat leftRectMat = output.submat(leftRect);
+        Mat rightRectMat = output.submat(rightRect);
+        Mat centerRectMat = output.submat(centerRect);
+//
+//        int left = Core.countNonZero(leftRectMat);
+//        int right = Core.countNonZero(rightRectMat);
+//        int center = Core.countNonZero(centerRectMat);
+//
+////        int max = Arrays.stream(new int[] {right, left, center}).max().getAsInt();
+        Scalar leftAvg = Core.mean(leftRectMat);
+        Scalar rightAvg = Core.mean(rightRectMat);
+        Scalar centerAvg = Core.mean(centerRectMat);
 
-        int left = Core.countNonZero(leftRectMat);
-        int right = Core.countNonZero(rightRectMat);
-        int center = Core.countNonZero(centerRectMat);
+        double left = leftAvg.val[0];
+        double right = rightAvg.val[0];
+        double center = centerAvg.val[0];
 
-//        int max = Arrays.stream(new int[] {right, left, center}).max().getAsInt();
         if (left > right && left > center) {
             leftColor = detectedRectColor;
         }
@@ -122,6 +141,11 @@ public class TeamPropMask extends OpenCvPipeline {
         else {
             centerColor = detectedRectColor;
         }
+        telemetry.clear();
+
+        telemetry.addData("Left AVG", leftAvg);
+        telemetry.addData("right AVG", rightAvg);
+        telemetry.addData("center AVG", centerAvg);
 
         Imgproc.rectangle(output, leftRect, leftColor, 4);
         Imgproc.rectangle(output, rightRect, rightColor, 4);

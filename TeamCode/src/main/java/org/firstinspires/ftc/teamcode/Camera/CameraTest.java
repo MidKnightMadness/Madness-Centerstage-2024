@@ -19,7 +19,7 @@ public class CameraTest extends OpMode {
 
     int[] dimensions = new int[] { 640, 360 };
 
-    TeamPropMask teamPropMask =  new TeamPropMask(dimensions[0], dimensions[1]);
+    TeamPropMask teamPropMask;
 
     DefaultMask defaultMask = new DefaultMask();
     boolean isUsingDefault;
@@ -29,6 +29,8 @@ public class CameraTest extends OpMode {
 
     @Override
     public void init() {
+        teamPropMask = new TeamPropMask(dimensions[0], dimensions[1], telemetry);
+        telemetry.setAutoClear(false);
         xToggle = new ButtonToggle();
         yToggle = new ButtonToggle();
 
@@ -57,9 +59,9 @@ public class CameraTest extends OpMode {
     Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
     @Override
     public void init_loop() {
-        telemetry.addData(">", "Press X to set Default vs mask");
-        telemetry.addData(">", "Press Y to set red or blue when in masked mode");
-        telemetry.addData("Left", String.format(Locale.ENGLISH, "(%d, %d), %d by %d", leftRect.x, leftRect.y, leftRect.width, leftRect.height));
+//        telemetry.addData(">", "Press X to set Default vs mask");
+//        telemetry.addData(">", "Press Y to set red or blue when in masked mode");
+//        telemetry.addData("Left", String.format(Locale.ENGLISH, "(%d, %d), %d by %d", leftRect.x, leftRect.y, leftRect.width, leftRect.height));
         xToggle.update(gamepad1.x);
         yToggle.update(gamepad1.y);
 
@@ -84,7 +86,9 @@ public class CameraTest extends OpMode {
 
         }
 
-        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
+//        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
+
+
     }
 
     @Override
