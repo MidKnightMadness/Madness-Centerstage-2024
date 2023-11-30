@@ -52,7 +52,7 @@ public class MecanumDrive {
     public static final double POWER_MULTIPLIER = 0.5;
 
     // Inputs and power constraints
-    private double [] motorInputs;
+    public double [] motorInputs;
 
     double [] RPMs = {456.8,
             223.8,
