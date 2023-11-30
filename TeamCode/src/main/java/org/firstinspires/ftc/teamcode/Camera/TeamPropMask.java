@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -9,7 +7,8 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
-
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums.SpikeMarkPositions;
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums.CameraModes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,7 +17,12 @@ public class TeamPropMask extends OpenCvPipeline {
     Mat hsvMat = new Mat();
     Mat output = new Mat();
 
+    CameraModes mode = CameraModes.RED;
+    SpikeMarkPositions position = SpikeMarkPositions.LEFT;
 
+    SpikeMarkPositions getPosition() {
+        return position;
+    }
 
     int width;
     int height;
@@ -45,10 +49,6 @@ public class TeamPropMask extends OpenCvPipeline {
     Rect rightRect = new Rect(300, 135, 70, 55);
     Rect centerRect = new Rect(495, 130, 95, 75);
 
-    // 0: red
-    // 1: blue
-    int mode = 0;
-
     public TeamPropMask(int width, int height, Telemetry telemetry) {
         this.width = width;
         this.height = height;
@@ -65,23 +65,12 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
 
-    void setMode(String mode) {
-        if (mode.equals("blue")) {
-            this.mode = 1;
-        }
-        else if (mode.equals("red")) {
-            this.mode = 0;
-        }
-    }
-
-    void setMode(int mode) {
-        if (mode == 1 || mode == 0) {
-            this.mode = mode;
-        }
+    void setMode(CameraModes mode) {
+        this.mode = mode;
     }
 
     String getMode() {
-        return mode == 0 ? "red" : mode == 1 ? "blue" : "unknown";
+        return mode == CameraModes.BLUE ? "red" : mode == CameraModes.RED ? "blue" : "unknown";
     }
 
     Mat getGrayScaleHsv(Mat hsvMat) {
@@ -94,11 +83,11 @@ public class TeamPropMask extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
 
-        if (mode == 0) {
+        if (mode == CameraModes.RED) {
             Mat redOutput1 = new Mat();
             Mat redOutput2 = new Mat();
 
-            // red
+            // red bounds
             Core.inRange(hsvMat, redLower, redUpper, redOutput1);
             Core.inRange(hsvMat, redLower2, redUpper2, redOutput2);
             Core.bitwise_or(redOutput1, redOutput2, output);
@@ -111,19 +100,11 @@ public class TeamPropMask extends OpenCvPipeline {
         Scalar rightColor  = defaultRectColor;
         Scalar centerColor = defaultRectColor;
 
-        // convert output to grayscale (V value)
-//        Imgproc.cvtColor(output, output, Imgproc.COLOR_HSV2RGB);
-//        Imgproc.cvtColor(output, output, Imgproc.COLOR_RGB2GRAY);
 
         Mat leftRectMat = output.submat(leftRect);
         Mat rightRectMat = output.submat(rightRect);
         Mat centerRectMat = output.submat(centerRect);
-//
-//        int left = Core.countNonZero(leftRectMat);
-//        int right = Core.countNonZero(rightRectMat);
-//        int center = Core.countNonZero(centerRectMat);
-//
-////        int max = Arrays.stream(new int[] {right, left, center}).max().getAsInt();
+
         Scalar leftAvg = Core.mean(leftRectMat);
         Scalar rightAvg = Core.mean(rightRectMat);
         Scalar centerAvg = Core.mean(centerRectMat);
@@ -134,13 +115,17 @@ public class TeamPropMask extends OpenCvPipeline {
 
         if (left > right && left > center) {
             leftColor = detectedRectColor;
+            position = SpikeMarkPositions.LEFT;
         }
         else if (right > left && right > center) {
             rightColor = detectedRectColor;
+            position = SpikeMarkPositions.RIGHT;
         }
         else {
             centerColor = detectedRectColor;
+            position = SpikeMarkPositions.CENTER;
         }
+
         telemetry.clear();
 
         telemetry.addData("Left AVG", leftAvg);
