@@ -95,11 +95,9 @@ public class CameraTest extends OpMode {
             }
         }
 
-        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+//        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
 
-//        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
-
-
+        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
     }
 
     @Override
