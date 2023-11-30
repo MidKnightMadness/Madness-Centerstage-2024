@@ -45,8 +45,6 @@ public class CameraTest extends OpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
 
-        teamPropPosition = teamPropMask.getTeamPropPosition();
-        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {

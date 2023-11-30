@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Localization.Pose;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -13,6 +14,9 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums.CameraModes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class TeamPropMask extends OpenCvPipeline {
     Mat hsvMat = new Mat();
@@ -50,6 +54,21 @@ public class TeamPropMask extends OpenCvPipeline {
     Rect rightRect = new Rect(300, 135, 70, 55);
     Rect centerRect = new Rect(495, 130, 95, 75);
 
+    Map<SpikeMarkPositions, Pose> spikeMarkScoringOffsets = new HashMap<SpikeMarkPositions, Pose>() {{
+        put(SpikeMarkPositions.LEFT, new Pose(10, 10, Math.PI/2));
+    }};
+
+//    red {
+//        left: vector2
+//        center: vector2
+//        right: vector2
+//    }
+//
+//    blue {
+//        left: vector2
+//        center: vector2
+//        right: vector2
+//    }
     public double[][] coordinates = {
             {1,0,24,42},
             {1,1,36,48},
@@ -180,6 +199,7 @@ public class TeamPropMask extends OpenCvPipeline {
             }
 
         }
+
         return null;
     }
 }
