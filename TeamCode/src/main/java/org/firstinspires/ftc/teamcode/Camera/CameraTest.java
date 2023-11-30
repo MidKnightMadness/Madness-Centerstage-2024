@@ -4,6 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums.CameraModes;
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums.SpikeMarkPositions;
+
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -84,12 +88,11 @@ public class CameraTest extends OpMode {
 
         if (yToggle.getValue()) {
             if (teamPropMask.getMode().equals("red")) {
-                teamPropMask.setMode("blue");
+                teamPropMask.setMode(CameraModes.BLUE);
             }
             else {
-                teamPropMask.setMode("red");
+                teamPropMask.setMode(CameraModes.RED);
             }
-
         }
 
         telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
