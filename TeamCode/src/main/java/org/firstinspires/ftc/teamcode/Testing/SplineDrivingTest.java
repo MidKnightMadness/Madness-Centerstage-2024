@@ -21,8 +21,9 @@ public class SplineDrivingTest extends OpMode {
 
     double [] driveInputs = {0.0, 0.0, 0.0};
     double [][] targetStates = {
-            {5.0, 0.0, Math.PI / 2.0d},
-            {5.0, 27.0, Math.PI / 2.0d},
+//            {5.0, 0.0, Math.PI / 2.0d},
+            {2.0, 30.0, Math.PI}
+//            {-30.0, 30.0, Math.PI / 2.0},
 //            {-22.0 - 40.0, 27.0, Math.PI / 2.0d},
 //            {-22.0 - 40.0, 27.0 + 30.0, Math.PI / 2.0d},
 //            {5.0, 27.0 + 30.0, Math.PI / 2.0d},
@@ -48,9 +49,9 @@ public class SplineDrivingTest extends OpMode {
     @Override
     public void loop() {
         // DON'T CHANGE ============================================================================
-//        if(gamepad1.x){
-//            odometry.resetEncoders();
-//        }
+        if(gamepad1.x){
+            odometry.resetEncoders();
+        }
 
         // PID Adjustment
         if(gamepad1.dpad_down){
@@ -60,16 +61,17 @@ public class SplineDrivingTest extends OpMode {
             PIDDrive.D [2] += 0.001;
 //            PIDDrive.D [1] += 0.001;
         }
+        telemetry.addData("verticalWheelDistance", odometry.verticalWheelDistance);
 
         PIDDrive.P [2] -= 0.001 * gamepad1.left_stick_y;
 //        PIDDrive.P [1] -= 0.001 * gamepad1.left_stick_y;
-
-        PIDDrive.I [2] -= 0.001 * gamepad1.right_stick_y;
+//
+//        PIDDrive.I [0] -= 0.001 * gamepad1.right_stick_y;
 //        PIDDrive.I [1] -= 0.001 * gamepad1.right_stick_y;
 
-        telemetry.addData("D", PIDDrive.D [2]);
-        telemetry.addData("P", PIDDrive.P [2]);
-        telemetry.addData("I", PIDDrive.I [2]);
+        telemetry.addData("D", PIDDrive.D [0]);
+        telemetry.addData("P", PIDDrive.P [0]);
+        telemetry.addData("I", PIDDrive.I [0]);
 
         odometry.updatePosition();
         driveInputs = PIDDrive.updatePID();
@@ -78,7 +80,15 @@ public class SplineDrivingTest extends OpMode {
 //        mecanumDrive.normalDrive(1, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
         // PID TUNING ==============================================================================
-        mecanumDrive.FieldOrientedDrive(-driveInputs [0], -driveInputs [1], -driveInputs [2], odometry.getRotationRadians(), telemetry);
+        if(numberOfPointsReached < 1) {
+            mecanumDrive.FieldOrientedDrive(-driveInputs[0], -driveInputs[1], -driveInputs[2], odometry.getRotationRadians(), telemetry);
+        }else{
+            if(PIDDrive.distanceToTarget > 0.25){
+                mecanumDrive.FieldOrientedDrive(-driveInputs[0], -driveInputs[1], -driveInputs[2], odometry.getRotationRadians(), telemetry);
+            }else{
+                mecanumDrive.FieldOrientedDrive(0.0, 0.0, 0.0, odometry.getRotationRadians(), telemetry);
+            }
+        }
 
         if(PIDDrive.distanceToTarget < NAVIGATIONAL_TOLERANCE
                 && numberOfPointsReached < targetStates.length - 1){
