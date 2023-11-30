@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Camera;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -49,6 +50,24 @@ public class TeamPropMask extends OpenCvPipeline {
     // 1: blue
     int mode = 0;
 
+    public double[][] coordinates = {
+            {1,0,24,42},
+            {1,1,36,48},
+            {1,2,48,42},
+
+            {2,0,72,42},
+            {2,1,84,48},
+            {2,2,96,42},
+
+            {3,0,24,102},
+            {3,1,36,96},
+            {3,2,48,102},
+
+            {4,0,72,102},
+            {4,1,84,96},
+            {4,2,96,102}
+    };
+
     public TeamPropMask(int width, int height, Telemetry telemetry) {
         this.width = width;
         this.height = height;
@@ -90,6 +109,7 @@ public class TeamPropMask extends OpenCvPipeline {
         return channels.get(0);
     }
 
+    int teamPropPosition = 0;
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
@@ -134,13 +154,18 @@ public class TeamPropMask extends OpenCvPipeline {
 
         if (left > right && left > center) {
             leftColor = detectedRectColor;
+            teamPropPosition = 0;
         }
         else if (right > left && right > center) {
             rightColor = detectedRectColor;
+            teamPropPosition = 1;
         }
-        else {
+        else if(center>left &&center>right){
             centerColor = detectedRectColor;
+            teamPropPosition = 2;
         }
+        else{teamPropPosition =3;}
+
         telemetry.clear();
 
         telemetry.addData("Left AVG", leftAvg);
@@ -151,6 +176,30 @@ public class TeamPropMask extends OpenCvPipeline {
         Imgproc.rectangle(output, rightRect, rightColor, 4);
         Imgproc.rectangle(output, centerRect, centerColor, 4);
 
+
+
+
         return output;
+    }
+
+    public int getTeamPropPosition() {
+        return teamPropPosition;
+    }
+
+    public Vector2 getCoordinates(int teamPropPosition, int robotPosition) {
+        for(int i = 0;i<coordinates.length;i+=3){
+            if(robotPosition==i){
+
+                for(int j =0;j<3;j++){
+                    if(coordinates[i+j][1]==teamPropPosition){
+
+                        return new Vector2(coordinates[i+j][3],coordinates[i+j][4]);
+
+                    }
+                }
+            }
+
+        }
+        return null;
     }
 }

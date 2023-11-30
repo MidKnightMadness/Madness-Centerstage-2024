@@ -27,6 +27,8 @@ public class CameraTest extends OpMode {
     ButtonToggle xToggle;
     ButtonToggle yToggle;
 
+    int teamPropPosition;
+    int robotPosition = 1;
     @Override
     public void init() {
         teamPropMask = new TeamPropMask(dimensions[0], dimensions[1], telemetry);
@@ -39,15 +41,19 @@ public class CameraTest extends OpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
 
+        teamPropPosition = teamPropMask.getTeamPropPosition();
+        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
                 webcam.startStreaming(dimensions[0], dimensions[1], OpenCvCameraRotation.UPRIGHT);
+                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
 
             @Override
             public void onError(int errorCode) {
                 telemetry.addData("Error " + errorCode, "error accessing camera stream");
+                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
         });
     }
@@ -85,6 +91,8 @@ public class CameraTest extends OpMode {
             }
 
         }
+
+        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
 
 //        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
 
