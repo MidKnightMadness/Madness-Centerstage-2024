@@ -51,12 +51,12 @@ public class Main extends OpMode {
     public void init() {
 //        slides = new LinearSlides(hardwareMap);
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-        IntakeMotor = hardwareMap.get(DcMotorEx.class, "intake motor");
-//        OuttakeServo= new OuttakeBox(hardwareMap, "Outtake Servo");
-        //initiate servo intake motor
-//         IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
-         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-         IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        IntakeMotor = hardwareMap.get(DcMotorEx.class, "intake motor");
+////        OuttakeServo= new OuttakeBox(hardwareMap, "Outtake Servo");
+//        //initiate servo intake motor
+////         IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
+//         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//         IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //
 //        //initialization of color sensors
 //          colorSensorOutake = hardwareMap.get(ColorSensor.class, "colorSensorOutake");
@@ -81,16 +81,16 @@ public class Main extends OpMode {
     public void handleDriverControls() {
         mecanumDrive.normalDrive(1, gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
-        if(gamepad1.left_bumper && !gamepad1.right_bumper){ // Run forwards
-            telemetry.addLine("intake running forwards");
-            IntakeMotor.setPower(1.0);
-        }else if(gamepad1.right_bumper && !gamepad1.left_bumper){
-            telemetry.addLine("intake running in reverse");
-            IntakeMotor.setPower(-1.0);
-        }else{
-            telemetry.addLine("intake not running");
-            IntakeMotor.setPower(0.0);
-        }
+//        if(gamepad1.left_bumper && !gamepad1.right_bumper){ // Run forwards
+//            telemetry.addLine("intake running forwards");
+//            IntakeMotor.setPower(1.0);
+//        }else if(gamepad1.right_bumper && !gamepad1.left_bumper){
+//            telemetry.addLine("intake running in reverse");
+//            IntakeMotor.setPower(-1.0);
+//        }else{
+//            telemetry.addLine("intake not running");
+//            IntakeMotor.setPower(0.0);
+//        }
     }
 
     // Uses gamepad2
