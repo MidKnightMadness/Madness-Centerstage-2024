@@ -31,11 +31,11 @@ public class TeamPropMask extends OpenCvPipeline {
     Telemetry telemetry;
 
 
-    // blue bounds
+    // blue color bounds
     Scalar blueLower = new Scalar(100, 100, 100);
     Scalar blueUpper = new Scalar(140, 255, 255);
 
-    // red bounds
+    // red color bounds
     Scalar redLower = new Scalar(0, 100, 100);
     Scalar redUpper = new Scalar(15, 255, 255);
     Scalar redLower2 = new Scalar(160, 100, 100);
@@ -76,7 +76,7 @@ public class TeamPropMask extends OpenCvPipeline {
     }
 
     String getMode() {
-        return mode == CameraModes.BLUE ? "red" : mode == CameraModes.RED ? "blue" : "unknown";
+        return mode == CameraModes.RED ? "red" : mode == CameraModes.BLUE ? "blue" : "unknown";
     }
 
     Mat getGrayScaleHsv(Mat hsvMat) {
