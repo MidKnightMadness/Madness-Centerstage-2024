@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
-@TeleOp(group= "Test", name = "DrivingTest")
+@TeleOp(name = "aDrivingTest")
 public class DrivingTest extends OpMode {
 
     MecanumDrive mecanumDrive;
