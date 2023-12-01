@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
@@ -22,6 +23,9 @@ public class AutoDeadReckoning extends OpMode {
     Timer timer;
 
     ButtonToggle a;
+    ButtonToggle b;
+    ButtonToggle y;
+    ButtonToggle x;
 
     double [] RPMs = {248.7,
             186.5,
@@ -35,6 +39,9 @@ public class AutoDeadReckoning extends OpMode {
     public void init() {
         timer = new Timer();
         a = new ButtonToggle();
+        b = new ButtonToggle();
+        y = new ButtonToggle();
+        x = new ButtonToggle();
 
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         FR = hardwareMap.get(DcMotorEx.class, "FR");
@@ -53,19 +60,24 @@ public class AutoDeadReckoning extends OpMode {
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
     }
+    double seconds = 1.3;
 
     @Override
     public void loop() {
-        if (this.gamepad1.y) {
-            setMotorPowers(1, 1, 1, 1);
+        if (y.update(gamepad1.y)) {
+            rotate90Degrees();
         }
 
         if (a.update(gamepad1.a)) {
-            driveForwardForTime(2.5, 0.75);
+            driveForwardForTime(1, 0.7);
         }
+
+        if (b.update(gamepad1.b)) {
+            driveForwardForTime(3, 0.7);
+        }
+
+        telemetry.addData("Rotation time", seconds);
 
         telemetryMotorVelocities();
     }
@@ -86,9 +98,9 @@ public class AutoDeadReckoning extends OpMode {
     }
 
     void setMotorPowers(double flPow, double frPow, double blPow, double brPow) {
-        FL.setPower(flPow * 16d/25 * RPMMultipliers[0]);
+        FL.setPower(flPow * 16d/25 * RPMMultipliers[0] * 1.0225d);
         FR.setPower(frPow * RPMMultipliers[1]);
-        BL.setPower(blPow * 16d/25 * RPMMultipliers[2]);
+        BL.setPower(blPow * 16d/25 * RPMMultipliers[2] * 1.0225d);
         BR.setPower(brPow * RPMMultipliers[3]);
     }
 
@@ -110,4 +122,23 @@ public class AutoDeadReckoning extends OpMode {
         telemetry.addData("BL RPM", radPSToRPM(BL.getVelocity(AngleUnit.RADIANS)));
         telemetry.addData("BR RPM", radPSToRPM(BR.getVelocity(AngleUnit.RADIANS)));
     }
+
+    void rotate90Degrees() {
+        double power = 0.5;
+        double seconds = 1.29;
+        setMotorPowersForTime(seconds, power, -power, power, -power);
+    }
+
+    void setMotorPowersForTime(double seconds, double fl, double fr, double bl, double br) {
+        timer.updateTime();
+        double startTime = timer.getTime();
+        while (timer.getTime() - startTime < seconds) {
+            setMotorPowers(fl, fr, bl, br);
+            telemetryMotorVelocities();
+            timer.updateTime();
+        }
+
+        setMotorPowers(0, 0, 0, 0);
+    }
+
 }
