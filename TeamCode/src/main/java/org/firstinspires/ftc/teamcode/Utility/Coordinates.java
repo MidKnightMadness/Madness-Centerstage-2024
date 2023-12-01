@@ -39,11 +39,11 @@ public class Coordinates {
             }
         } else {//blue side
             if(position == SpikeMarkPositions.LEFT){//left side
-                return coordinatesLines[0];
+                return coordinatesLines[3];
             } else if(position ==SpikeMarkPositions.RIGHT){//right side
-                return coordinatesLines[2];
+                return coordinatesLines[5];
             }else{
-                return coordinatesLines[1];
+                return coordinatesLines[4];
             }
 
         }
