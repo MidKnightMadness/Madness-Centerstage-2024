@@ -1,0 +1,32 @@
+package org.firstinspires.ftc.teamcode.Utility;
+
+public class Pose {
+    Vector2 position;
+    double rotation;
+    String label;
+
+    public Pose(Vector2 position, double rotation) {
+        this.position = position;
+        this.rotation = rotation;
+    }
+    public Pose(String label, Vector2 position, double rotation) {
+        this.position = position;
+        this.rotation = rotation;
+        this.label = label;
+    }
+    public Pose(double x, double y, double rotation) {
+        this.position = new Vector2(x, y);
+        this.rotation = rotation;
+    }
+
+
+
+    public boolean equals(Pose pose) {
+        return this.position == pose.position && this.rotation == pose.rotation;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+}

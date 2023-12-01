@@ -13,6 +13,10 @@ public class BlueAutoBack extends Auto {
             {36, 132, 0},
             {84, 132, 0}
     };
+
+    double [][] teamPropPos = {
+            {0,0,0}
+    };
     @Override
     public double[][] setTargetStates(){
         return targetStates;
