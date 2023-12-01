@@ -1,8 +1,4 @@
-package org.firstinspires.ftc.teamcode.Localization;
-
-import androidx.annotation.Nullable;
-
-import org.firstinspires.ftc.teamcode.Utility.Vector2;
+package org.firstinspires.ftc.teamcode.Utility;
 
 public class Pose {
     Vector2 position;

@@ -65,7 +65,7 @@ public class Auto extends OpMode {
         intake = new Intake(hardwareMap);
         PIDDrive = new PIDDrive(odometry, 0, 0, 0, telemetry);
 
-        //get the team prop and robot postion
+        //get the team prop and robot position
         // teamPropPosition  = simpleProcessor.processFrame(frame, 0); //implement a frame: we need to use the camera
         robotPositionNumber = getRobotPositionNumber();
 
