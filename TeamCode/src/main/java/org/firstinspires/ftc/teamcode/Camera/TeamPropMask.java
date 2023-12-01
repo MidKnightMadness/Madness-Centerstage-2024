@@ -52,7 +52,7 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
     //position of robot: {36,6.75}
-    public Vector2[] coordinatesLines = {new Vector2(-12,35.25), new Vector2(0, 41.25), new Vector2(12,35.25)};
+
 
 
     public TeamPropMask(int width, int height, Telemetry telemetry) {
@@ -123,17 +123,14 @@ public class TeamPropMask extends OpenCvPipeline {
         if (left > right && left > center) {
             leftColor = detectedRectColor;
             position = SpikeMarkPositions.LEFT;
-            teamPropPosition = 0;
         }
         else if (right > left && right > center) {
             rightColor = detectedRectColor;
             position = SpikeMarkPositions.RIGHT;
-            teamPropPosition = 1;
         }
         else {
             centerColor = detectedRectColor;
             position = SpikeMarkPositions.CENTER;
-            teamPropPosition = 2;
         }
 
         telemetry.clear();
@@ -153,19 +150,5 @@ public class TeamPropMask extends OpenCvPipeline {
         return teamPropPosition;
     }
 
-    public Vector2 getCoordinates(int teamPropPosition) {
-        if (this.mode == CameraModes.BLUE) {//inverted
-            if (teamPropPosition == 0) {//left side
-                return coordinatesLines[2];
-            } else if (teamPropPosition == 2) {//right side
-                return coordinatesLines[0];
-            } else {
-                return coordinatesLines[1];
-            }
-        } else {//camera mode regular
-            return coordinatesLines[teamPropPosition];
-        }
 
-
-    }
 }

@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums.CameraModes;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.SpikeMarkPositions;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.Coordinates;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -31,7 +32,7 @@ public class CameraTest extends OpMode {
     ButtonToggle xToggle;
     ButtonToggle yToggle;
 
-    int teamPropPosition;
+    SpikeMarkPositions spikeMarkPositions;
     int robotPosition = 1;
     @Override
     public void init() {
@@ -45,9 +46,10 @@ public class CameraTest extends OpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
 
-        teamPropPosition = teamPropMask.getTeamPropPosition();
-        telemetry.addLine("teamProp position" + teamPropPosition);
-       // telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+
+        spikeMarkPositions = teamPropMask.getPosition();
+
+        telemetry.addLine("Vector" + Coordinates.getSpikeMark(CameraModes.RED, spikeMarkPositions));
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -96,7 +98,7 @@ public class CameraTest extends OpMode {
             }
         }
 
-        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition));
+
 
 //        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
 
