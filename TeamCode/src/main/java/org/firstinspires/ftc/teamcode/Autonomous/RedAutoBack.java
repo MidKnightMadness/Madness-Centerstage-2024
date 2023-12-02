@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
+
 @Autonomous
 public class RedAutoBack extends Auto {
     double[][] targetStates = {
@@ -33,5 +35,10 @@ public class RedAutoBack extends Auto {
     @Override
     public int getPositionNumber(){
         return positionNumber;//Position Number is 2
+    }
+
+    @Override
+    public CameraEnums.CameraModes getColor(){
+        return CameraEnums.CameraModes.RED;
     }
 }

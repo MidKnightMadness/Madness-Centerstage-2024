@@ -21,7 +21,7 @@ public class TeamPropMask extends OpenCvPipeline {
     CameraModes mode = CameraModes.RED;
     SpikeMarkPositions position = SpikeMarkPositions.LEFT;
 
-    SpikeMarkPositions getPosition() {
+    public SpikeMarkPositions getPosition() {
         return position;
     }
 

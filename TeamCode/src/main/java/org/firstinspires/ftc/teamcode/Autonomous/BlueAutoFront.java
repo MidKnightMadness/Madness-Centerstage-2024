@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
+
 @Autonomous
 public class BlueAutoFront extends Auto {
     Auto auto;
@@ -16,12 +18,13 @@ public class BlueAutoFront extends Auto {
     {84, 132, 0},
     };
 
+    final int robotPosition = 1;
     @Override
     public double[][] setTargetStates(){
         return targetStates;
     }
 
-    final int positionNumber = 3;
+
     @Override
     public int getDirection() {
         return -1;
@@ -33,8 +36,12 @@ public class BlueAutoFront extends Auto {
     }
 
     @Override
+    public CameraEnums.CameraModes getColor(){
+        return CameraEnums.CameraModes.BLUE;
+    }
+    @Override
     public int getPositionNumber(){
-        return 3;//Position Number is 3
+        return robotPosition;//Position Number is 3
 
     }
 
