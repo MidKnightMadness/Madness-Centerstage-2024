@@ -49,13 +49,11 @@ public class CameraTest extends OpMode {
             @Override
             public void onOpened() {
                 webcam.startStreaming(dimensions[0], dimensions[1], OpenCvCameraRotation.UPRIGHT);
-                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
 
             @Override
             public void onError(int errorCode) {
                 telemetry.addData("Error " + errorCode, "error accessing camera stream");
-                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
         });
     }

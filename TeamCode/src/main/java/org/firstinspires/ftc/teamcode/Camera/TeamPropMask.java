@@ -48,8 +48,8 @@ public class TeamPropMask extends OpenCvPipeline {
 //    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
 //    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
 
-    Rect leftRect = new Rect(90, 150, 95, 70);
-    Rect rightRect = new Rect(300, 135, 70, 55);
+    Rect leftRect = new Rect(90, 150, 95, 75);
+    Rect rightRect = new Rect(300, 135, 95, 75);
     Rect centerRect = new Rect(495, 130, 95, 75);
 
     Map<SpikeMarkPositions, Pose> spikeMarkScoringOffsets = new HashMap<SpikeMarkPositions, Pose>() {{
@@ -181,6 +181,10 @@ public class TeamPropMask extends OpenCvPipeline {
 
     public int getTeamPropPosition() {
         return teamPropPosition;
+    }
+
+    public SpikeMarkPositions getSpikeMarkPosition() {
+        return position;
     }
 
     public Vector2 getCoordinates(int teamPropPosition, int robotPosition) {
