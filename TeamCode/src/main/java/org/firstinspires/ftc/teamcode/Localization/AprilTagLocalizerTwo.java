@@ -1,12 +1,18 @@
 package org.firstinspires.ftc.teamcode.Localization;
 
+import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -19,6 +25,11 @@ public class AprilTagLocalizerTwo extends Localizer {
     // AUXILLARY VARIABLES =========================================================================
     Telemetry telemetry;
     HardwareMap hardwareMap;
+
+//    BHI260IMU imu;
+//    IMU.Parameters parameters;
+//    Orientation angles;
+
     public double[] sensorCoords1 = {0.0, 0.0}; // For each tag detected, do both localization methods
     public double[] sensorCoords2 = {0.0, 0.0};
     double [] calculationsVector = {0.0, 0.0};
@@ -64,10 +75,24 @@ public class AprilTagLocalizerTwo extends Localizer {
         this.telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         this.telemetry.addData(">", "Touch Play to start OpMode");
         this.telemetry.update();
+
+        // IMU initialization
+//        parameters = new IMU.Parameters(
+//                new RevHubOrientationOnRobot(
+//                        new Orientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS, 0.0f, 0.0f, 0.0f, 0)));
+//
+//        imu = hardwareMap.get(BHI260IMU.class, "imu");
+//        imu.initialize(parameters);
+//
+//        angles = new Orientation();
+//        angles = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
     }
 
     @Override
     public double[] getRelCoords(double robotHeading, double currentX, double currentY) {
+        // IMU update
+//        angles = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+
         // Reset list of detected coordinates relative to camera
         List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
         this.telemetry.addData("# AprilTags Detected", currentDetections.size());
@@ -89,33 +114,48 @@ public class AprilTagLocalizerTwo extends Localizer {
         }
         averageRange /= currentDetections.size();
 
-        // Step through the list of detections and combine coordinates from each one
-        for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addData("Detection", detection.id);
+        if(currentDetections.size() != 0 && (currentDetections.get(0).id < 7)) { // IDs from 1 to 6
+            // Step through the list of detections and combine coordinates from each one
+            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null) {
+                    telemetry.addData("Detection", detection.id);
 
-                // Intermediates
-                double correctedY = correctY(detection.ftcPose.y);
-                double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
+                    // Combine detection coordinates with inverse square coefficients based on range
+                    calculationsVector[0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
+                            - APRIL_TAG_COORDS[detection.id - 1][0];
 
-                // Combine detection coordinates with inverse square coefficients based on range
-                calculationsVector [0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                                            -APRIL_TAG_COORDS [detection.id - 1][0];
-//                        Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
-//                                            -APRIL_TAG_COORDS [detection.id - 1][0];
-                calculationsVector [1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                                            -APRIL_TAG_COORDS [detection.id - 1][1];
+                    calculationsVector[1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
+                            - APRIL_TAG_COORDS[detection.id - 1][1];
 
-//                        Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
-//                                            -APRIL_TAG_COORDS [detection.id - 1][1];
+                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+                }
+            }
 
-                calculationsVector [0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
-                calculationsVector [1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+            calculationsVector[0] += 0.804d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
+            calculationsVector[1] -= 2.75d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
+
+        }else{ // IDs from 7 to 10
+            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null) {
+                    telemetry.addData("Detection", detection.id);
+
+                    // Intermediates
+                    double correctedY = correctY(detection.ftcPose.y);
+                    double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
+
+                    // Combine detection coordinates with inverse square coefficients based on range
+                    calculationsVector[0] -= Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
+                            -APRIL_TAG_COORDS [detection.id - 1][0];
+
+                    calculationsVector[1] -= -Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
+                            -APRIL_TAG_COORDS [detection.id - 1][1];
+
+                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+                }
             }
         }
-
-        calculationsVector [0] += 0.804d * averageRange /22.375d; // Correction for backdrop tags, error proportional to range
-        calculationsVector [1] -= 2.75d * averageRange /22.375d; // Correction for backdrop tags, error proportional to range
 
         return calculationsVector;
     }
