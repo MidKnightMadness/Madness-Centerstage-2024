@@ -7,18 +7,28 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
+import org.firstinspires.ftc.teamcode.Camera.DefaultMask;
+import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
 import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Localization.SimpleProcessor;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
+import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.Coordinates;
+import org.firstinspires.ftc.teamcode.Utility.Pose;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 @TeleOp
-public class Auto extends OpMode {
+public abstract class Auto extends OpMode {
     Odometry odometry;
     Timer timer;
     MecanumDrive mecanumDrive;
@@ -32,6 +42,14 @@ public class Auto extends OpMode {
 
     Intake intake;
 
+
+    //camera modes and spike mark
+    public CameraEnums.CameraModes BLUE;
+    public CameraEnums.SpikeMarkPositions CENTER;
+
+    public int robotPositionNumber = 0;
+
+
     Vector2 teamPropLocation = new Vector2(0,0);
     public int getDirection() {
         return -1;
@@ -44,17 +62,67 @@ public class Auto extends OpMode {
     public int getRobotPositionNumber(){
         return 1;
     }
-    public int teamPropPosition = 3;
-    public int robotPositionNumber = 1;
     double [][] targetStates = {{0, 0, 0}};
 
     double lateralDistance = getDirection()* 24 * getNumTilesToPark();
-    public int getPositionNumber(){
-        return robotPositionNumber;
+
+    OpenCvWebcam webcam;
+
+    int[] dimensions = new int[] { 640, 360 };
+
+    TeamPropMask teamPropMask;
+
+    DefaultMask defaultMask = new DefaultMask();
+    boolean isUsingDefault;
+
+    ButtonToggle xToggle;
+    ButtonToggle yToggle;
+
+    CameraEnums.SpikeMarkPositions spikeMarkPositions;
+
+
+    public CameraEnums.CameraModes getColor(){
+        return CameraEnums.CameraModes.RED;//by automatic
     }
+
     @Override
     public void init()
     {
+        teamPropMask = new TeamPropMask(dimensions[0], dimensions[1], telemetry);
+        telemetry.setAutoClear(false);
+        xToggle = new ButtonToggle();
+        yToggle = new ButtonToggle();
+
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        webcam.setPipeline(teamPropMask);
+
+
+        spikeMarkPositions = teamPropMask.getPosition();
+
+
+        robotPositionNumber = getRobotPositionNumber();
+
+        //get the pose that the team prop is on
+        Pose poseLine = Coordinates.getSpikeMark(getColor(),spikeMarkPositions);
+
+        telemetry.addLine("Pose" + poseLine);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(dimensions[0], dimensions[1], OpenCvCameraRotation.UPRIGHT);
+                // telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("Error " + errorCode, "error accessing camera stream");
+                //   telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+            }
+        });
+
+
 
         timer = new Timer();
         odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
@@ -67,15 +135,14 @@ public class Auto extends OpMode {
 
         //get the team prop and robot position
         // teamPropPosition  = simpleProcessor.processFrame(frame, 0); //implement a frame: we need to use the camera
-        robotPositionNumber = getRobotPositionNumber();
 
-        //get the vector that the team prop is on
-        teamPropLocation = simpleProcessor.getVector(teamPropPosition, getPositionNumber());
         targetStates = setTargetStates();
     }
     public double[][] setTargetStates(){
         return targetStates;
     }
+
+
 
     @Override
     public void loop()
@@ -127,5 +194,7 @@ public class Auto extends OpMode {
     }
 
 
-
+    public int getPositionNumber(){
+        return 0;
+    };
 }
