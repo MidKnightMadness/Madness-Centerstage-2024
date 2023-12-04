@@ -98,8 +98,8 @@ public abstract class Auto extends OpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
 
-
-        spikeMarkPositions = teamPropMask.getPosition();
+//
+//        spikeMarkPositions = teamPropMask.getPosition();
 
 
         robotPositionNumber = getRobotPositionNumber();

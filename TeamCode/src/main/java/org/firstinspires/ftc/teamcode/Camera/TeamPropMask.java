@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Camera;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Utility.Pose;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -11,8 +12,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.SpikeMarkPositions;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.CameraModes;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class TeamPropMask extends OpenCvPipeline {
     Mat hsvMat = new Mat();
@@ -21,7 +23,7 @@ public class TeamPropMask extends OpenCvPipeline {
     CameraModes mode = CameraModes.RED;
     SpikeMarkPositions position = SpikeMarkPositions.LEFT;
 
-    public SpikeMarkPositions getPosition() {
+    SpikeMarkPositions getPosition() {
         return position;
     }
 
@@ -32,7 +34,7 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
     // blue color bounds
-    Scalar blueLower = new Scalar(100, 100, 100);
+    Scalar blueLower = new Scalar(90, 100, 100);
     Scalar blueUpper = new Scalar(140, 255, 255);
 
     // red color bounds
@@ -46,14 +48,42 @@ public class TeamPropMask extends OpenCvPipeline {
 //    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
 //    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
 
-    Rect leftRect = new Rect(90, 150, 95, 70);
-    Rect rightRect = new Rect(300, 135, 70, 55);
-    Rect centerRect = new Rect(495, 130, 95, 75);
+    Rect leftRect = new Rect(90, 150, 95, 75);
+    Rect rightRect = new Rect(495, 130, 95, 75);
+    Rect centerRect = new Rect(300, 135, 95, 75);
 
+    Map<SpikeMarkPositions, Pose> spikeMarkScoringOffsets = new HashMap<SpikeMarkPositions, Pose>() {{
+        put(SpikeMarkPositions.LEFT, new Pose(10, 10, Math.PI/2));
+    }};
 
-    //position of robot: {36,6.75}
+//    red {
+//        left: vector2
+//        center: vector2
+//        right: vector2
+//    }
+//
+//    blue {
+//        left: vector2
+//        center: vector2
+//        right: vector2
+//    }
+    public double[][] coordinates = {
+            {1,0,24,42},
+            {1,1,36,48},
+            {1,2,48,42},
 
+            {2,0,72,42},
+            {2,1,84,48},
+            {2,2,96,42},
 
+            {3,0,24,102},
+            {3,1,36,96},
+            {3,2,48,102},
+
+            {4,0,72,102},
+            {4,1,84,96},
+            {4,2,96,102}
+    };
 
     public TeamPropMask(int width, int height, Telemetry telemetry) {
         this.width = width;
@@ -71,7 +101,7 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
 
-    void setMode(CameraModes mode) {
+    public void setMode(CameraModes mode) {
         this.mode = mode;
     }
 
@@ -123,14 +153,17 @@ public class TeamPropMask extends OpenCvPipeline {
         if (left > right && left > center) {
             leftColor = detectedRectColor;
             position = SpikeMarkPositions.LEFT;
+            teamPropPosition = 0;
         }
         else if (right > left && right > center) {
             rightColor = detectedRectColor;
             position = SpikeMarkPositions.RIGHT;
+            teamPropPosition = 1;
         }
         else {
             centerColor = detectedRectColor;
             position = SpikeMarkPositions.CENTER;
+            teamPropPosition = 2;
         }
 
         telemetry.clear();
@@ -150,5 +183,25 @@ public class TeamPropMask extends OpenCvPipeline {
         return teamPropPosition;
     }
 
+    public SpikeMarkPositions getSpikeMarkPosition() {
+        return position;
+    }
 
+    public Vector2 getCoordinates(int teamPropPosition, int robotPosition) {
+        for(int i = 0;i<coordinates.length;i+=3){
+            if(robotPosition==i){
+
+                for(int j =0;j<3;j++){
+                    if(coordinates[i+j][1]==teamPropPosition){
+
+                        return new Vector2(coordinates[i+j][3],coordinates[i+j][4]);
+
+                    }
+                }
+            }
+
+        }
+
+        return null;
+    }
 }
