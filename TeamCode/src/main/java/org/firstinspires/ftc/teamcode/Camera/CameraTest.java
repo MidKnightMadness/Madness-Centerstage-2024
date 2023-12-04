@@ -49,7 +49,7 @@ public class CameraTest extends OpMode {
 
         spikeMarkPositions = teamPropMask.getPosition();
 
-        telemetry.addLine("Vector" + Coordinates.getSpikeMark(CameraModes.RED, spikeMarkPositions));
+        telemetry.addLine("Pose" + Coordinates.getSpikeMark(CameraModes.RED, spikeMarkPositions));
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
