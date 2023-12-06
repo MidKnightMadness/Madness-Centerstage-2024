@@ -10,7 +10,7 @@ public class TestIntake extends OpMode {
 
     @Override
     public void init() {
-
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
     }
 
     @Override
