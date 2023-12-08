@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Testing.Benchmarks;
 import android.os.Environment;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 @TeleOp(name = "Robot Camera Benchmark", group = "Benchmark")
+@Disabled
 public class RobotCameraBenchmark extends OpMode {
     AverageBuffer timeBuffer;
     BufferedWriter bufferedWriter;

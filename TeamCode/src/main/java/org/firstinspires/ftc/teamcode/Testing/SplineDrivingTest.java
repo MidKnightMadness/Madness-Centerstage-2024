@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 @TeleOp(group= "Test", name = "Spline driving test")
+@Disabled
 public class SplineDrivingTest extends OpMode {
     // HARDWARE ====================================================================================
     MecanumDrive mecanumDrive;

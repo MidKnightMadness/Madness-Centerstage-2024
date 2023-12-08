@@ -5,13 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
 @TeleOp
-public class LinearSlideCalibration extends OpMode {
+public class LinearSlideEncoderCalibration extends OpMode {
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
     public Servo ElbowJoint;
@@ -45,23 +44,22 @@ public class LinearSlideCalibration extends OpMode {
     }
 
     public void loop() {
-//        if (dPadUp.update(this.gamepad1.y)) {
-//            targetPos += 500;
-//        }
-//        if (dPadDown.update(this.gamepad1.a)) {
-//            targetPos -= 500;
-//        }
-//
+        if (dPadUp.update(this.gamepad1.y)) {
+            targetPos += 250;
+        }
+        if (dPadDown.update(this.gamepad1.a)) {
+            targetPos -= 250;
+        }
+
         motorLeft.setPower(this.gamepad1.left_stick_y * 0.5);
         motorRight.setPower(this.gamepad1.right_stick_x * 0.5);
 
         if (this.gamepad1.right_bumper) {
             resetEncoders();
         }
-//
-//
-//        motorLeft.setTargetPosition(targetPos);
-//        motorRight.setTargetPosition(targetPos);
+
+        motorLeft.setTargetPosition(targetPos);
+        motorRight.setTargetPosition(targetPos);
 
 
         telemetry.addData("Target pos", targetPos);
