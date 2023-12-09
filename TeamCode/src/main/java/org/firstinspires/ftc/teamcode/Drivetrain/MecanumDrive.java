@@ -124,11 +124,6 @@ public class MecanumDrive {
         telemetry.addData("BL", motorInputs [2]);
         telemetry.addData("BR", motorInputs [3]);
 
-        telemetry.addData("FL spin", FL.getVelocity());
-        telemetry.addData("FR spin", FR.getVelocity());
-        telemetry.addData("BL spin", BL.getVelocity());
-        telemetry.addData("BR spin", BR.getVelocity());
-
         setMotorPowers();
     }
 

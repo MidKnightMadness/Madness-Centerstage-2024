@@ -14,12 +14,12 @@ public class SingleServoTest extends OpMode{
     double targetTicks = 0.50; // Set to start in middle of range
 
     // Launcher
-    double [] bounds = {0.65, 0.925}; // locked, open
+//    double [] bounds = {0.65, 0.925}; // locked, open
 
     // Box Servos
 //    double [] bounds = {0.8615, 0.578}; // right, left
     // Right Side
-//    double [] bounds = {0.25, 1.0d}; // outboard, inboard
+    double [] bounds = {0.25, 1.0d}; // outboard, inboard
     // Left Side
 //    double [] bounds = {0.85, 0.1}; // outboard, inboard
 
@@ -34,7 +34,7 @@ public class SingleServoTest extends OpMode{
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "servo");
+        servo = hardwareMap.get(Servo.class, "Right wrist servo");
         controller = servo.getController();
     }
 
@@ -48,23 +48,13 @@ public class SingleServoTest extends OpMode{
 
         if(gamepad1.dpad_up && !gamepad1.dpad_down){
             if(servo.getPosition() > 0.0 && servo.getPosition() < 1.0){
-                centerTicks += 0.0005;
+                targetTicks += 0.0005;
             }
         }else if(!gamepad1.dpad_up && gamepad1.dpad_down){
             if(servo.getPosition() > 0.0 && servo.getPosition() < 1.0){
-                centerTicks -= 0.0005;
+                targetTicks  -= 0.0005;
             }
         }
 
-        if(gamepad1.y){
-//            targetTicks = bounds [0];
-            controller.pwmDisable();
-        }else {
-            controller.pwmEnable();
-            targetTicks = bounds[1];
-        }
-//        }else{
-//            targetTicks = centerTicks;
-//        }
     }
 }

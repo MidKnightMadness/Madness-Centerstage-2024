@@ -48,9 +48,9 @@ public class TeamPropMask extends OpenCvPipeline {
 //    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
 //    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
 
-    Rect leftRect = new Rect(90, 150, 95, 75);
-    Rect rightRect = new Rect(495, 130, 95, 75);
-    Rect centerRect = new Rect(300, 135, 95, 75);
+    Rect leftRect = new Rect(90, 200, 95, 75);
+    Rect rightRect = new Rect(495, 180, 95, 75);
+    Rect centerRect = new Rect(300, 185, 95, 75);
 
     Map<SpikeMarkPositions, Pose> spikeMarkScoringOffsets = new HashMap<SpikeMarkPositions, Pose>() {{
         put(SpikeMarkPositions.LEFT, new Pose(10, 10, Math.PI/2));

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -39,6 +40,8 @@ public class AutoDeadReckoning extends OpMode {
 
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
 
+    Servo intakeRightServo;
+
     Timer timer;
 
     ButtonToggle a, b, x, y;
@@ -46,9 +49,12 @@ public class AutoDeadReckoning extends OpMode {
     IMU imu;
     TeamPropMask teamPropMask;
 
-    double [] RPMs = {390.0, 186.8, 389.2, 186.7};
+    double [] RPMs = {410.1,
+            212.6,
+            393.8,
+            206.7};
     double min = RPMs[3];
-    double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2], min / RPMs[3]};
+    double[] RPMMultipliers = { min / RPMs[0] * 1.18, min / RPMs[1] * 5/16 , min / RPMs[2] *1.18, min / RPMs[3]};
 
     @Override
     public void init() {
@@ -61,8 +67,10 @@ public class AutoDeadReckoning extends OpMode {
 
         teamPropMask = new TeamPropMask(640, 360, telemetry);
         teamPropMask.setMode(cameraMode);
+        intakeRightServo = hardwareMap.get(Servo.class, "Right intake servo");
+        intakeRightServo.setPosition(0.1);
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
@@ -84,13 +92,10 @@ public class AutoDeadReckoning extends OpMode {
     }
 
     void init_IMU() {
-        RevHubOrientationOnRobot.LogoFacingDirection[] logoFacingDirections
-                = RevHubOrientationOnRobot.LogoFacingDirection.values();
-        RevHubOrientationOnRobot.UsbFacingDirection[] usbFacingDirections
-                = RevHubOrientationOnRobot.UsbFacingDirection.values();
 
-        RevHubOrientationOnRobot.LogoFacingDirection logo = logoFacingDirections[0];  // logo facing up
-        RevHubOrientationOnRobot.UsbFacingDirection usb = usbFacingDirections[2];   // usb facing forward
+        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
+        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
+
         imu = hardwareMap.get(IMU.class, "imu");
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
@@ -137,26 +142,26 @@ public class AutoDeadReckoning extends OpMode {
 
 //
 //
-        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
-            int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
-            moveForwardDistance(24);
-            setTargetRotation(spikeMarkDirection * Math.PI / 2);
-            moveForwardDistance(5);
-            sleep(1000);
-            moveForwardDistance(-5);
-            setTargetRotation(0);
-            moveForwardDistance(-24);
-        }
-        else {
-            moveForwardDistance(33);
-            sleep(1000);
-            moveForwardDistance(-33);
-        }
-
-        // park
-        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
-        setTargetRotation(parkingDirection * Math.PI / 2);
-        moveForwardDistance(getInchesToPark());
+//        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
+//            int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
+//            moveForwardDistance(24);
+//            setTargetRotation(spikeMarkDirection * Math.PI / 2);
+//            moveForwardDistance(5);
+//            sleep(1000);
+//            moveForwardDistance(-5);
+//            setTargetRotation(0);
+//            moveForwardDistance(-24);
+//        }
+//        else {
+//            moveForwardDistance(33);
+//            sleep(1000);
+//            moveForwardDistance(-33);
+//        }
+//
+//        // park
+//        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
+//        setTargetRotation(parkingDirection * Math.PI / 2);
+//        moveForwardDistance(getInchesToPark());
 
 
     }
@@ -190,6 +195,8 @@ public class AutoDeadReckoning extends OpMode {
 
         telemetry.clear();
         telemetry.addData("Forward distance traveled", forwardDisplacement);
+        telemetry.addData("Left ticks", lastTicks[0]);
+        telemetry.addData("Right ticks", lastTicks[1]);
         updateForwardDisplacement();
 
 //        telemetryMotorVelocities();
@@ -209,7 +216,8 @@ public class AutoDeadReckoning extends OpMode {
         lastTicks[1] = rightPos;
 
         // left encoder is reversed
-        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
+//        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
+        forwardDisplacement += -deltaLeftTicks * IN_PER_TICK;
     }
 
     void resetEncoders() {
@@ -280,8 +288,8 @@ public class AutoDeadReckoning extends OpMode {
     }
 
     void setTargetRotation(double targetRotation) {
-        double maxPower = 1;
-        double minPower = 0.07;
+        double maxPower = 0.5;
+        double minPower = 0.1;
 
         double percentToStop = 0.995;
 
@@ -292,43 +300,41 @@ public class AutoDeadReckoning extends OpMode {
         double startingYaw = orientation.getYaw(AngleUnit.RADIANS);
 
         double rotation = targetRotation - startingYaw;
-
         double targetYawRadians = startingYaw + rotation;
 
         double error = rotation;
         if (rotation - startingYaw < 0.3) {
-            maxPower = 0.15;
+            maxPower = 0.2;
         }
 
-        if (rotation == 0) return;
         double direction = rotation / Math.abs(rotation);
 
         while (Math.abs(error) > Math.abs((1 - percentToStop) * rotation)) {
             // hard cap
-            if (currentTime - startTime > 5) {
-                break;
-            }
+//            if (currentTime - startTime > 5) {
+//                break;
+//            }
 
             // power proportional to error between min and max power
             error = targetYawRadians - orientation.getYaw(AngleUnit.RADIANS);
             telemetry.clear();
-            telemetry.addData("current rot", orientation.getYaw(AngleUnit.RADIANS)  * 180d / Math.PI);
-            telemetry.addData("target rot", targetYawRadians * 180d / Math.PI);
-            telemetry.addData("error", error * 180 / Math.PI);
+
             telemetry.update();
 
             double proportionalPower = (error / rotation) * (maxPower - minPower) + minPower;
+            telemetry.addData("current rot", orientation.getYaw(AngleUnit.RADIANS)  * 180d / Math.PI);
+            telemetry.addData("target rot", targetYawRadians * 180d / Math.PI);
+            telemetry.addData("error", error * 180 / Math.PI);
+            telemetry.addData("proportional power", proportionalPower);
 
             if (proportionalPower > maxPower) proportionalPower = maxPower;
             setPowers(-proportionalPower * direction, proportionalPower * direction,
                     -proportionalPower * direction, proportionalPower * direction);
             orientation = imu.getRobotYawPitchRollAngles();
             currentTime = timer.updateTime();
-
-        };
+        }
 
         setPowers(0, 0, 0, 0);
-
     }
 
     @Deprecated
@@ -338,28 +344,31 @@ public class AutoDeadReckoning extends OpMode {
     }
 
     void moveForwardDistance(double distance) {
-        double maxPower = 1;
-        double minPower = 0.1;
+        moveForwardDistanceByTime(distance);
 
-        double startTime = timer.updateTime();
-        double currentTime = startTime;
-
-        // -1 or 1
-        double direction = distance / Math.abs(distance);
-
-        while (forwardDisplacement < distance - 0.2) {
-            // hard cap
-            if (currentTime - startTime > 5) {
-                break;
-            }
-            updateForwardDisplacement();
-
-            double error = distance - forwardDisplacement;
-            double power = minPower + (maxPower - minPower) * (error / distance);
-            setMotorPowersSmoothed(power * direction, power * direction, power * direction, power * direction);
-        }
-
-        forwardDisplacement = 0;
+//        double maxPower = 1;
+//        double minPower = 0.1;
+//        forwardDisplacement = 0;
+//
+//        double startTime = timer.updateTime();
+//        double currentTime = startTime;
+//
+//        // -1 or 1
+//        double direction = distance / Math.abs(distance);
+//
+//        while (forwardDisplacement < distance - 0.2) {
+//            // hard cap
+//            if (currentTime - startTime > 5) {
+//                break;
+//            }
+//            updateForwardDisplacement();
+//
+//            double error = distance - forwardDisplacement;
+//            double power = minPower + (maxPower - minPower) * (error / distance);
+//            setMotorPowersSmoothed(power * direction, power * direction, power * direction, power * direction);
+//        }
+//
+//        forwardDisplacement = 0;
     }
 
 

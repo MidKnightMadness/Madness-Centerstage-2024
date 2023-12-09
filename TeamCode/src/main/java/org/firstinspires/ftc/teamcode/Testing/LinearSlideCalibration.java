@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 public class LinearSlideCalibration extends OpMode {
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
-//    public Servo ElbowJoint;
-//    public Servo WristJoint;
+    public Servo ElbowJoint;
+    public Servo WristJoint;
 
     ButtonToggle dPadUp;
     ButtonToggle dPadDown;
@@ -31,8 +31,9 @@ public class LinearSlideCalibration extends OpMode {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //        ElbowJoint = hardwareMap.get(Servo.class, "");
 
@@ -44,13 +45,25 @@ public class LinearSlideCalibration extends OpMode {
     }
 
     public void loop() {
-        // Reset
-        if(gamepad1.x){
+//        if (dPadUp.update(this.gamepad1.y)) {
+//            targetPos += 500;
+//        }
+//        if (dPadDown.update(this.gamepad1.a)) {
+//            targetPos -= 500;
+//        }
+//
+        motorLeft.setPower(this.gamepad1.left_stick_y * 0.1 + this.gamepad1.right_stick_y * 0.5);
+        motorRight.setPower(this.gamepad1.left_stick_y * 0.1 + this.gamepad1.right_stick_y * 0.5);
+
+
+        if (this.gamepad1.right_bumper) {
             resetEncoders();
         }
+//
+//
+//        motorLeft.setTargetPosition(targetPos);
+//        motorRight.setTargetPosition(targetPos);
 
-        motorLeft.setPower(this.gamepad1.left_stick_y * 0.3);
-        motorRight.setPower(this.gamepad1.right_stick_y * 0.3);
 
         telemetry.addData("Target pos", targetPos);
         telemetry.addData("Left motor Power", motorLeft.getPower());
@@ -67,5 +80,10 @@ public class LinearSlideCalibration extends OpMode {
 
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+
+    public void setExtension(double percent) {
+
     }
 }

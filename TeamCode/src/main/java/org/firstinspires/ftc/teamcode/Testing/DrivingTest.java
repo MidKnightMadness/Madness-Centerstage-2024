@@ -28,30 +28,28 @@ public class DrivingTest extends OpMode {
 
     }
 
-
-
     @Override
     public void loop() {
-        if (gamepad1.x) {
-            leftServo.setPosition(0);
-        }
+//        if (gamepad1.x) {
+//            leftServo.setPosition(0);
+//        }
+//
+//        if (gamepad1.y) {
+//            leftServo.setPosition(1);
+//        }
+//
+//        if (gamepad1.a) {
+//            rightServo.setPosition(0);
+//        }
+//        if (gamepad1.b) {
+//            rightServo.setPosition(1);
+//        }
 
-        if (gamepad1.y) {
-            leftServo.setPosition(1);
-        }
-
-        if (gamepad1.a) {
-            rightServo.setPosition(0);
-        }
-        if (gamepad1.b) {
-            rightServo.setPosition(1);
-        }
-
-        telemetry.addData("Y: ", "Left servo 1");
-        telemetry.addData("X: ", "Left servo 0");
-        telemetry.addData("B: ", "Right servo 1");
-        telemetry.addData("A: ", "Right servo 0");
-
+//        telemetry.addData("Y: ", "Left servo 1");
+//        telemetry.addData("X: ", "Left servo 0");
+//        telemetry.addData("B: ", "Right servo 1");
+//        telemetry.addData("A: ", "Right servo 0");
+//
         mecanumDrive.normalDrive(1, -gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
 

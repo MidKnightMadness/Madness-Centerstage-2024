@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -24,117 +25,119 @@ import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 
 @TeleOp(group= "[Game]", name = "Driver Controlled TeleOp")
 public class Main extends OpMode {
-
-    public ColorSensorWrapper colorSensorWrapper;
-    public PixelDetector pixelDetector;
-//    LinearSlides slides;
     MecanumDrive mecanumDrive;
+
+    DcMotor intakeMotor;
     OuttakeBox OuttakeServo;
-    ColorSensor colorSensorOutake;
 
-    ColorSensor colorSensorChasis;
+    ButtonToggle buttonToggleA, g1RightBump;
 
-    ButtonToggle buttonToggleA;
+    public DcMotorEx motorRight;
+    public DcMotorEx motorLeft;
 
-    Servo servoBox;
-    Servo armIntake;
+    Servo rightIntakeServo;
+    Servo leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
+
+
+    ButtonToggle g2Y, g2A, g2LeftBump;
+
     DcMotorEx IntakeMotor;
 
+    double[] rightIntakeServoPositions = {0.3075, 0.2425, 0.2223, 0.1605, 0.126};
+    double[] leftIntakeServoPositions = {0.8375, 0.89, 0.893, 0.939, 0.9575};
 
-    public int numberOfTimesATrue = 0;
+    double wristVertical = 0.623;
+    double wristDown = 0.388;
 
-    public boolean down;
-    public boolean up;
-
-    //just using driver controlled
     @Override
     public void init() {
-//        slides = new LinearSlides(hardwareMap);
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-//        IntakeMotor = hardwareMap.get(DcMotorEx.class, "intake motor");
-////        OuttakeServo= new OuttakeBox(hardwareMap, "Outtake Servo");
-//        //initiate servo intake motor
-////         IntakeMotor = hardwareMap.get(DcMotorEx.class, "servoIntake");
-//         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//         IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//
-//        //initialization of color sensors
-//          colorSensorOutake = hardwareMap.get(ColorSensor.class, "colorSensorOutake");
-//          colorSensorChasis = hardwareMap.get(ColorSensor.class, "colorSensorChasis");
-//
-//
-//          servoBox = hardwareMap.get(Servo.class, "servoBox");
-//          armIntake = hardwareMap.get(Servo.class,"armIntakeServo");
+        intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
 
-//       //initialization of wrappers
-//        colorSensorWrapper = new ColorSensorWrapper(colorSensorOutake);
-//        pixelDetector = new PixelDetector();
-//
-//        //initialize the button togglers
+        rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
+
+        g2Y = new ButtonToggle();
+        g2A = new ButtonToggle();
+        g2LeftBump = new ButtonToggle();
+        buttonToggleA = new ButtonToggle();
+        g1RightBump = new ButtonToggle();
+
+        rightIntakeServo = hardwareMap.get(Servo.class, "Right intake servo");
+        leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
+        rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
+
+        boxServo = hardwareMap.get(Servo.class, "Center box servo");
+
+        motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
+        motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
         buttonToggleA = new ButtonToggle();
 
+        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addLine("Initialized");
     }
 
-    // Uses gamepad1
+    double power = 1;
     public void handleDriverControls() {
-        mecanumDrive.normalDrive(1, gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
-
-//        if(gamepad1.left_bumper && !gamepad1.right_bumper){ // Run forwards
-//            telemetry.addLine("intake running forwards");
-//            IntakeMotor.setPower(1.0);
-//        }else if(gamepad1.right_bumper && !gamepad1.left_bumper){
-//            telemetry.addLine("intake running in reverse");
-//            IntakeMotor.setPower(-1.0);
-//        }else{
-//            telemetry.addLine("intake not running");
-//            IntakeMotor.setPower(0.0);
-//        }
+        if (g1RightBump.update(gamepad1.right_bumper)) {
+            if (power == 1) {
+                power = 0.25;
+            }
+            else {
+                power = 1;
+            }
+        }
+        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
     }
 
-    // Uses gamepad2
-    boolean isIntakeRunning = false;
+    int currentIntakeServoIndex = 0;
 
-    //0.25 is starting position of servo
-    boolean outakeBoxLeft = false;
-    boolean outakeBoxRight = false;
-    //float previouslinearSlidesHeight = 0F;//or whatever value linear slides start at
-
-    //float currentLinearSlidesHeight = 0F;//current linear slides height
+    double wristPos = wristDown;
     public void handleManipulatorControls() {
-//        slides.extendWithPower(-gamepad2.right_stick_y);
-        //set for gamepad 2, checking to see if gamepad had any changes
 
-        //linear slides -> left stick y     -> separate class
-        //intake -> servo -> d pad down and up -> height
-        //button two to start roller intake             -> done
-        //button x and b for outake box left and right  -> done
-
-        //button a to run intake running to get pixels
-      /*  if (gamepad2.x){
-        OuttakeServo.outtakePixelLeft();}
-        else if (gamepad2.y) {
-            OuttakeServo.outtakePixelRight();
+        if (g2LeftBump.update(gamepad2.left_bumper)) {
+            if (wristPos == wristDown) {
+                wristPos = wristVertical;
+            }
+            else {
+                wristPos = wristDown;
+            }
         }
-        else{
-            OuttakeServo.outtakePixelMiddle();
-        }*/
+        if (g2Y.update(gamepad2.y)) {
+            if (currentIntakeServoIndex < rightIntakeServoPositions.length - 1) {
+                currentIntakeServoIndex++;
+            }
+        }
 
-        /*if (isIntakeRunning) {
-            telemetry.addLine("intake running forwards");
-            IntakeMotor.setPower(1.0);
+        if (g2A.update(gamepad2.a)) {
+            if (currentIntakeServoIndex > 0) {
+                currentIntakeServoIndex--;
+            }
+        }
+
+        if (this.gamepad2.right_bumper) {
+            boxServo.setPosition(1);
         }
         else {
-            telemetry.addLine("intake running in reverse");
-            IntakeMotor.setPower(-1.0);
+            boxServo.setPosition(0.69);
         }
 
-        if (buttonToggleA.update(gamepad1.a)) {
-            isIntakeRunning = !isIntakeRunning;
-        }
-*/
+        rightWristServo.setPosition(wristPos);
 
+
+
+        telemetry.addData("Intake servo pos index", currentIntakeServoIndex);
+        telemetry.addData("Right intake servo", rightIntakeServo.getPosition());
+        telemetry.addData("Left intake servo", leftIntakeServo.getPosition());
+
+        rightIntakeServo.setPosition(rightIntakeServoPositions[currentIntakeServoIndex]);
+        intakeMotor.setPower(gamepad2.left_stick_y);
+        motorLeft.setPower(this.gamepad2.right_stick_y * -0.5);
+        motorRight.setPower(this.gamepad2.right_stick_y * -0.5);
     }
 
     @Override
@@ -142,9 +145,5 @@ public class Main extends OpMode {
         handleDriverControls();
         handleManipulatorControls();
     }
-
-
-
-
 }
 
