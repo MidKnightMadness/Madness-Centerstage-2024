@@ -31,8 +31,8 @@ public class LinearSlideCalibration extends OpMode {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 //        ElbowJoint = hardwareMap.get(Servo.class, "");
 
@@ -44,20 +44,13 @@ public class LinearSlideCalibration extends OpMode {
     }
 
     public void loop() {
-//        if (dPadUp.update(this.gamepad1.y)) {
-//            targetPos += 500;
-//        }
-//        if (dPadDown.update(this.gamepad1.a)) {
-//            targetPos -= 500;
-//        }
-//
+        // Reset
+        if(gamepad1.x){
+            resetEncoders();
+        }
+
         motorLeft.setPower(this.gamepad1.left_stick_y * 0.3);
         motorRight.setPower(this.gamepad1.right_stick_y * 0.3);
-//
-//
-//        motorLeft.setTargetPosition(targetPos);
-//        motorRight.setTargetPosition(targetPos);
-
 
         telemetry.addData("Target pos", targetPos);
         telemetry.addData("Left motor Power", motorLeft.getPower());
@@ -74,10 +67,5 @@ public class LinearSlideCalibration extends OpMode {
 
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-
-    public void setExtension(double percent) {
-
     }
 }
