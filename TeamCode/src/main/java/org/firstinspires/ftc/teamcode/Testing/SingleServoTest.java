@@ -12,11 +12,21 @@ public class SingleServoTest extends OpMode{
     Servo servo;
     ServoController controller;
     double targetTicks = 0.50; // Set to start in middle of range
+
     // Launcher
     double [] bounds = {0.65, 0.925}; // locked, open
-    //Box Servos
+
+    // Box Servos
 //    double [] bounds = {0.8615, 0.578}; // right, left
+    // Right Side
 //    double [] bounds = {0.25, 1.0d}; // outboard, inboard
+    // Left Side
+//    double [] bounds = {0.85, 0.1}; // outboard, inboard
+
+    // Outtake elbow servos
+    // Right Side
+//    double [] bounds = {0.85, 0.1}; // outboard, inboard
+    // Left Side
 //    double [] bounds = {0.85, 0.1}; // outboard, inboard
 
     // Box Servo
