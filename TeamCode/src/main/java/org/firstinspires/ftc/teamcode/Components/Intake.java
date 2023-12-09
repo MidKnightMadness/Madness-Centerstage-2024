@@ -1,55 +1,61 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Intake {
-    // Units are millimeters
-    // Drawing:
-    // https://docs.google.com/drawings/d/1y0ESeoueBK8GQwIP18MR_x3pGB41Nf1QV6QQpi0wvFI/edit
+public class Intake{
+    DcMotorEx rollerMotor;
+    Servo leftServo;
+    Servo rightServo;
 
-    final double LENGTH_TO_SERVO_WHEEL = 216.88;
-    final double HEIGHT_SERVO = 108.717;
+    // CalculationVariables
+    double [] leftServoPresets = {0.8375, 0.89, 0.893, 0.939, 0.9575};
+    double [] rightServoPresets = {0.3075, 0.2425, 0.2223, 0.1605, 0.126};
 
-    final double WHEEL_RADIUS = 25.4;
+    public Intake(HardwareMap hardwareMap){
+        rollerMotor = hardwareMap.get(DcMotorEx.class, "roller motor");
+        leftServo = hardwareMap.get(Servo.class, "left intake servo");
+        rightServo = hardwareMap.get(Servo.class, "right intake servo");
 
-    public DcMotor motor;
-    public Servo servo;
-
-    public Intake(HardwareMap hardwareMap) {
-        motor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        servo = hardwareMap.get(Servo.class, "servo");
-    }
-    public void setMotorPower(double power) {
-        motor.setPower(power);
-
+        rollerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rollerMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rollerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rollerMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
-    double getIntakeHeight(double servoAngle) {
-        return HEIGHT_SERVO - WHEEL_RADIUS - LENGTH_TO_SERVO_WHEEL * Math.cos(servoAngle);
+    public void idle(){
+        leftServo.setPosition(leftServoPresets [4]);
+        rightServo.setPosition(rightServoPresets [4]);
+
+        this.setMotorPower(0.0);
     }
 
+    public void down(){
+        this.setMotorPower(1.0);
 
-    void setIntakeHeight(double targetHeight, double servoPosition) {
-        double servoAngle = servoPosToAngle(servoPosition);
-        double currentHeight = getIntakeHeight(servoAngle);
-        double heightDifference = targetHeight - currentHeight;
-        double angleDifference = Math.acos(heightDifference / LENGTH_TO_SERVO_WHEEL);
+        leftServo.setPosition(leftServoPresets [0]);
+        rightServo.setPosition(rightServoPresets [0]);
     }
 
-    final int MAX_SERVO_BOUND = 1;
-    final int MIN_SERVO_BOUND = 0;
-    final int SERVO_RANGE = MAX_SERVO_BOUND - MIN_SERVO_BOUND;
+    public void spitPixel(){
+        leftServo.setPosition(leftServoPresets [0]);
+        rightServo.setPosition(rightServoPresets [0]);
 
-    final double rotationRange = Math.PI / 2;
-
-    double angleToServoPos(double servoPos) {
-        return (MAX_SERVO_BOUND - servoPos) / SERVO_RANGE * rotationRange;
+        this.setMotorPower(-0.5); // Subject to change
     }
 
-    double servoPosToAngle(double angle) {
-        return (rotationRange - angle) / rotationRange;
+    public void intakeFromStackOf(int stackSize){
+        this.setMotorPower(1.0);
+
+        leftServo.setPosition(leftServoPresets [stackSize - 1]);
+        rightServo.setPosition(rightServoPresets [stackSize - 1]);
     }
 
+    public double setMotorPower(double power){
+        rollerMotor.setPower(power);
+        return power;
+    }
 }

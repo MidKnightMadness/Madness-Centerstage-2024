@@ -45,16 +45,16 @@ public class AprilTagLocalizerTwo extends Localizer {
     public ArrayList<Double> rangeCoefficients;
 
     public final double[][] APRIL_TAG_COORDS = { // hardcoded
-            {135, 114.75},//id 1
-            {135, 108.75},//id 2
-            {135, 102.75},//id 3
-            {135, 41.25},//id 4
-            {135, 35.25},//id 5
-            {135, 29.25},//id 6
-            {0.0, 114},//id 7 not necesarilky accurate yet
-            {0.0, 108},//id 8 not necesarilky accurate yet
-            {0.0, 36},//id 9 not necesarilky accurate yet
-            {0.0, 30}//id 10 not necesarilky accurate y
+            {135d, 115d},//id 1
+            {135d, 109d},//id 2
+            {135d, 103d},//id 3
+            {135d, 41d},//id 4
+            {135d, 35d},//id 5
+            {135d, 29d},//id 6
+            {0d, 114d},//id 7 not necesarilky accurate yet
+            {0d, 108d},//id 8 not necesarilky accurate yet
+            {0d, 36d},//id 9 not necesarilky accurate yet
+            {0d, 30d}//id 10 not necesarilky accurate y
     };
     public double calculationsDouble = 0.0; // Used as intermediate
     double yAfterErrorChange = 0;
@@ -103,18 +103,20 @@ public class AprilTagLocalizerTwo extends Localizer {
         calculationsVector [0] = 0.0;
         calculationsVector [1] = 0.0;
         calculationsDouble = 0.0;
-        double averageRange = 0.0;
-
-        // Get range coefficients normalizing factor
-        for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                calculationsDouble += 1 / (detection.ftcPose.range * detection.ftcPose.range); // Add up coefficients, divide everything by sum to normalize
-                averageRange += detection.ftcPose.range;
-            }
-        }
-        averageRange /= currentDetections.size();
 
         if(currentDetections.size() != 0 && (currentDetections.get(0).id < 7)) { // IDs from 1 to 6
+            telemetry.addData("Detections", currentDetections.size());
+            double averageRange = 0.0;
+
+            // Get range coefficients normalizing factor
+            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null) {
+                    calculationsDouble += 1 / (detection.ftcPose.range * detection.ftcPose.range); // Add up coefficients, divide everything by sum to normalize
+                    averageRange += detection.ftcPose.range;
+                }
+            }
+            averageRange /= currentDetections.size();
+
             // Step through the list of detections and combine coordinates from each one
             for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
                 if (detection.metadata != null) {
@@ -127,15 +129,30 @@ public class AprilTagLocalizerTwo extends Localizer {
                     calculationsVector[1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
                             - APRIL_TAG_COORDS[detection.id - 1][1];
 
-                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
-                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+//                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+//                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+
+                    calculationsVector [0] /= currentDetections.size();
+                    calculationsVector [1] /= currentDetections.size();
+                    // For average
                 }
             }
+//
+//            calculationsVector[0] += 0.804d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
+//            calculationsVector[1] += 2.75d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
+        }
+        else{ // IDs from 7 to 10
+            double averageRange = 0.0;
 
-            calculationsVector[0] += 0.804d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
-            calculationsVector[1] -= 2.75d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
+            // Get range coefficients normalizing factor
+            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null) {
+                    calculationsDouble += 1 / (detection.ftcPose.range * detection.ftcPose.range); // Add up coefficients, divide everything by sum to normalize
+                    averageRange += detection.ftcPose.range;
+                }
+            }
+            averageRange /= currentDetections.size();
 
-        }else{ // IDs from 7 to 10
             for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
                 if (detection.metadata != null) {
                     telemetry.addData("Detection", detection.id);
