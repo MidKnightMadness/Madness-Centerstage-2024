@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Environment;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -25,6 +26,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 @TeleOp(name = "Color Sensor Benchmark", group = "Benchmark")
+@Disabled
 public class ColorSensorBenchmark extends OpMode {
     BufferedWriter bufferedWriter;
     FileWriter fileWriter;

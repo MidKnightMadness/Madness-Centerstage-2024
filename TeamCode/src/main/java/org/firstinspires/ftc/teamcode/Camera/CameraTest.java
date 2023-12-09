@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums.CameraModes;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.SpikeMarkPositions;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.Coordinates;
 import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -31,7 +32,7 @@ public class CameraTest extends OpMode {
     ButtonToggle xToggle;
     ButtonToggle yToggle;
 
-    int teamPropPosition;
+    SpikeMarkPositions spikeMarkPositions;
     int robotPosition = 1;
     @Override
     public void init() {
@@ -45,17 +46,21 @@ public class CameraTest extends OpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
 
+
+        spikeMarkPositions = teamPropMask.getPosition();
+
+        telemetry.addLine("Vector" + Coordinates.getSpikeMark(CameraModes.RED, spikeMarkPositions));
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
                 webcam.startStreaming(dimensions[0], dimensions[1], OpenCvCameraRotation.UPRIGHT);
-                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+               // telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
 
             @Override
             public void onError(int errorCode) {
                 telemetry.addData("Error " + errorCode, "error accessing camera stream");
-                telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
+             //   telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
             }
         });
     }
@@ -86,16 +91,18 @@ public class CameraTest extends OpMode {
 
         if (yToggle.getValue()) {
             if (teamPropMask.getMode().equals("red")) {
-                teamPropMask.setMode(CameraModes.BLUE);
+                teamPropMask.setMode(CameraModes.RED);
             }
             else {
-                teamPropMask.setMode(CameraModes.RED);
+                teamPropMask.setMode(CameraModes.BLUE);
             }
         }
 
-//        telemetry.addLine("Vector" + teamPropMask.getCoordinates(teamPropPosition,robotPosition));
 
-        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
+
+//        telemetry.addData("Mode", isUsingDefault ? "Default" : teamPropMask.getMode());
+
+
     }
 
     @Override

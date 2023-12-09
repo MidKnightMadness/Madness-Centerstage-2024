@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Testing.Benchmarks;
 import android.os.Environment;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 @TeleOp(name = "Robot Chassis Sensor Benchmark", group = "Benchmark")
+@Disabled
 public class RobotChassisSensorBenchmark extends OpMode {
     AverageBuffer timeBuffer;
     BufferedWriter bufferedWriter;

@@ -2,36 +2,17 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
+
 @Autonomous
-public class RedAutoBack extends Auto {
-    double[][] targetStates = {
-            {0, 0, 0}, //insert starting coords
-        {84, 12, 0},
-    {120, 36, 0},
-    {84, 12, 0},
-    {12, 12, 0},
-    {12, 36, 0},
-    {36, 12, 0},
-    {84, 12, 0}
-
-    };
+public class RedAutoBack extends AutoDeadReckoning {
     @Override
-    public double[][] setTargetStates(){
-        return targetStates;
-    }
-    final int positionNumber = 2;
-    @Override
-    public int getDirection() {
-        return 1;
+    public double getInchesToPark() {
+        return 99;
     }
 
     @Override
-    public int getNumTilesToPark() {
-        return 4;
-    }
-
-    @Override
-    public int getPositionNumber(){
-        return positionNumber;//Position Number is 2
+    public CameraEnums.CameraModes getAllianceColor(){
+        return CameraEnums.CameraModes.RED;
     }
 }

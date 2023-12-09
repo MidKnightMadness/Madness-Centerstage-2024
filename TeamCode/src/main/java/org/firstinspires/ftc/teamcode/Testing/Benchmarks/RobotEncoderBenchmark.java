@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Testing.Benchmarks;
 
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 @TeleOp(name = "Robot Encoder Benchmark", group = "Benchmark")
+@Disabled
 public class RobotEncoderBenchmark extends OpMode {
     AverageBuffer timeBuffer;
     BufferedWriter bufferedWriter;

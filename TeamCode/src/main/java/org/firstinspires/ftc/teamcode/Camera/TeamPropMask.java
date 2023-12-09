@@ -34,7 +34,7 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
     // blue color bounds
-    Scalar blueLower = new Scalar(100, 100, 100);
+    Scalar blueLower = new Scalar(90, 100, 100);
     Scalar blueUpper = new Scalar(140, 255, 255);
 
     // red color bounds
@@ -48,9 +48,9 @@ public class TeamPropMask extends OpenCvPipeline {
 //    Rect rightRect = RectangleFactory.generateRectFromPercentages(width, height, 36, 46, 74, 70);
 //    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
 
-    Rect leftRect = new Rect(90, 150, 95, 70);
-    Rect rightRect = new Rect(300, 135, 70, 55);
-    Rect centerRect = new Rect(495, 130, 95, 75);
+    Rect leftRect = new Rect(90, 150, 95, 75);
+    Rect rightRect = new Rect(495, 130, 95, 75);
+    Rect centerRect = new Rect(300, 135, 95, 75);
 
     Map<SpikeMarkPositions, Pose> spikeMarkScoringOffsets = new HashMap<SpikeMarkPositions, Pose>() {{
         put(SpikeMarkPositions.LEFT, new Pose(10, 10, Math.PI/2));
@@ -101,7 +101,7 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
 
-    void setMode(CameraModes mode) {
+    public void setMode(CameraModes mode) {
         this.mode = mode;
     }
 
@@ -181,6 +181,10 @@ public class TeamPropMask extends OpenCvPipeline {
 
     public int getTeamPropPosition() {
         return teamPropPosition;
+    }
+
+    public SpikeMarkPositions getSpikeMarkPosition() {
+        return position;
     }
 
     public Vector2 getCoordinates(int teamPropPosition, int robotPosition) {

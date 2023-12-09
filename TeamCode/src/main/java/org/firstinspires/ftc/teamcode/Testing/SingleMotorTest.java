@@ -9,8 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "Single Motor Test")
-@Disabled
+@TeleOp(name = "Single Motor Test", group = "Testing")
 public class SingleMotorTest extends OpMode {
     public DcMotorEx testMotor;
     public double setRPM = 0.0;
@@ -18,23 +17,25 @@ public class SingleMotorTest extends OpMode {
     @Override
     public void init() {
         testMotor = hardwareMap.get(DcMotorEx.class, "Test Motor");
-        testMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        testMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         testMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         testMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
     public void loop() {
-        if(gamepad1.left_stick_y != 0){
-            setRPM += gamepad1.left_stick_y * 10;
+
+        if (this.gamepad1.x) {
+            testMotor.setPower(1);
+        }
+        if (gamepad1.y) {
+            testMotor.setPower(-1);
         }
 
-        if (gamepad1.right_trigger != 0) {
-            setRPM = 0;
+        if (gamepad1.a) {
+            testMotor.setPower(0);
         }
 
-        testMotor.setVelocity(setRPM * 30f / Math.PI, AngleUnit.RADIANS);
-        telemetry.addData("Measured RPM", testMotor.getVelocity(AngleUnit.RADIANS) * 30f / Math.PI);
-        telemetry.addData("Desired RPM: ", setRPM);
+        telemetry.addData("Power", testMotor.getPower());
     }
 }
