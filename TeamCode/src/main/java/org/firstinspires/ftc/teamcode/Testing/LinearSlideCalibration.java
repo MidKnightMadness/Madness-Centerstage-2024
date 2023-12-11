@@ -23,8 +23,13 @@ public class LinearSlideCalibration extends OpMode {
     ButtonToggle y;
     ButtonToggle a;
 
-    int[] leftBounds = {};
-    int[] rightBounds = {};
+    int [] leftBounds = {0, 0}; // Bottom, top
+    int [] rightBounds = {0, 0}; // Bottom, top
+    double inPerTickLeftSlide = 0.0;
+    double inPerTickRightSlide = 0.0;
+    double slidesDifferenceTolerance = 0.0; // Length difference between two slides tolerated
+    double extensionLength = 0.0; // Extended length, use length of right side (lead side)
+    double correctionConstant = 0.0; // Left slide follows right side, to help witn synchronization
 
     int targetPos;
     public void init() {
@@ -34,8 +39,6 @@ public class LinearSlideCalibration extends OpMode {
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-//        ElbowJoint = hardwareMap.get(Servo.class, "");
 
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
