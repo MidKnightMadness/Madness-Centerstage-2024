@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 
-@TeleOp (name = "Basic Servo Testing", group = "Testing")
+@TeleOp (name = "Basic Servo Testing", group = "testing")
 public class SingleServoTest extends OpMode{
     Servo servo;
     ServoController controller;

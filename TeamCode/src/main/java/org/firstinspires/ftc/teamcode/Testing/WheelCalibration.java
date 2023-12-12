@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Utility.RollingAverage;
 
-@TeleOp(name = "Drivetrain wheel Calibration")
+@TeleOp(name = "Drivetrain wheel Calibration", group = "testing")
 public class WheelCalibration extends OpMode {
     public DcMotorEx FL;
     public DcMotorEx FR;

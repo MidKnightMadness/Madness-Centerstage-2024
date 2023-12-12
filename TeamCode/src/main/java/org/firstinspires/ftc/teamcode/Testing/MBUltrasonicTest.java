@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Components.MBUltrasonicSensorWrapper;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 
-@TeleOp(name = "Ultrasonic Sensor Test", group = "Testing")
+@TeleOp(name = "Ultrasonic Sensor Test", group = "testing")
 public class MBUltrasonicTest extends OpMode {
     AnalogInput us1;
     MBUltrasonicSensorWrapper ultrasonicSensor;

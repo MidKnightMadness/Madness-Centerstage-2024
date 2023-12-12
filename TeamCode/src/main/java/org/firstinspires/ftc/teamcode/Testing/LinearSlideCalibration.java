@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
-@TeleOp
+@TeleOp(name = "linear slides calibration", group = "testing")
 public class LinearSlideCalibration extends OpMode {
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;

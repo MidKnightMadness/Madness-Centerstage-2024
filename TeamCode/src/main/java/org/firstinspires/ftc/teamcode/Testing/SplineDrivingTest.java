@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
-@TeleOp(group= "Test", name = "Spline driving test")
+@TeleOp(group= "testing", name = "Spline driving test")
 @Disabled
 public class SplineDrivingTest extends OpMode {
     // HARDWARE ====================================================================================

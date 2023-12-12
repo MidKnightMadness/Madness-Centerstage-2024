@@ -8,7 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 
-@TeleOp
+
+@TeleOp(name = "through bore encoder testing", group = "testing")
 @Disabled
 public class ThroughBoreEncoderTest extends OpMode {
     DcMotor encoder1;

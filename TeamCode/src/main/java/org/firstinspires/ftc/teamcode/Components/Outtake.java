@@ -6,7 +6,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+/* Full outtake class for easier usage
+Objectives:
+1. Combine functionality to ensure box doesn't collide
+2. Add presets
+3. Position robot to properly align box with backdrop
+4.
+Contains:
+1.
+ */
 @TeleOp(name = "outtake testing", group = "testing")
 public class Outtake extends OpMode {
     // Parts
