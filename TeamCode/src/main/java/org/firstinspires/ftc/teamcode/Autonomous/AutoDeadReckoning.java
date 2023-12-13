@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
+import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -32,37 +34,23 @@ Contains:
 3. Conversion functions and compensation for RPM-torque differences between motors
  */
 @TeleOp
-public class AutoDeadReckoning extends OpMode {
+public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
     public CameraEnums.CameraModes getAllianceColor(){
         return CameraEnums.CameraModes.BLUE;
     }
-
     public DcMotorEx FL, FR, BL, BR, leftEncoder, rightEncoder;
-
     CameraModes cameraMode = getAllianceColor();
-
     public double getInchesToPark() {
         return 52;
     }
-
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
-
     Servo intakeRightServo;
-
     Timer timer;
-
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
     IMU imu;
     TeamPropMask teamPropMask;
-
-    double [] RPMs = {410.1,
-            212.6,
-            393.8,
-            206.7};
-    double min = RPMs[3];
-    double[] RPMMultipliers = { min / RPMs[0] * 1.18, min / RPMs[1] * 5/16 , min / RPMs[2] *1.18, min / RPMs[3]};
 
     @Override
     public void init() {
@@ -148,6 +136,8 @@ public class AutoDeadReckoning extends OpMode {
     public void start() {
         webcam.stopStreaming();
 
+//        setMotorPowersForTime(2.5, -1, 1, -1, 1);
+        park();
 //
 //
 //        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
@@ -183,6 +173,11 @@ public class AutoDeadReckoning extends OpMode {
         }
 
     }
+
+    void park() {
+        setMotorPowersForTime(2.5, 1, 1, 1, 1);
+    }
+
 
     @Override
     public void loop() {
@@ -378,8 +373,6 @@ public class AutoDeadReckoning extends OpMode {
 //
 //        forwardDisplacement = 0;
     }
-
-
     void setMotorPowersForTimeSmoothed(double seconds, double fl, double fr, double bl, double br) {
         double startTime = timer.updateTime();
 
@@ -409,5 +402,4 @@ public class AutoDeadReckoning extends OpMode {
 
         setPowers(0, 0, 0, 0);
     }
-
 }

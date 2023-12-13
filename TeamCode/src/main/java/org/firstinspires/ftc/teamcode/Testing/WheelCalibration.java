@@ -7,22 +7,15 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.RollingAverage;
 
-@TeleOp(name = "Drivetrain wheel Calibration", group = "testing")
-public class WheelCalibration extends OpMode {
+@TeleOp(name = "Drivetrain wheel Calibration")
+public class WheelCalibration extends OpMode implements WheelRPMConfig {
     public DcMotorEx FL;
     public DcMotorEx FR;
     public DcMotorEx BL;
     public DcMotorEx BR;
-
-    double [] RPMs = {410.1,
-            212.6,
-            393.8,
-            206.7};
-    double min = RPMs[3];
-    double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2] , min / RPMs[3]};
-//    double[] RPMMultipliers = { 1, 1 ,1 , 1};
 
     RollingAverage[] wheelRPMS = {
         new RollingAverage("FL"),
@@ -59,7 +52,9 @@ public class WheelCalibration extends OpMode {
 
         if (this.gamepad1.x) {
             setAdjustedPowers(1);
-            updateWheelRPMS();
+        }
+        if (this.gamepad1.b) {
+            setAdjustedPowers(-1);
         }
 
         if (this.gamepad1.a) {
@@ -72,10 +67,15 @@ public class WheelCalibration extends OpMode {
         if (gamepad1.dpad_down) {
             rightSideMultiplier -= 0.0005;
         }
+
+        telemetry.addData("Right side multiplier", rightSideMultiplier);
     }
     void setAdjustedPowers(double power) {
         for (int i = 0; i < motors.length; i++) {
             double adjustPower = power * RPMMultipliers[i];
+            if (i  % 2 == 1) {
+                adjustPower *= rightSideMultiplier;
+            }
             motors[i].setPower(adjustPower);
             telemetry.addData(wheelRPMS[i].getName(), adjustPower);
         }

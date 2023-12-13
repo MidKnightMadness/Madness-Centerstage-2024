@@ -1,8 +1,4 @@
-package org.firstinspires.ftc.teamcode.Drivetrain;
-
-import org.firstinspires.ftc.teamcode.Drivetrain.SplinePath;
-
-import java.util.ArrayList;
+package org.firstinspires.ftc.teamcode.Testing.SplineDrive;
 
 public class SectionSpline{
     /* 
