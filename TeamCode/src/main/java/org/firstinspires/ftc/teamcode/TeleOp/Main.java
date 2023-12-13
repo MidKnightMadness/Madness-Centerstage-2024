@@ -1,26 +1,14 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Camera.PixelDetector;
-import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
-import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
-import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
-import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
-import org.firstinspires.ftc.teamcode.Drivetrain.SplinePath;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
-import org.firstinspires.ftc.teamcode.Components.LinearSlides;
 import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 
 @TeleOp(group= "[Game]", name = "Driver Controlled TeleOp")
@@ -46,7 +34,7 @@ public class Main extends OpMode {
     double[] rightIntakeServoPositions = {0.3075, 0.2425, 0.2223, 0.1605, 0.126};
     double[] leftIntakeServoPositions = {0.8375, 0.89, 0.893, 0.939, 0.9575};
 
-    double wristVertical = 0.623;
+    double wristVertical = 0.58;
     double wristDown = 0.388;
 
     @Override
@@ -107,34 +95,40 @@ public class Main extends OpMode {
                 wristPos = wristDown;
             }
         }
-        if (g2Y.update(gamepad2.y)) {
-            if (currentIntakeServoIndex < rightIntakeServoPositions.length - 1) {
-                currentIntakeServoIndex++;
-            }
-        }
-
-        if (g2A.update(gamepad2.a)) {
-            if (currentIntakeServoIndex > 0) {
-                currentIntakeServoIndex--;
-            }
-        }
+//        if (g2Y.update(gamepad2.y)) {
+//            if (currentIntakeServoIndex < rightIntakeServoPositions.length - 1) {
+//                currentIntakeServoIndex++;
+//            }
+//        }
+//
+//        if (g2A.update(gamepad2.a)) {
+//            if (currentIntakeServoIndex > 0) {
+//                currentIntakeServoIndex--;
+//            }
+//        }
 
         if (this.gamepad2.right_bumper) {
-            boxServo.setPosition(1);
+            if (gamepad2.a) {
+                boxServo.setPosition(0.15);
+            }
+            else {
+                boxServo.setPosition(1);
+            }
+
         }
         else {
-            boxServo.setPosition(0.69);
+            boxServo.setPosition(0.6435);
         }
 
         rightWristServo.setPosition(wristPos);
-
-
 
         telemetry.addData("Intake servo pos index", currentIntakeServoIndex);
         telemetry.addData("Right intake servo", rightIntakeServo.getPosition());
         telemetry.addData("Left intake servo", leftIntakeServo.getPosition());
 
-        rightIntakeServo.setPosition(rightIntakeServoPositions[currentIntakeServoIndex]);
+        // rightIntakeServo.setPosition(rightIntakeServoPositions[currentIntakeServoIndex]);
+        rightIntakeServo.setPosition(0.126 + (0.3075 - 0.126) * gamepad2.right_trigger);
+
         intakeMotor.setPower(gamepad2.left_stick_y);
         motorLeft.setPower(this.gamepad2.right_stick_y * -0.5);
         motorRight.setPower(this.gamepad2.right_stick_y * -0.5);

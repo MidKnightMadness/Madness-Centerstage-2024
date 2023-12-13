@@ -1,15 +1,19 @@
-package org.firstinspires.ftc.teamcode.Drivetrain;
+package org.firstinspires.ftc.teamcode.Testing.Drivetrain;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
+import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
+import org.firstinspires.ftc.teamcode.Testing.SplineDrive.SectionSpline;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 public class IndepDrivetrain implements Runnable{
     public MecanumDrive mecanumDrive;
     public Odometry odometry;
-    public PIDDrive PIDDrive;
+    public org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive PIDDrive;
     public SectionSpline spline;
     public Telemetry telemetry;
     public ElapsedTime timer;

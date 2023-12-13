@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
-import org.firstinspires.ftc.teamcode.Drivetrain.SectionSpline;
+import org.firstinspires.ftc.teamcode.Testing.SplineDrive.SectionSpline;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import java.lang.reflect.Field;

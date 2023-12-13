@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.Testing;
+package org.firstinspires.ftc.teamcode.Testing.SplineDrive;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.hardware.ServoControllerEx;
 
 @TeleOp (name = "Basic Servo Testing", group = "Testing")
 public class SingleServoTest extends OpMode{
@@ -34,7 +32,7 @@ public class SingleServoTest extends OpMode{
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "Right wrist servo");
+        servo = hardwareMap.get(Servo.class, "Center box servo");
         controller = servo.getController();
     }
 

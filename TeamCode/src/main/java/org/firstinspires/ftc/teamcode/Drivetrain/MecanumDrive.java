@@ -1,18 +1,10 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
-//import static java.lang.Thread.sleep;
-
-//import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-//import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-//import java.util.ArrayList;
 
 /*
 Configuration:
@@ -31,7 +23,7 @@ Motors:
 3: FL, Left Encoder
  */
 
-public class MecanumDrive {
+public class MecanumDrive implements WheelRPMConfig {
     // Motors
     public DcMotorEx FL;
     public DcMotorEx FR;
@@ -53,14 +45,6 @@ public class MecanumDrive {
 
     // Inputs and power constraints
     private double [] motorInputs;
-
-    double [] RPMs = {390.0,
-            186.8,
-            389.2,
-            186.7};
-
-    double min = RPMs[3];
-    double[] RPMMultipliers = { min / RPMs[0], min / RPMs[1] , min / RPMs[2], min / RPMs[3]};
 
     public MecanumDrive(HardwareMap hardwareMap, Telemetry telemetry){
         FL = hardwareMap.get(DcMotorEx.class, "FL");

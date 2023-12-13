@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Drivetrain;
+package org.firstinspires.ftc.teamcode.Testing.SplineDrive;
 
 public class SplinePath {
     public double [] coords = {0.0, 0.0};

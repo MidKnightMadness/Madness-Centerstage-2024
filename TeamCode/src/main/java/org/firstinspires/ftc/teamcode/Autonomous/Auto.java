@@ -4,8 +4,6 @@ import android.graphics.Camera;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
@@ -15,7 +13,6 @@ import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.Odometry;
-import org.firstinspires.ftc.teamcode.Localization.SimpleProcessor;
 import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Coordinates;
@@ -33,7 +30,6 @@ public abstract class Auto extends OpMode {
     Timer timer;
     MecanumDrive mecanumDrive;
 
-    SimpleProcessor simpleProcessor;
     PIDDrive PIDDrive;
 
     OuttakeBox servoBox;
@@ -126,7 +122,6 @@ public abstract class Auto extends OpMode {
 
         timer = new Timer();
         odometry = new Odometry(hardwareMap, 0, new Vector2(0, 0));
-        simpleProcessor = new SimpleProcessor();
 
 
         servoBox = new OuttakeBox(hardwareMap, "servoBox");
