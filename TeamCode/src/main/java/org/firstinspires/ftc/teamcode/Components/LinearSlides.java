@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
-@TeleOp
 public class LinearSlides{
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
