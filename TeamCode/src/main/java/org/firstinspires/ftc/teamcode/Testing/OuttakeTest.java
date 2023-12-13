@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
-@TeleOp (name = "Servo Test", group = "Testing")
+@TeleOp (name = "Servo Test", group = "testing")
 public class OuttakeTest extends OpMode {
 
     OuttakeBox outtakeBox;

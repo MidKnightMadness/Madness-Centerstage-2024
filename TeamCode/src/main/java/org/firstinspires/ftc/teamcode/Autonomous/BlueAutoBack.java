@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 
 @Autonomous
 public class BlueAutoBack extends AutoDeadReckoning {
-
     @Override
     public double getInchesToPark() {
         return 99;

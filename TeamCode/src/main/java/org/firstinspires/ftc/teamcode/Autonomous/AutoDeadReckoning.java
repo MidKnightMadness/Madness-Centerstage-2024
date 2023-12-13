@@ -24,7 +24,15 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-
+/* For testing opmodes without odometry
+Objectives:
+1. Driving forward by distance, whether by wheel radii calculations or by calibrated time and power calculations
+2. Smooithly ramp up and ramp down power
+Contains:
+1. Drive using power and time (primarily used)
+2. Drive using distance
+3. Conversion functions and compensation for RPM-torque differences between motors
+ */
 @TeleOp
 public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 

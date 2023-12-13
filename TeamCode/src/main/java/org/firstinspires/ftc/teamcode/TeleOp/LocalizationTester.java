@@ -8,16 +8,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
+import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
 
-import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;;
+;
 
 
 
 @TeleOp(name = "New Localization Testing")
 public class LocalizationTester extends OpMode {
     // AprilTagLocalizerTwo object and hardware
-    AprilTagLocalizerTwo localizer;
+    AprilTagLocalizer localizer;
     BNO055IMU imu;
 
     // Auxillary Variables
@@ -28,7 +28,7 @@ public class LocalizationTester extends OpMode {
 
     @Override
     public void init() {
-        localizer = new AprilTagLocalizerTwo(hardwareMap, telemetry, 0.0, 0.0);
+        localizer = new AprilTagLocalizer(hardwareMap, telemetry, 0.0, 0.0);
 
         parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;

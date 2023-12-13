@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "Single Motor Test", group = "Testing")
+@TeleOp(name = "Single Motor Test", group = "testing")
 public class SingleMotorTest extends OpMode {
     public DcMotorEx testMotor;
     public double setRPM = 0.0;

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.Utility.RGBColor;
 
-@TeleOp
+@TeleOp(name = "color sensor test", group = "testing")
 @Disabled
 public class ColorSensorTest extends OpMode {
 

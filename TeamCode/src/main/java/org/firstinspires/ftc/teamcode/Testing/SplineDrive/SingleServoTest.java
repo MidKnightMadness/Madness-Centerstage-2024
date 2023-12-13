@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 
-@TeleOp (name = "Basic Servo Testing", group = "Testing")
+@TeleOp (name = "Basic Servo Testing", group = "testing")
 public class SingleServoTest extends OpMode{
     Servo servo;
     ServoController controller;

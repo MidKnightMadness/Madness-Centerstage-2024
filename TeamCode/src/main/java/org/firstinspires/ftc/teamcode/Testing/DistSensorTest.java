@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 
-@TeleOp(name = "Dist Sensor Test")
+@TeleOp(name = "Dist Sensor Test", group = "Sensor")
 @Disabled
 public class DistSensorTest extends OpMode {
     public DistanceSensor distanceSensor;

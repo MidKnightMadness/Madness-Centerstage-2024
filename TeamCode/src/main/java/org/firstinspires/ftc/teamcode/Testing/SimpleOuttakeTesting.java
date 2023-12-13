@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "outtake servo testing", group = "Testing")
+@TeleOp(name = "outtake servo testing", group = "testing")
 public class SimpleOuttakeTesting extends OpMode {
     final double LEFT_BOUND = 0.5;
     final double RIGHT_BOUND = 0;

@@ -15,7 +15,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-@TeleOp(name = "Ultrasonic Sensor Calibration")
+@TeleOp(name = "Ultrasonic Sensor Calibration", group = "testing")
 @Disabled
 public class MBUltrasonicCalibration extends OpMode {
     public AnalogInput ultrasonicSensor;
