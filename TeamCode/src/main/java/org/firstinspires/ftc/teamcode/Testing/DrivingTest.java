@@ -19,6 +19,9 @@ public class DrivingTest extends OpMode {
     Servo rightServo;
     DcMotorEx intakeMotor;
 
+    double increment = 0.0005;
+    double rotationPower = 0.1;
+
     @Override
     public void init() {
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
@@ -26,30 +29,29 @@ public class DrivingTest extends OpMode {
 //        leftServo = hardwareMap.get(Servo.class, "leftServo");
 //        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
+
     }
 
     @Override
     public void loop() {
-//        if (gamepad1.x) {
-//            leftServo.setPosition(0);
-//        }
-//
-//        if (gamepad1.y) {
-//            leftServo.setPosition(1);
-//        }
-//
-//        if (gamepad1.a) {
-//            rightServo.setPosition(0);
-//        }
-//        if (gamepad1.b) {
-//            rightServo.setPosition(1);
-//        }
+        if (this.gamepad1.dpad_up) {
+            rotationPower += increment;
+        }
 
-//        telemetry.addData("Y: ", "Left servo 1");
-//        telemetry.addData("X: ", "Left servo 0");
-//        telemetry.addData("B: ", "Right servo 1");
-//        telemetry.addData("A: ", "Right servo 0");
-//
+        if (gamepad1.dpad_down) {
+            rotationPower -= increment;
+        }
+
+        if (this.gamepad1.right_bumper) {
+            mecanumDrive.normalDrive(rotationPower, 0, 0, 1);
+        }
+
+        if (this.gamepad1.left_bumper) {
+            mecanumDrive.normalDrive(rotationPower, 0, 1, 0);
+        }
+
+        telemetry.addData("Adjust Power", rotationPower);
+
         mecanumDrive.normalDrive(1, -gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
     }
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,7 +15,8 @@ import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
 
 
 
-@TeleOp(name = "New Localization Testing")
+@TeleOp(name = "New Localization Testing", group = "testing")
+@Disabled
 public class LocalizationTester extends OpMode {
     // AprilTagLocalizerTwo object and hardware
     AprilTagLocalizer localizer;

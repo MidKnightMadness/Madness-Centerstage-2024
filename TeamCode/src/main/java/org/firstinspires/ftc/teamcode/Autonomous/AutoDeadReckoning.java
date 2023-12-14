@@ -127,7 +127,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     @Override
     public void init_loop() {
         teamPropPosition = teamPropMask.getSpikeMarkPosition();
-        telemetry.addData("imu yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("imu yaw", getRobotDegrees());
 
         telemetry.addData("Detected spike mark position", teamPropPosition);
     }
@@ -137,7 +137,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         webcam.stopStreaming();
 
 //        setMotorPowersForTime(2.5, -1, 1, -1, 1);
-        park();
+//        park();
 //
 //
 //        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
@@ -160,8 +160,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 //        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
 //        setTargetRotation(parkingDirection * Math.PI / 2);
 //        moveForwardDistance(getInchesToPark());
-
-
     }
 
     void sleep(long milis) {
@@ -178,15 +176,19 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         setMotorPowersForTime(2.5, 1, 1, 1, 1);
     }
 
+    double increment = 0.0005;
+
 
     @Override
     public void loop() {
         if (y.update(gamepad1.y)) {
-            setTargetRotation(Math.PI / 2);
+//            setTargetRotation(getRobotDegrees() + 90);
+            moveForwardDistance(36);
         }
 
         if (a.update(gamepad1.a)) {
-            setTargetRotation(-Math.PI / 2);
+//            setTargetRotation(getRobotDegrees() - 90);
+            moveForwardDistance(24);
         }
 
         if (b.update(gamepad1.b)) {
@@ -196,33 +198,54 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
             setTargetRotation(0);
         }
 
+        if (this.gamepad1.dpad_up) {
+            maxPower += increment;
+        }
+        if (gamepad1.dpad_down) {
+            maxPower -= increment;
+        }
+
         telemetry.clear();
         telemetry.addData("Forward distance traveled", forwardDisplacement);
-        telemetry.addData("Left ticks", lastTicks[0]);
-        telemetry.addData("Right ticks", lastTicks[1]);
         updateForwardDisplacement();
+        telemetry.addData("Left ticks", ticks[0]);
+        telemetry.addData("Right ticks", ticks[1]);
+
+        telemetry.addData("imu yaw", getRobotDegrees());
+        telemetry.addData("final error", finalerror);
+
+        telemetry.addData("Max power", maxPower);
+
+        if (this.gamepad1.right_bumper) {
+            resetForwardDisplacement();
+        }
 
 //        telemetryMotorVelocities();
     }
 
-    final double IN_PER_TICK = 30.0d / 38888d;
-    int[] lastTicks = new int[] { 0, 0 };
+//    final double IN_PER_TICK = 0.00079829719;
+    final double TICK_PER_IN = 1248.66631083;
+
+    int[] ticks = new int[] { 0, 0 };
     double forwardDisplacement = 0;
     void updateForwardDisplacement() {
         int leftPos = leftEncoder.getCurrentPosition();
         int rightPos = rightEncoder.getCurrentPosition();
 
-        int deltaLeftTicks = leftPos - lastTicks[0];
-        int deltaRightTicks = rightPos - lastTicks[1];
-
-        lastTicks[0] = leftPos;
-        lastTicks[1] = rightPos;
+        ticks[0] = leftPos;
+        ticks[1] = rightPos;
 
         // left encoder is reversed
 //        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
-        forwardDisplacement += -deltaLeftTicks * IN_PER_TICK;
+        forwardDisplacement = (-ticks[0] + ticks[1]) / (2d * TICK_PER_IN);
     }
 
+    void resetForwardDisplacement() {
+        resetEncoders();
+        ticks[0] = 0;
+        ticks[1] = 0;
+        forwardDisplacement = 0;
+    }
     void resetEncoders() {
         leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -290,54 +313,71 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         telemetry.addData("BR Pow", BR.getPower());
     }
 
-    void setTargetRotation(double targetRotation) {
-        double maxPower = 0.5;
-        double minPower = 0.1;
+    double finalerror = 0;
 
-        double percentToStop = 0.995;
+    void setTargetRotation(double targetRotation) {
+        targetRotation = normalizeAngle(targetRotation);
+
+        double maxPower = 0.7;
+        double minPower = 0.225;
+
+        double percentToStop = 0.9995;
 
         double startTime = timer.updateTime();
         double currentTime = startTime;
 
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        double startingYaw = orientation.getYaw(AngleUnit.RADIANS);
+        double startingYaw = getRobotDegrees();
 
-        double rotation = targetRotation - startingYaw;
-        double targetYawRadians = startingYaw + rotation;
+        double rotation = normalizeAngle(targetRotation - startingYaw);
+        double targetYawDegrees = startingYaw + rotation;
 
         double error = rotation;
-        if (rotation - startingYaw < 0.3) {
-            maxPower = 0.2;
+
+        if (rotation - startingYaw < 1) {
+            maxPower = minPower;
         }
 
-        double direction = rotation / Math.abs(rotation);
+        // -1 for right, 1 for left
+        double direction = Math.signum(rotation);
 
-        while (Math.abs(error) > Math.abs((1 - percentToStop) * rotation)) {
+        // stops if within 0.25 degrees
+        while (Math.abs(error) > 0.18) {
             // hard cap
 //            if (currentTime - startTime > 5) {
 //                break;
 //            }
 
             // power proportional to error between min and max power
-            error = targetYawRadians - orientation.getYaw(AngleUnit.RADIANS);
+            error = normalizeAngle(targetYawDegrees - getRobotDegrees());
+            direction = Math.signum(error);
+
+            finalerror = error;
             telemetry.clear();
 
-            telemetry.update();
+            double proportionalPower = Math.abs((error / rotation)) * (maxPower - minPower) + minPower;
 
-            double proportionalPower = (error / rotation) * (maxPower - minPower) + minPower;
-            telemetry.addData("current rot", orientation.getYaw(AngleUnit.RADIANS)  * 180d / Math.PI);
-            telemetry.addData("target rot", targetYawRadians * 180d / Math.PI);
-            telemetry.addData("error", error * 180 / Math.PI);
+            telemetry.addData("current rot", getRobotDegrees());
+            telemetry.addData("target rot", targetYawDegrees);
+            telemetry.addData("error", error);
             telemetry.addData("proportional power", proportionalPower);
+            telemetry.update();
 
             if (proportionalPower > maxPower) proportionalPower = maxPower;
             setPowers(-proportionalPower * direction, proportionalPower * direction,
                     -proportionalPower * direction, proportionalPower * direction);
-            orientation = imu.getRobotYawPitchRollAngles();
+
             currentTime = timer.updateTime();
         }
 
         setPowers(0, 0, 0, 0);
+    }
+
+    double getRobotDegrees() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
+
+    double normalizeAngle(double angle) {
+        return (angle + 180) % 360 - 180;
     }
 
     @Deprecated
@@ -345,33 +385,40 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         // dist = 28.57t - 10.02
         driveForwardForTime((distance + 10.02) / 28.57, 0.7);
     }
+    double maxPower = 0.7;
 
     void moveForwardDistance(double distance) {
-        moveForwardDistanceByTime(distance);
+//        moveForwardDistanceByTime(distance);
+        double minPower = 0.225;
+        resetForwardDisplacement();
 
-//        double maxPower = 1;
-//        double minPower = 0.1;
-//        forwardDisplacement = 0;
-//
 //        double startTime = timer.updateTime();
 //        double currentTime = startTime;
-//
-//        // -1 or 1
-//        double direction = distance / Math.abs(distance);
-//
-//        while (forwardDisplacement < distance - 0.2) {
-//            // hard cap
+
+        double error = distance;
+
+        while (Math.abs(error) > 0.05) {
+            // hard cap
 //            if (currentTime - startTime > 5) {
 //                break;
 //            }
-//            updateForwardDisplacement();
-//
-//            double error = distance - forwardDisplacement;
-//            double power = minPower + (maxPower - minPower) * (error / distance);
-//            setMotorPowersSmoothed(power * direction, power * direction, power * direction, power * direction);
-//        }
-//
-//        forwardDisplacement = 0;
+            updateForwardDisplacement();
+
+            error = distance - forwardDisplacement;
+
+            double direction = Math.signum(error);  // -1 or 1
+
+            double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
+
+            telemetry.addData("Distance error", error);
+            telemetry.addData("Power", power);
+            telemetryMotorPowers();
+
+            setMotorPowersSmoothed(power * direction, power * direction, power * direction, power * direction);
+        }
+
+        setPowers(0, 0, 0, 0);
+        finalerror = error;
     }
     void setMotorPowersForTimeSmoothed(double seconds, double fl, double fr, double bl, double br) {
         double startTime = timer.updateTime();
