@@ -117,56 +117,49 @@ public class AprilTagLocalizer extends Localizer {
                     telemetry.addData("Detection", detection.id);
 
                     // Combine detection coordinates with inverse square coefficients based on range
-                    calculationsVector[0] -= Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                            - APRIL_TAG_COORDS[detection.id - 1][0];
+                    calculationsVector[0] += -(Math.cos(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
+                            - APRIL_TAG_COORDS[detection.id - 1][0]) / currentDetections.size();
 
-                    calculationsVector[1] -= Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
-                            - APRIL_TAG_COORDS[detection.id - 1][1];
-
-//                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
-//                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
-
-                    calculationsVector [0] /= currentDetections.size();
-                    calculationsVector [1] /= currentDetections.size();
-                    // For average
+                    calculationsVector[1] += -(Math.sin(robotHeading + detection.ftcPose.bearing) * detection.ftcPose.range
+                            - APRIL_TAG_COORDS[detection.id - 1][1]) / currentDetections.size();
                 }
             }
-//
+
 //            calculationsVector[0] += 0.804d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
 //            calculationsVector[1] += 2.75d * averageRange / 22.375d; // Correction for backdrop tags, error proportional to range
         }
-        else{ // IDs from 7 to 10
-            double averageRange = 0.0;
-
-            // Get range coefficients normalizing factor
-            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
-                if (detection.metadata != null) {
-                    calculationsDouble += 1 / (detection.ftcPose.range * detection.ftcPose.range); // Add up coefficients, divide everything by sum to normalize
-                    averageRange += detection.ftcPose.range;
-                }
-            }
-            averageRange /= currentDetections.size();
-
-            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
-                if (detection.metadata != null) {
-                    telemetry.addData("Detection", detection.id);
-
-                    // Intermediates
-                    double correctedY = correctY(detection.ftcPose.y);
-                    double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
-
-                    // Combine detection coordinates with inverse square coefficients based on range
-                    calculationsVector[0] -= Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
-                            -APRIL_TAG_COORDS [detection.id - 1][0];
-
-                    calculationsVector[1] -= -Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
-                            -APRIL_TAG_COORDS [detection.id - 1][1];
-
-                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
-                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
-                }
-            }
-        }
+//        else{ // IDs from 7 to 10
+//            double averageRange = 0.0;
+//
+//            // Get range coefficients normalizing factor
+//            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+//                if (detection.metadata != null) {
+//                    calculationsDouble += 1 / (detection.ftcPose.range * detection.ftcPose.range); // Add up coefficients, divide everything by sum to normalize
+//                    averageRange += detection.ftcPose.range;
+//                }
+//            }
+//            averageRange /= currentDetections.size();
+//
+//            for (org.firstinspires.ftc.vision.apriltag.AprilTagDetection detection : currentDetections) {
+//                if (detection.metadata != null) {
+//                    telemetry.addData("Detection", detection.id);
+//
+//                    // Intermediates
+//                    double correctedY = correctY(detection.ftcPose.y);
+//                    double correctedX = correctX(detection.ftcPose.x, correctY(detection.ftcPose.y));
+//
+//                    // Combine detection coordinates with inverse square coefficients based on range
+//                    calculationsVector[0] -= Math.cos(robotHeading) * correctedX + Math.sin(robotHeading) * correctedY // Rotate to correct for robot heading
+//                            -APRIL_TAG_COORDS [detection.id - 1][0];
+//
+//                    calculationsVector[1] -= -Math.sin(robotHeading) * correctedX + Math.cos(robotHeading) * correctedY // Rotate to correct for robot heading
+//                            -APRIL_TAG_COORDS [detection.id - 1][1];
+//
+//                    calculationsVector[0] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+//                    calculationsVector[1] /= (detection.ftcPose.range * detection.ftcPose.range * calculationsDouble);
+//                }
+//            }
+//        }
 
         return calculationsVector;
     }
@@ -211,7 +204,7 @@ public class AprilTagLocalizer extends Localizer {
 
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
         } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }

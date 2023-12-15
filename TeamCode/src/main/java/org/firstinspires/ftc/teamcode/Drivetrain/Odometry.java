@@ -95,9 +95,9 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         elapsedTime = new ElapsedTime();
 
         //Initialize Motors
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "encoder1");
-        rightEncoder = hardwareMap.get(DcMotorEx.class, "encoder2");
-        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "encoder3");
+        leftEncoder = hardwareMap.get(DcMotorEx.class, "BL");
+        rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
+        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "FL");
 
         //Reset Position
         this.rotationRadians = startingAngleRadians;
@@ -135,7 +135,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         // calculate change in angles
         deltaRadians = getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
         angularVelocity = deltaRadians / deltaTime;
-        rotationRadians += deltaRadians; //Finding integral part 1
+        rotationRadians += deltaRadians;
 
         //average left and right encoder distance
         forwardMovement = (leftDistanceMoved + rightDistanceMoved) / 2.0;
@@ -149,8 +149,6 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         //Calculating change X and Y position of robot
         netX = forwardMovement * rotCosine + trueLateralMovement * rotSin;
         netY = forwardMovement * rotSin - trueLateralMovement * rotCosine;
-
-        rotationRadians += .5 * deltaRadians; //Finding integral part 2
 
         //Calculating final x and y
         //Note: Changed signs since was reversed, had to re-swap variables

@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.Drivetrain.PIDDrive;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 @TeleOp(group= "testing", name = "Spline driving test")
-@Disabled
 public class SplineDrivingTest extends OpMode {
     // HARDWARE ====================================================================================
     MecanumDrive mecanumDrive;
@@ -22,12 +21,12 @@ public class SplineDrivingTest extends OpMode {
 
     double [] driveInputs = {0.0, 0.0, 0.0};
     double [][] targetStates = {
-            {5.0, 0.0, Math.PI / 2.0d},
-            {5.0, 27.0, Math.PI},
-            {-22.0 - 40.0, 27.0, Math.PI},
-            {-22.0 - 40.0, 27.0 + 30.0, Math.PI / 2.0d},
-            {5.0, 27.0 + 30.0, Math.PI / 2.0d},
-            {5.0, 0.0, Math.PI}
+            {5.0, 5.0, Math.PI / 2.0d},
+//            {5.0, 27.0, Math.PI},
+//            {-22.0 - 40.0, 27.0, Math.PI},
+//            {-22.0 - 40.0, 27.0 + 30.0, Math.PI / 2.0d},
+//            {5.0, 27.0 + 30.0, Math.PI / 2.0d},
+//            {5.0, 0.0, Math.PI}
     };
 
     double NAVIGATIONAL_TOLERANCE = 0.25; // Inches to target
@@ -55,22 +54,22 @@ public class SplineDrivingTest extends OpMode {
 
         // PID Adjustment
         if(gamepad1.dpad_down){
-            PIDDrive.D [2] -= 0.001;
-//            PIDDrive.D [1] -= 0.001;
+            PIDDrive.D [0] -= 0.001;
+            PIDDrive.D [1] -= 0.001;
         }else if(gamepad1.dpad_up){
-            PIDDrive.D [2] += 0.001;
-//            PIDDrive.D [1] += 0.001;
+            PIDDrive.D [0] += 0.001;
+            PIDDrive.D [1] += 0.001;
         }
 
-        PIDDrive.P [2] -= 0.001 * gamepad1.left_stick_y;
-//        PIDDrive.P [1] -= 0.001 * gamepad1.left_stick_y;
+        PIDDrive.P [0] -= 0.001 * gamepad1.left_stick_y;
+        PIDDrive.P [1] -= 0.001 * gamepad1.left_stick_y;
 
-        PIDDrive.I [2] -= 0.001 * gamepad1.right_stick_y;
-//        PIDDrive.I [1] -= 0.001 * gamepad1.right_stick_y;
+        PIDDrive.I [0] -= 0.001 * gamepad1.right_stick_y;
+        PIDDrive.I [1] -= 0.001 * gamepad1.right_stick_y;
 
-        telemetry.addData("D", PIDDrive.D [2]);
-        telemetry.addData("P", PIDDrive.P [2]);
-        telemetry.addData("I", PIDDrive.I [2]);
+        telemetry.addData("D", PIDDrive.D [0]);
+        telemetry.addData("P", PIDDrive.P [0]);
+        telemetry.addData("I", PIDDrive.I [0]);
 
         odometry.updatePosition();
         driveInputs = PIDDrive.updatePID();

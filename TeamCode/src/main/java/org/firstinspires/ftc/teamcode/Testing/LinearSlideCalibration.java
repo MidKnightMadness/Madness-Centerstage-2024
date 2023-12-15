@@ -32,13 +32,15 @@ public class LinearSlideCalibration extends OpMode {
     double correctionConstant = 0.0; // Left slide follows right side, to help witn synchronization
 
     int targetPos;
+
+    double rightSideMultiplier = 0.75; // Default
     public void init() {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRight.setDirection(DcMotor.Direction.REVERSE);
 
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
@@ -48,16 +50,15 @@ public class LinearSlideCalibration extends OpMode {
     }
 
     public void loop() {
-//        if (dPadUp.update(this.gamepad1.y)) {
-//            targetPos += 500;
-//        }
-//        if (dPadDown.update(this.gamepad1.a)) {
-//            targetPos -= 500;
-//        }
-//
-        motorLeft.setPower(this.gamepad1.left_stick_y * 0.1 + this.gamepad1.right_stick_y * 0.5);
-        motorRight.setPower(this.gamepad1.left_stick_y * 0.1 + this.gamepad1.right_stick_y * 0.5);
+        if (dPadUp.update(this.gamepad1.y)) {
+            rightSideMultiplier += 0.005;
+        }
+        if (dPadDown.update(this.gamepad1.a)) {
+            rightSideMultiplier -= 0.005;
+        }
 
+        motorLeft.setPower(this.gamepad1.left_stick_y * 0.4);
+        motorRight.setPower(this.gamepad1.left_stick_y * 0.4 * rightSideMultiplier);
 
         if (this.gamepad1.right_bumper) {
             resetEncoders();
@@ -71,6 +72,7 @@ public class LinearSlideCalibration extends OpMode {
         telemetry.addData("Target pos", targetPos);
         telemetry.addData("Left motor Power", motorLeft.getPower());
         telemetry.addData("Right motor Power", motorRight.getPower());
+        telemetry.addData("Right side multiplier", rightSideMultiplier);
 
         telemetry.addData("Left motor", motorLeft.getCurrentPosition());
         telemetry.addData("Right motor", motorRight.getCurrentPosition());

@@ -80,7 +80,7 @@ public class Main extends OpMode {
                 power = 1;
             }
         }
-        mecanumDrive.normalDrive(power, 0, gamepad2.right_stick_y,-gamepad2.right_stick_x);
+        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y,-gamepad1.right_stick_x);
     }
 
     int currentIntakeServoIndex = 0;
@@ -127,10 +127,13 @@ public class Main extends OpMode {
         telemetry.addData("Left intake servo", leftIntakeServo.getPosition());
 
 
+        telemetry.addData("\nLeft Slides Pos", motorLeft.getCurrentPosition());
+        telemetry.addData("Right Slides Pos", motorRight.getCurrentPosition());
+
         // rightIntakeServo.setPosition(rightIntakeServoPositions[currentIntakeServoIndex]);
         if (gamepad2.a) {
             rightIntakeServo.setPosition(0.126 + (0.3075 - 0.126) * gamepad2.right_trigger);
-            leftIntakeServo.setPosition(0.9575 - (0.9575 - 0.8375) * gamepad2.right_trigger);
+//            leftIntakeServo.setPosition(0.9575 - (0.9575 - 0.8375) * gamepad2.right_trigger);
         }
         else {
             rightIntakeServo.setPosition(0.185);
@@ -141,8 +144,8 @@ public class Main extends OpMode {
 
 
         intakeMotor.setPower(gamepad2.left_stick_y);
-//        motorLeft.setPower(this.gamepad2.right_stick_y * -0.5);
-//        motorRight.setPower(this.gamepad2.right_stick_y * -0.5);
+        motorLeft.setPower(this.gamepad2.right_stick_y * -0.5);
+        motorRight.setPower(this.gamepad2.right_stick_y * -0.5 * 0.75);
     }
 
     @Override
