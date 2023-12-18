@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
@@ -34,8 +34,8 @@ Contains:
 3. Conversion functions and compensation for RPM-torque differences between motors
  */
 @TeleOp
+@SuppressLint("DefaultLocale")
 public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
-
     public CameraEnums.CameraModes getAllianceColor(){
         return CameraEnums.CameraModes.BLUE;
     }
@@ -51,7 +51,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     OpenCvWebcam webcam;
     IMU imu;
     TeamPropMask teamPropMask;
-
     @Override
     public void init() {
         timer = new Timer();
@@ -103,7 +102,9 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     void init_motors() {
         leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
         rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
-        resetEncoders();
+
+        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         FR = hardwareMap.get(DcMotorEx.class, "FR");
@@ -128,7 +129,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     public void init_loop() {
         teamPropPosition = teamPropMask.getSpikeMarkPosition();
         telemetry.addData("imu yaw", getRobotDegrees());
-
         telemetry.addData("Detected spike mark position", teamPropPosition);
     }
 
@@ -136,29 +136,25 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     public void start() {
         webcam.stopStreaming();
 
-//        setMotorPowersForTime(2.5, -1, 1, -1, 1);
-//        park();
-//
-//
-//        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
-//            int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
-//            moveForwardDistance(24);
-//            setTargetRotation(spikeMarkDirection * Math.PI / 2);
-//            moveForwardDistance(5);
-//            sleep(1000);
-//            moveForwardDistance(-5);
-//            setTargetRotation(0);
+        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
+            int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
+            moveForwardDistance(24);
+            setTargetRotation(spikeMarkDirection * 90);
+            moveForwardDistance(5);
+            sleep(1000);
+            moveForwardDistance(-5);
+            setTargetRotation(0);
 //            moveForwardDistance(-24);
-//        }
-//        else {
-//            moveForwardDistance(33);
-//            sleep(1000);
-//            moveForwardDistance(-33);
-//        }
-//
-//        // park
+        }
+        else {
+            moveForwardDistance(33);
+            sleep(1000);
+            moveForwardDistance(-33);
+        }
+
+        // park
 //        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
-//        setTargetRotation(parkingDirection * Math.PI / 2);
+//        setTargetRotation(parkingDirection * 90);
 //        moveForwardDistance(getInchesToPark());
     }
 
@@ -182,13 +178,13 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     @Override
     public void loop() {
         if (y.update(gamepad1.y)) {
-//            setTargetRotation(getRobotDegrees() + 90);
-            moveForwardDistance(36);
+            setTargetRotation(getRobotDegrees() + 90);
+//            driveForwardForTime(2, 0.5);
         }
 
         if (a.update(gamepad1.a)) {
-//            setTargetRotation(getRobotDegrees() - 90);
-            moveForwardDistance(24);
+            setTargetRotation(getRobotDegrees() - 90);
+//            driveForward(12);
         }
 
         if (b.update(gamepad1.b)) {
@@ -198,23 +194,30 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
             setTargetRotation(0);
         }
 
+        if (gamepad1.left_bumper) {
+            setPowers(1, 1, 1, 1);
+        }
+        else {
+            setPowers(0, 0, 0, 0);
+        }
+
         if (this.gamepad1.dpad_up) {
-            maxPower += increment;
+            kP += increment;
         }
         if (gamepad1.dpad_down) {
-            maxPower -= increment;
+            kP -= increment;
         }
 
         telemetry.clear();
         telemetry.addData("Forward distance traveled", forwardDisplacement);
         updateForwardDisplacement();
-        telemetry.addData("Left ticks", ticks[0]);
-        telemetry.addData("Right ticks", ticks[1]);
+
+        telemetry.addData("Left ticks", leftEncoder.getCurrentPosition());
+        telemetry.addData("Right ticks", rightEncoder.getCurrentPosition());
 
         telemetry.addData("imu yaw", getRobotDegrees());
         telemetry.addData("final error", finalerror);
-
-        telemetry.addData("Max power", maxPower);
+        telemetry.addData("KP", kP);
 
         if (this.gamepad1.right_bumper) {
             resetForwardDisplacement();
@@ -224,26 +227,19 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     }
 
 //    final double IN_PER_TICK = 0.00079829719;
-    final double TICK_PER_IN = 1248.66631083;
-
-    int[] ticks = new int[] { 0, 0 };
+    final double TICKS_PER_INCH = 1248.66631083;
     double forwardDisplacement = 0;
     void updateForwardDisplacement() {
         int leftPos = leftEncoder.getCurrentPosition();
         int rightPos = rightEncoder.getCurrentPosition();
 
-        ticks[0] = leftPos;
-        ticks[1] = rightPos;
-
         // left encoder is reversed
 //        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
-        forwardDisplacement = (-ticks[0] + ticks[1]) / (2d * TICK_PER_IN);
+        forwardDisplacement = (-leftPos+ rightPos) / (2d * TICKS_PER_INCH);
     }
 
     void resetForwardDisplacement() {
         resetEncoders();
-        ticks[0] = 0;
-        ticks[1] = 0;
         forwardDisplacement = 0;
     }
     void resetEncoders() {
@@ -252,6 +248,9 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
         leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     double radPSToRPM(double radiansPerSec) {
@@ -280,7 +279,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         lastPowers = new double[] {fl, fr, bl, br};
     }
 
-    void setMotorPowersSmoothed(double flPow, double frPow, double blPow, double brPow) {
+    void setPowersSmoothed(double flPow, double frPow, double blPow, double brPow) {
         double k = 1/50d;
 
         double fl = flPow * RPMMultipliers[0];
@@ -297,7 +296,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     }
 
     void driveForwardForTime(double seconds, double power) {
-        setMotorPowersForTimeSmoothed(seconds, power, power, power, power);
+        setPowersForTimeSmoothed(seconds, power, power, power, power);
     }
 
     void telemetryMotorVelocities() {
@@ -338,7 +337,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         }
 
         // -1 for right, 1 for left
-        double direction = Math.signum(rotation);
+
 
         // stops if within 0.25 degrees
         while (Math.abs(error) > 0.18) {
@@ -348,18 +347,16 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 //            }
 
             // power proportional to error between min and max power
-            error = normalizeAngle(targetYawDegrees - getRobotDegrees());
-            direction = Math.signum(error);
-
-            finalerror = error;
+            error = normalizeAngle( normalizeAngle(targetYawDegrees) - getRobotDegrees());
             telemetry.clear();
 
             double proportionalPower = Math.abs((error / rotation)) * (maxPower - minPower) + minPower;
+            double direction = Math.signum(error);
 
             telemetry.addData("current rot", getRobotDegrees());
             telemetry.addData("target rot", targetYawDegrees);
             telemetry.addData("error", error);
-            telemetry.addData("proportional power", proportionalPower);
+            telemetry.addData("proportional power", proportionalPower * direction);
             telemetry.update();
 
             if (proportionalPower > maxPower) proportionalPower = maxPower;
@@ -369,11 +366,13 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
             currentTime = timer.updateTime();
         }
 
+        finalerror = error;
+
         setPowers(0, 0, 0, 0);
     }
 
     double getRobotDegrees() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        return normalizeAngle(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
     }
 
     double normalizeAngle(double angle) {
@@ -385,19 +384,22 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         // dist = 28.57t - 10.02
         driveForwardForTime((distance + 10.02) / 28.57, 0.7);
     }
-    double maxPower = 0.7;
 
+    double kP = 1/12d;
     void moveForwardDistance(double distance) {
 //        moveForwardDistanceByTime(distance);
         double minPower = 0.225;
+        double maxPower = 0.5;
+
         resetForwardDisplacement();
 
 //        double startTime = timer.updateTime();
 //        double currentTime = startTime;
 
         double error = distance;
+        double direction = Math.signum(distance);
 
-        while (Math.abs(error) > 0.05) {
+        while (Math.abs(error) > 0.1) {
             // hard cap
 //            if (currentTime - startTime > 5) {
 //                break;
@@ -406,32 +408,65 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
             error = distance - forwardDisplacement;
 
-            double direction = Math.signum(error);  // -1 or 1
-
             double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
 
-            telemetry.addData("Distance error", error);
-            telemetry.addData("Power", power);
+            telemetry.addData("Error", error);
+            telemetry.addData("Power", power * direction);
             telemetryMotorPowers();
+            telemetry.addLine("-------");
 
-            setMotorPowersSmoothed(power * direction, power * direction, power * direction, power * direction);
+            telemetry.update();
+
+            setPowers(power * direction, power * direction, power * direction, power * direction);
         }
 
         setPowers(0, 0, 0, 0);
         finalerror = error;
     }
-    void setMotorPowersForTimeSmoothed(double seconds, double fl, double fr, double bl, double br) {
+
+    void driveForward(double distance) {
+        double minPower = 0.225;
+        double maxPower = 0.5;
+
+        resetForwardDisplacement();
+        double error;
+
+        do {
+            updateForwardDisplacement();
+
+            error = distance - forwardDisplacement;
+            double power = minPower + (maxPower - minPower) * Math.abs(error) * kP;
+            double direction = Math.signum(error);
+
+            power = Math.min(power, maxPower) * direction;
+
+            setPowers(power, power, power, power);
+
+            telemetry.clear();
+            telemetry.addLine(String.format("Power: %.3f", power));
+            telemetry.addLine(String.format("Error: %.2f", error));
+            telemetry.addLine(String.format("Forward displacement %.3f", forwardDisplacement));
+            telemetry.update();
+
+        } while (Math.abs(error) > 0.1);
+
+        setPowers(0, 0, 0, 0);
+
+        finalerror = error;
+
+    }
+    void setPowersForTimeSmoothed(double seconds, double fl, double fr, double bl, double br) {
         double startTime = timer.updateTime();
 
         // run for time
         while (timer.getTime() - startTime < seconds) {
-            setMotorPowersSmoothed(fl, fr, bl, br);
+            setPowersSmoothed(fl, fr, bl, br);
 //            telemetryMotorVelocities();
             timer.updateTime();
         }
 
         while (Math.abs(FL.getPower()) > 0.1) {
-            setMotorPowersSmoothed(0, 0, 0, 0);
+            setPowersSmoothed(0, 0, 0, 0);
         }
 
         setPowers(0, 0, 0, 0);

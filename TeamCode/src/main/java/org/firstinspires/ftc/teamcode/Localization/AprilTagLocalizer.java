@@ -110,10 +110,10 @@ public class AprilTagLocalizer extends Localizer {
         for(AprilTagDetection detection : currentDetections) {
             if(detection.id == 3 || detection.id == 4) {
                 cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
-                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+                        - APRIL_TAG_COORDS[detection.id - 1][0]) / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
 
                 cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
-                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+                        - APRIL_TAG_COORDS[detection.id - 1][1]) / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
             }else {
                 cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
                         -APRIL_TAG_COORDS [detection.id  - 1][0]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));

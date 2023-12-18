@@ -18,6 +18,10 @@ public class ButtonToggle {
         return false;
     }
 
+    public static ButtonToggle n() {
+        return new ButtonToggle();
+    }
+
     public boolean getValue() {
         return value;
     }
