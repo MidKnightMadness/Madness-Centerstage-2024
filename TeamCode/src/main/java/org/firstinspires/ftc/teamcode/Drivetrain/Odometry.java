@@ -12,18 +12,23 @@ import org.firstinspires.ftc.teamcode.Utility.Vector2;
 
 import java.util.concurrent.TimeUnit;
 //@Config
-public class Odometry implements Runnable{ // "implements runnable" is for multithreading
-
-    //All variables mentioned here will be addessed as "this.VARIABLE_NAME"
-
+public class Odometry {
     //Constants
-    // Same for now
-    double inPerTickLeft = 30.0d / 35574d;
-    double inPerTickRight = 30.0d / 38888d;
-    double inPerTickCenter = 20.0d / 25423d;
-    double verticalWheelDistance = 3.0;
-    // Need to retry this, somehow was not equalizing properly (centerDistanceTraveled - deltaRadians*distanceToFront)
-    double lateralWheelDistance = 12.5;
+    double inPerTickLeft = 30.0 / 38000d;
+    double inPerTickRight = 30.0 / 38000d;
+    double inPerTickFront= 30.0 / 38000d;
+    double HEADING_CORRECTION = 360d / 359.99;
+
+    double trackWidth = 12.5;
+    double distanceToFront = 1.5;
+
+    double [] deltaTicks = {0d, 0d, 0d}; // Left, right, center
+    double [] lastTicks = {0d, 0d, 0d}; // Left, right, center
+    double deltaRadians = 0.0;
+    double [] deltaCoords = {0.0, 0.0};
+
+    double perceivedHeading = 0.0;
+    double [] perceivedCoords = {0.0, 0.0};
 
 
     //Tracking Time
@@ -34,64 +39,22 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
     //Pose Tracking Variables
     public Vector2 position = new Vector2();
     Vector2 velocity = new Vector2();
+    Vector2 velocityRelativeToRobot = new Vector2();
     public double angularVelocity = 0.0;
-    public double rotationRadians;
+    public double rotationRadians = 0d;
 
-    //Odometry Wheel Variables
-    int lastLeftTicks = 0;
-    int deltaLeftTicks = 0;
-    double leftDistanceMoved;
-
-    int lastRightTicks = 0;
-    int deltaRightTicks = 0;
-    double rightDistanceMoved;
-
-    int lastTopTicks = 0;
-    int deltaTopTicks = 0;
-    double topDistanceMoved;
-
-
-    //Hardware Variables
-    public DcMotorEx leftEncoder;
-    public DcMotorEx horizontalEncoder;
-    public DcMotorEx rightEncoder;
-
-
-    //Intermediate Variables OwO
-
-    //Tick readings for encoders
-    public int leftTicks;
-    public int rightTicks;
-    public int topTicks;
-
-    //Angle change
-    double deltaRadians;
-
-    //Avg Distance of left and right encoders
-    double forwardMovement;
-
-    //Middle encoder movement from rotation
-    double lateralMovementFromRotation;
-    double trueLateralMovement;
-
-    //sin and cos of robot angle from horizontal right (unit circle style)
-    double rotSin;
-    double rotCosine;
-
-    //Change X and Y position of robot
-    double netX;
-    double netY;
-    Vector2 lastVelocity = new Vector2();
-
-
-    // Low pass filter used to smooth position
-    double prevLeft = 0.0;
-    double prevRight = 0.0;
-    double prevFront = 0.0;
-
+    // Hardware variables
+    DcMotorEx leftEncoder;
+    DcMotorEx rightEncoder;
+    DcMotorEx horizontalEncoder;
 
     public Odometry(HardwareMap hardwareMap, double startingAngleRadians, Vector2 startingPosition) {
-        OpModeIsActive = true;
+        deltaRadians = 0.0;
+        deltaCoords = new double [2];
+
+        perceivedHeading = startingAngleRadians;
+        perceivedCoords [0] = startingPosition.x;
+        perceivedCoords [1] = startingPosition.y;
         elapsedTime = new ElapsedTime();
 
         //Initialize Motors
@@ -104,65 +67,40 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         this.position = startingPosition;
     }
 
-    public void updatePosition() {
+    public void updatePosition() { // Assuming left and right are positive for forward, horizontal is positive for counterclockwise
+        // Update encoder ticks
+        deltaTicks [0] = leftEncoder.getCurrentPosition() - lastTicks [0];
+        deltaTicks [1] = rightEncoder.getCurrentPosition() - lastTicks [1];
+        deltaTicks [2] = horizontalEncoder.getCurrentPosition() - lastTicks [2];
 
-        //Updating Time
-        double currentTime = elapsedTime.time(TimeUnit.MICROSECONDS) / 1000000.0d;
-        deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
+        lastTicks [0] = leftEncoder.getCurrentPosition();
+        lastTicks [1] = rightEncoder.getCurrentPosition();
+        lastTicks [2] = horizontalEncoder.getCurrentPosition();
 
-        //Implementing low pass filter for smoothing
-        //Note: change coefficients to make filter more/less responsive
-        leftTicks = (int) (-0.9 * leftEncoder.getCurrentPosition()+ 0.1 * lastLeftTicks);
-        rightTicks = (int) (-0.9 * rightEncoder.getCurrentPosition() + 0.1 * lastRightTicks);
-        topTicks = (int) (-0.9 * horizontalEncoder.getCurrentPosition() + 0.1 * lastTopTicks);
+        // Assume left and right are positive for forward, front is positive for counterclockwise
+        deltaRadians = (deltaTicks [1] * inPerTickRight - deltaTicks [0] * inPerTickLeft) * HEADING_CORRECTION / (trackWidth);
 
-        //calculate change in tick reading
-        deltaLeftTicks = leftTicks - lastLeftTicks;
-        deltaRightTicks = rightTicks - lastRightTicks;
-        deltaTopTicks = topTicks - lastTopTicks;
-
-        //update last enocder values with new low pass filter values
-        lastLeftTicks = leftTicks;
-        lastRightTicks = rightTicks;
-        lastTopTicks = topTicks;
-
-        // raw distance from each encoder
-        leftDistanceMoved = inPerTickLeft * deltaLeftTicks;
-        rightDistanceMoved = inPerTickRight * deltaRightTicks;
-        topDistanceMoved = inPerTickCenter * deltaTopTicks;
-
-        // calculate change in angles
-        deltaRadians = getDeltaRotation(leftDistanceMoved, rightDistanceMoved); // Added calibration for systematic error
-        angularVelocity = deltaRadians / deltaTime;
+        perceivedHeading += deltaRadians;
         rotationRadians += deltaRadians;
 
-        //average left and right encoder distance
-        forwardMovement = (leftDistanceMoved + rightDistanceMoved) / 2.0;
-        //Actual horizontal movement without rotational influence
-        trueLateralMovement = topDistanceMoved - deltaRadians * verticalWheelDistance;
+        deltaCoords [0] = -Math.sin(perceivedHeading) * (deltaTicks [2] * inPerTickFront - deltaRadians * distanceToFront) + Math.cos(perceivedHeading) * (deltaTicks [1] * inPerTickRight + deltaTicks [0] * inPerTickLeft) / 2d;
+        deltaCoords [1] = Math.cos(perceivedHeading) * (deltaTicks [2] * inPerTickFront - deltaRadians * distanceToFront) + Math.sin(perceivedHeading) * (deltaTicks [1] * inPerTickRight + deltaTicks [0] * inPerTickLeft) / 2d;
 
-        //assigning sin and cos of rotation
-        rotSin = Math.sin(rotationRadians);
-        rotCosine = Math.cos(rotationRadians);
+        position.x += deltaCoords [0];
+        position.y += deltaCoords [1];
+        perceivedCoords [0] += deltaCoords [0];
+        perceivedCoords [1] += deltaCoords [1];
 
-        //Calculating change X and Y position of robot
-        netX = forwardMovement * rotCosine + trueLateralMovement * rotSin;
-        netY = forwardMovement * rotSin - trueLateralMovement * rotCosine;
+        deltaTime = elapsedTime.seconds() - lastTime;
+        angularVelocity = deltaRadians / deltaTime;
+        velocity.x = deltaCoords [0] / deltaTime;
+        velocity.y = deltaCoords [1] / deltaTime;
+        velocityRelativeToRobot.x = (deltaTicks [2] * inPerTickFront - deltaRadians * distanceToFront) / deltaTime;
+        velocityRelativeToRobot.y = (deltaTicks [1] * inPerTickRight + deltaTicks [0] * inPerTickLeft) / (2d * deltaTime);
 
-        //Calculating final x and y
-        //Note: Changed signs since was reversed, had to re-swap variables
-        this.position.x += (12.0 / 10.75) * netX;
-        this.position.y += (12.0 / 10.75) * netY;
-
-        //getting x and y velocities
-        velocity.x = - 0.75 * netX / deltaTime + 0.25 * lastVelocity.x;
-        velocity.y = 0.75 * netY / deltaTime + 0.25 * lastVelocity.y;
-
-        lastVelocity.x = velocity.x;
-        lastVelocity.y = velocity.y;
+        lastTime = elapsedTime.seconds();
+        elapsedTime.reset();
     }
-
 
     public void resetEncoders() {
         leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -185,7 +123,7 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
         telemetry.addLine(String.valueOf(deltaTime));
 
-        telemetry.addData("Wheel ticks", String.format("%d, %d, %d", leftTicks, rightTicks, topTicks));
+        telemetry.addData("Wheel ticks", String.format("%d, %d, %d", leftEncoder.getCurrentPosition(), rightEncoder.getCurrentPosition(), horizontalEncoder.getCurrentPosition()));
 
         telemetry.addLine("--------");
         telemetry.addLine("POSITION " + position);
@@ -196,9 +134,8 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
         telemetry.addData("Left Dead Wheel Position", leftEncoder.getCurrentPosition());
         telemetry.addData("Right Dead Wheel Position", rightEncoder.getCurrentPosition());
         telemetry.addData("Top Dead Wheel Position", horizontalEncoder.getCurrentPosition());
-        telemetry.addData("netX", netX);
-        telemetry.addData("netY", netY);
-        telemetry.addData("trueLateralMovement", trueLateralMovement);
+        telemetry.addData("netX", deltaCoords [0]);
+        telemetry.addData("netY", deltaCoords [1]);
     }
 
 
@@ -208,10 +145,6 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
     public void setRotation(double rotation) {
         this.rotationRadians = rotation;
-    }
-
-    public double getDeltaRotation(double leftChange, double rightChange) {
-        return (rightChange - leftChange) / lateralWheelDistance;
     }
 
     public double getXCoordinate() {
@@ -232,23 +165,5 @@ public class Odometry implements Runnable{ // "implements runnable" is for multi
 
     public Vector2 getVelocity() {
         return velocity;
-    }
-
-
-    // For multithreading
-    public boolean OpModeIsActive = true;
-    @Override
-    public void run() { // Run, ideally at a regulated rate, the odometry algorithm
-        // Will assume odometry object is already initialized
-        // OpModeIsActive variable for emergency stop
-        while(OpModeIsActive){
-
-            this.updatePosition();
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
