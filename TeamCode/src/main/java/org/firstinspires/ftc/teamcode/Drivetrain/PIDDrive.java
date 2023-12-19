@@ -94,9 +94,9 @@ public class PIDDrive{
         // Output data (was used in testing)
         telemetry.addLine("\nupdated14");
         telemetry.addData("Update rate", 1.0 / odometry.deltaTime);
-        telemetry.addData("\nPID ======================\nLeft", odometry.leftTicks);
-        telemetry.addData("Right", odometry.rightTicks);
-        telemetry.addData("Front", odometry.topTicks);
+        telemetry.addData("\nPID ======================\nLeft", odometry.leftEncoder.getCurrentPosition());
+        telemetry.addData("Right", odometry.rightEncoder.getCurrentPosition());
+        telemetry.addData("Front", odometry.horizontalEncoder.getCurrentPosition());
 
         telemetry.addData("\nx", odometry.getXCoordinate());
         telemetry.addData("y", odometry.getYCoordinate());

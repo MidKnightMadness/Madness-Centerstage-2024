@@ -44,9 +44,9 @@ public class Odometry {
     public double rotationRadians = 0d;
 
     // Hardware variables
-    DcMotorEx leftEncoder;
-    DcMotorEx rightEncoder;
-    DcMotorEx horizontalEncoder;
+    public DcMotorEx leftEncoder;
+    public DcMotorEx rightEncoder;
+    public DcMotorEx horizontalEncoder;
 
     public Odometry(HardwareMap hardwareMap, double startingAngleRadians, Vector2 startingPosition) {
         deltaRadians = 0.0;
@@ -110,9 +110,9 @@ public class Odometry {
         position = new Vector2();
         rotationRadians = 0;
 
-        leftEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        horizontalEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        leftEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        horizontalEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public String positionToString() {return String.format("(%f, %f)", position.x, position.y); }

@@ -68,6 +68,8 @@ public class AprilTagLocalizer extends Localizer {
 
     @Override
     double[] getCoords(double robotHeading, double currentX, double currentY) {
+
+
         return new double[0];
     }
 
@@ -81,45 +83,52 @@ public class AprilTagLocalizer extends Localizer {
         List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
-        if(currentDetections.size() == 0 || currentDetections == null){
+        if(currentDetections.size() == 0 || currentDetections == null){ // Works for all tags!
             return new double [] {currentX, currentY, robotHeading};
         }
 
         for(AprilTagDetection detection : currentDetections) { // Calculate range coefficient
+            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+
             if(detection.id == 3 || detection.id == 4) {
                 rangeCoefficient += 1d /
-                        (detection.ftcPose.range * detection.ftcPose.range);
+                        (actualRange * actualRange);
             }else {
                 rangeCoefficient += 0.1 /
-                        (detection.ftcPose.range * detection.ftcPose.range);
+                        (actualRange * actualRange);
             }
         }
 
         for(AprilTagDetection detection : currentDetections) {
+            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+
             if(detection.id == 3 || detection.id == 4) {
                 heading += (detection.ftcPose.yaw * 1d) /
-                        ((detection.ftcPose.range * detection.ftcPose.range));
-            }else if(detection.id > 6 ) {
-
+                        (rangeCoefficient * (actualRange * actualRange));
+            }else if(detection.id > 6) {
+                heading += ((detection.ftcPose.yaw + Math.PI) * 0.1) /
+                        (rangeCoefficient * (actualRange * actualRange));
             }else {
                 heading += (detection.ftcPose.yaw * 0.1) /
-                        ((detection.ftcPose.range * detection.ftcPose.range));
+                        (rangeCoefficient * (actualRange * actualRange));
             }
         }
 
         for(AprilTagDetection detection : currentDetections) {
+            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+
             if(detection.id == 3 || detection.id == 4) {
-                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
-                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * actualRange
+                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / (rangeCoefficient * (actualRange * actualRange));
 
-                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
-                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * actualRange
+                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / (rangeCoefficient * (actualRange * actualRange));
             }else {
-                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
-                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * actualRange
+                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 0.1 / (rangeCoefficient * (actualRange * actualRange));
 
-                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * (detection.ftcPose.range * detection.ftcPose.range)
-                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * actualRange
+                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 0.1 / (rangeCoefficient * (actualRange * actualRange));
             }
         }
 
@@ -214,5 +223,19 @@ public class AprilTagLocalizer extends Localizer {
         this.telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         this.telemetry.addLine("RBE = Range, Bearing & Elevation");
 
-    }   // end method telemetryAprilTag()
+    }
+
+    private double [][] TAG_RANGE_CORRECTIONS = { // A, B, C
+            // Perceived range = A * exp(C * range) + B
+            {2.352 * 10000d, -2.351 * 10000d, 4.179 / 100000d}, // ID 1
+            {6503d, -6502d, 0.0001502}, // ID 2
+            {3909d, -3908d, 0.0002501}, // ID 3
+            {298.8, -297.2, 0.003194}, // ID 4
+            {-1.282 * 10000d, 1.282 * 10000d, -7.845 / 100000d}, // ID 5
+            {-837.2, 837.6, -0.001248}, // ID 6
+    };
+
+    public double correctAprilTagError(int id, double perceivedRange){
+        return (2.303 * Math.log10((perceivedRange - TAG_RANGE_CORRECTIONS[id - 1][1]) / TAG_RANGE_CORRECTIONS[id - 1][0]) / TAG_RANGE_CORRECTIONS[id - 1][2]);
+    }
 }
