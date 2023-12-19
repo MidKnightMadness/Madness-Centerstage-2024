@@ -5,37 +5,29 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
-import org.firstinspires.ftc.teamcode.Components.OuttakeBox;
 
 @TeleOp(group= "[Game]", name = "Driver Controlled TeleOp")
 public class Main extends OpMode {
     MecanumDrive mecanumDrive;
-
     DcMotor intakeMotor;
-    OuttakeBox OuttakeServo;
-
-    ButtonToggle buttonToggleA, g1RightBump;
-
-    public DcMotorEx motorRight;
-    public DcMotorEx motorLeft;
-
-    Servo rightIntakeServo;
-    Servo leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
-
-
-    ButtonToggle g2Y, g2A, g2LeftBump;
-
-    DcMotorEx IntakeMotor;
-
+    ButtonToggle g1A, g1RightBump;
+    public DcMotorEx motorRight, motorLeft;
+    Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
+    ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     double[] rightIntakeServoPositions = {0.3075, 0.2425, 0.2223, 0.1605, 0.126};
     double[] leftIntakeServoPositions = {0.8375, 0.89, 0.893, 0.939, 0.9575};
-
     double wristVertical = 0.58;
     double wristDown = 0.388;
+
+    boolean isIntakeMode = true;
+
+    Gamepad gamepad;
+
 
     @Override
     public void init() {
@@ -44,13 +36,13 @@ public class Main extends OpMode {
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
-
-        g2Y = new ButtonToggle();
+                g2Y = new ButtonToggle();
         g2A = new ButtonToggle();
         g2LeftBump = new ButtonToggle();
-        buttonToggleA = new ButtonToggle();
+        g1A = new ButtonToggle();
         g1RightBump = new ButtonToggle();
-
+        g2X = new ButtonToggle();
+        g2LeftBump = new ButtonToggle();
         rightIntakeServo = hardwareMap.get(Servo.class, "Right intake servo");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
@@ -59,7 +51,6 @@ public class Main extends OpMode {
 
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
-        buttonToggleA = new ButtonToggle();
 
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -72,15 +63,15 @@ public class Main extends OpMode {
 
     double power = 1;
     public void handleDriverControls() {
-        if (g1RightBump.update(gamepad1.right_bumper)) {
-            if (power == 1) {
-                power = 0.25;
-            }
-            else {
-                power = 1;
-            }
-        }
-        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y,-gamepad1.right_stick_x);
+//        if (g1RightBump.update(gamepad1.right_bumper)) {
+//            if (power == 1) {
+//                power = 0.25;
+//            }
+//            else {
+//                power = 1;
+//            }
+//        }
+        mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
     }
 
     int currentIntakeServoIndex = 0;
@@ -88,12 +79,15 @@ public class Main extends OpMode {
     double wristPos = wristDown;
     public void handleManipulatorControls() {
         if (g2LeftBump.update(gamepad2.left_bumper)) {
-            if (wristPos == wristDown) {
-                wristPos = wristVertical;
-            }
-            else {
-                wristPos = wristDown;
-            }
+            gamepad2.rumble(1000);
+            isIntakeMode = !isIntakeMode;
+        }
+
+        if (isIntakeMode) {
+            handleIntakeControls();
+        }
+        else {
+            handleOuttakeControls();
         }
 //        if (g2Y.update(gamepad2.y)) {
 //            if (currentIntakeServoIndex < rightIntakeServoPositions.length - 1) {
@@ -106,52 +100,51 @@ public class Main extends OpMode {
 //                currentIntakeServoIndex--;
 //            }
 //        }
-
-        if (this.gamepad2.right_bumper) {
-            if (gamepad2.a) {
-                boxServo.setPosition(0.15);
-            }
-            else {
-                boxServo.setPosition(1);
-            }
-
-        }
-        else {
-            boxServo.setPosition(0.6435);
-        }
-
-        rightWristServo.setPosition(wristPos);
-
-        telemetry.addData("Intake servo pos index", currentIntakeServoIndex);
-        telemetry.addData("Right intake servo", rightIntakeServo.getPosition());
-        telemetry.addData("Left intake servo", leftIntakeServo.getPosition());
-
-
-        telemetry.addData("\nLeft Slides Pos", motorLeft.getCurrentPosition());
-        telemetry.addData("Right Slides Pos", motorRight.getCurrentPosition());
-
-        // rightIntakeServo.setPosition(rightIntakeServoPositions[currentIntakeServoIndex]);
-        if (gamepad2.a) {
-            rightIntakeServo.setPosition(0.126 + (0.3075 - 0.126) * gamepad2.right_trigger);
-//            leftIntakeServo.setPosition(0.9575 - (0.9575 - 0.8375) * gamepad2.right_trigger);
-        }
-        else {
-            rightIntakeServo.setPosition(0.185);
-        }
-
-
-
-
-
-        intakeMotor.setPower(gamepad2.left_stick_y);
-        motorLeft.setPower(this.gamepad2.right_stick_y * -0.5);
-        motorRight.setPower(this.gamepad2.right_stick_y * -0.5 * 0.75);
     }
 
     @Override
     public void loop() {
         handleDriverControls();
         handleManipulatorControls();
+        telemetry();
     }
+
+    void handleIntakeControls() {
+        intakeMotor.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+        if (gamepad2.a) {
+            rightIntakeServo.setPosition(0.126 + (0.3075 - 0.126) * gamepad2.right_trigger);;
+        }
+        else {
+            rightIntakeServo.setPosition(0.185);
+        }
+    }
+
+    void handleOuttakeControls() {
+        double intakePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.5;
+        motorLeft.setPower(intakePower);
+        motorRight.setPower(intakePower);
+
+        if (this.gamepad2.right_bumper) {
+            if (gamepad2.a) {
+                boxServo.setPosition(0.45);  // right
+            } else {
+                boxServo.setPosition(0.85);  // left
+            }
+        } else {
+            boxServo.setPosition(0.6435);   // center
+        }
+
+        if (g2X.update(gamepad2.x)) {
+            if (wristPos == wristDown) {wristPos = wristVertical; }
+            else { wristPos = wristDown; }
+            rightWristServo.setPosition(wristPos);
+        }
+    }
+
+    void telemetry() {
+        telemetry.addData("Mode", isIntakeMode ? "Intake" : "Outtake");
+
+    }
+
 }
 

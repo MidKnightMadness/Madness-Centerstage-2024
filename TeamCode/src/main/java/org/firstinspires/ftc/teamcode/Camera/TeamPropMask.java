@@ -34,8 +34,8 @@ public class TeamPropMask extends OpenCvPipeline {
 
 
     // blue color bounds
-    Scalar blueLower = new Scalar(90, 100, 100);
-    Scalar blueUpper = new Scalar(140, 255, 255);
+    Scalar blueLower = new Scalar(85, 90, 90);
+    Scalar blueUpper = new Scalar(145, 255, 255);
 
     // red color bounds
     Scalar redLower = new Scalar(0, 100, 100);
@@ -49,7 +49,7 @@ public class TeamPropMask extends OpenCvPipeline {
 //    Rect centerRect = RectangleFactory.generateRectFromPercentages(width, height, 73, 50, 100, 100);
 
     Rect leftRect = new Rect(90, 200, 95, 75);
-    Rect rightRect = new Rect(495, 180, 95, 75);
+    Rect rightRect = new Rect(510, 200, 95, 75);
     Rect centerRect = new Rect(300, 185, 95, 75);
 
     Map<SpikeMarkPositions, Pose> spikeMarkScoringOffsets = new HashMap<SpikeMarkPositions, Pose>() {{
