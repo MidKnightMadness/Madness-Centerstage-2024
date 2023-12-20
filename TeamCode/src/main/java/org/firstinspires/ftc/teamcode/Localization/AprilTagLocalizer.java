@@ -73,7 +73,7 @@ public class AprilTagLocalizer extends Localizer {
         return new double[0];
     }
 
-    double [] getRelCoords(double robotHeading, double currentX, double currentY){ // Camera coordinates, relative to field; x, y, heading
+    public double [] getRelCoords(double robotHeading, double currentX, double currentY){ // Camera coordinates, relative to field; x, y, heading
         // Reset calculation variables
         rangeCoefficient = 0d;
         heading = 0d;

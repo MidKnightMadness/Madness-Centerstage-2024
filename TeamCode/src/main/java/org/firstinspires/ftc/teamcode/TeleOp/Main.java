@@ -71,7 +71,7 @@ public class Main extends OpMode {
 //                power = 1;
 //            }
 //        }
-        mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
+        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
     }
 
     int currentIntakeServoIndex = 0;
@@ -120,9 +120,8 @@ public class Main extends OpMode {
     }
 
     void handleOuttakeControls() {
-        double intakePower = (gamepad2.right_trigger - gamepad2.left_trigger) * 0.5;
-        motorLeft.setPower(intakePower);
-        motorRight.setPower(intakePower);
+        motorLeft.setPower(this.gamepad1.left_stick_y * 0.4);
+        motorRight.setPower(this.gamepad1.left_stick_y * 0.4 * 0.75);
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
