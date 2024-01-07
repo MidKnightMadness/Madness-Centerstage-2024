@@ -27,8 +27,9 @@ public class LocalizationTester extends OpMode {
 
 
     double [] cameraCoordinates = {0.0, 0.0};
-    double [] targetCoordinates = {118.5, 109d};
+    double [] targetCoordinates = {118.5, 35d};
     double P = 0.0;
+    double D = 0.0;
 
 
     @Override
@@ -52,16 +53,30 @@ public class LocalizationTester extends OpMode {
         imu.resetYaw();
     }
 
+    double lastXError = 0.0;
+    double lastYError = 0.0;
     @Override
     public void loop() {
         if(gamepad1.dpad_up && !gamepad1.dpad_down){
             P += 0.01;
-        }else if(!gamepad1.dpad_up && gamepad1.dpad_down){
+        }else if(!gamepad1.dpad_up && gamepad1.dpad_down) {
             P -= 0.01;
         }
+        D += 0.005 * gamepad1.right_stick_y;
 
         cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
-        drive.FieldOrientedDrive(P * -(targetCoordinates [0] - cameraCoordinates [0]), P * -(targetCoordinates [1] - cameraCoordinates [1]), 0.0, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
+        double xError = targetCoordinates [0] - cameraCoordinates [0];
+        double yError = targetCoordinates [1] - cameraCoordinates [1];
+
+        double dX = xError - lastXError;
+        double dY = yError - lastYError;
+
+        lastXError = xError;
+        lastYError = yError;
+        drive.FieldOrientedDrive(P * (xError) - D * dX,
+                P * (yError) - D * dY,
+                0.0,
+                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
 
         telemetry();
     }
@@ -76,6 +91,7 @@ public class LocalizationTester extends OpMode {
         }
 
         telemetry.addData("P", P);
+        telemetry.addData("D", D);
         telemetry.addLine("\n\n\n========================");
 
         localizer.telemetryAprilTag();

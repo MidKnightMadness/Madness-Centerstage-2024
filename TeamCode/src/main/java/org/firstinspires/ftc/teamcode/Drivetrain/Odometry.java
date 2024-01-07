@@ -58,9 +58,9 @@ public class Odometry {
         elapsedTime = new ElapsedTime();
 
         //Initialize Motors
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "BL");
+        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
         rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
-        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "FL");
+        horizontalEncoder = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
         //Reset Position
         this.rotationRadians = startingAngleRadians;
@@ -69,9 +69,9 @@ public class Odometry {
 
     public void updatePosition() { // Assuming left and right are positive for forward, horizontal is positive for counterclockwise
         // Update encoder ticks
-        deltaTicks [0] = leftEncoder.getCurrentPosition() - lastTicks [0];
-        deltaTicks [1] = rightEncoder.getCurrentPosition() - lastTicks [1];
-        deltaTicks [2] = horizontalEncoder.getCurrentPosition() - lastTicks [2];
+        deltaTicks [0] = -(leftEncoder.getCurrentPosition() - lastTicks [0]);
+        deltaTicks [1] = -(rightEncoder.getCurrentPosition() - lastTicks [1]);
+        deltaTicks [2] = -(horizontalEncoder.getCurrentPosition() - lastTicks [2]);
 
         lastTicks [0] = leftEncoder.getCurrentPosition();
         lastTicks [1] = rightEncoder.getCurrentPosition();
@@ -110,9 +110,9 @@ public class Odometry {
         position = new Vector2();
         rotationRadians = 0;
 
-//        leftEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        horizontalEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        rightEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        horizontalEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public String positionToString() {return String.format("(%f, %f)", position.x, position.y); }

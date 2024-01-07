@@ -49,26 +49,26 @@ public class SlidesTesting extends LinearOpMode {
             motorLeft.setPower(-0.25);
             motorRight.setPower(-0.25 * 0.75);
 
-            if(timer.milliseconds() > 1000){
-                rightWristServo.setPosition(0.58); // vertical
-
-                if(timer.milliseconds() > 1500) {
-                    boxServo.setPosition(0.45); // right
-                }else{
-                    boxServo.setPosition(0.6435); // center
-                }
-            }else{
-                boxServo.setPosition(0.6435); // center
-                rightWristServo.setPosition(0.388); // down
-            }
+//            if(timer.milliseconds() > 1000){
+//                rightWristServo.setPosition(0.58); // vertical
+//
+//                if(timer.milliseconds() > 1500) {
+//                    boxServo.setPosition(0.45); // right
+//                }else{
+//                    boxServo.setPosition(0.6435); // center
+//                }
+//            }else{
+//                boxServo.setPosition(0.6435); // center
+//                rightWristServo.setPosition(0.388); // down
+//            }
         }
 
-        boxServo.setPosition(0.6435); // center
-        rightWristServo.setPosition(0.388); // down
-        motorLeft.setPower(-0.25);
-        motorRight.setPower(-0.25 * 0.75);
+//        boxServo.setPosition(0.6435); // center
+//        rightWristServo.setPosition(0.388); // down
+//        motorLeft.setPower(-0.25);
+//        motorRight.setPower(-0.25 * 0.75);
 
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         telemetry.addLine("Waiting to go down");
         telemetry.update();
 
