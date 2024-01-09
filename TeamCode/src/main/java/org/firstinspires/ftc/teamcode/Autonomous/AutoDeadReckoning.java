@@ -16,7 +16,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
+import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
+import org.firstinspires.ftc.teamcode.Localization.Localizer;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -51,6 +53,8 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     OpenCvWebcam webcam;
     IMU imu;
     TeamPropMask teamPropMask;
+    Localizer localizer;
+    MecanumDrive drive;
     @Override
     public void init() {
         timer = new Timer();
@@ -83,7 +87,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         });
 
         init_IMU();
-        init_motors();
+        drive = new MecanumDrive(hardwareMap, telemetry);
     }
 
     void init_IMU() {
@@ -99,31 +103,31 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         imu.resetYaw();
     }
 
-    void init_motors() {
-        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
-        rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
-
-        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        FL = hardwareMap.get(DcMotorEx.class, "FL");
-        FR = hardwareMap.get(DcMotorEx.class, "FR");
-        BL = hardwareMap.get(DcMotorEx.class, "BL");
-        BR = hardwareMap.get(DcMotorEx.class, "BR");
-
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        FL.setDirection(DcMotorSimple.Direction.REVERSE);
-        BL.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
+//    void init_motors() {
+//        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
+//        rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
+//
+//        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        FL = hardwareMap.get(DcMotorEx.class, "FL");
+//        FR = hardwareMap.get(DcMotorEx.class, "FR");
+//        BL = hardwareMap.get(DcMotorEx.class, "BL");
+//        BR = hardwareMap.get(DcMotorEx.class, "BR");
+//
+//        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//
+//        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+//        BL.setDirection(DcMotorSimple.Direction.REVERSE);
+//
+//        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//    }
 
     @Override
     public void init_loop() {
@@ -138,24 +142,24 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
         if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
             int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
-            moveForwardDistance(24);
+            moveForwardDistance(24, false);
             setTargetRotation(spikeMarkDirection * 90);
-            moveForwardDistance(5);
+            moveForwardDistance(5, false);
             sleep(1000);
-            moveForwardDistance(-5);
+            moveForwardDistance(-5, false);
             setTargetRotation(0);
 //            moveForwardDistance(-24);
         }
         else {
-            moveForwardDistance(33);
+            moveForwardDistance(33,false);
             sleep(1000);
-            moveForwardDistance(-33);
+            moveForwardDistance(-33, false);
         }
 
-        // park
-//        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
-//        setTargetRotation(parkingDirection * 90);
-//        moveForwardDistance(getInchesToPark());
+       //  park
+        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
+        setTargetRotation(parkingDirection * 90);
+        moveForwardDistance(getInchesToPark(), true);
     }
 
     void sleep(long milis) {
@@ -188,7 +192,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         }
 
         if (b.update(gamepad1.b)) {
-            moveForwardDistance(12);
+            moveForwardDistance(12, false);
         }
         if (x.update(gamepad1.x)) {
             setTargetRotation(0);
@@ -353,6 +357,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
             double proportionalPower = Math.abs((error / rotation)) * (maxPower - minPower) + minPower;
             double direction = Math.signum(error);
 
+
             telemetry.addData("current rot", getRobotDegrees());
             telemetry.addData("target rot", targetYawDegrees);
             telemetry.addData("error", error);
@@ -366,9 +371,15 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
             currentTime = timer.updateTime();
         }
 
+        //add the method for PID here
+
         finalerror = error;
 
         setPowers(0, 0, 0, 0);
+    }
+
+    public void turnByTIme(double time){
+
     }
 
     double getRobotDegrees() {
@@ -386,7 +397,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     }
 
     double kP = 1/12d;
-    void moveForwardDistance(double distance) {
+    void moveForwardDistance(double distance, boolean alignOnLine) {
 //        moveForwardDistanceByTime(distance);
         double minPower = 0.225;
         double maxPower = 0.5;
@@ -398,7 +409,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
         double error = distance;
         double direction = Math.signum(distance);
-
         while (Math.abs(error) > 0.1) {
             // hard cap
 //            if (currentTime - startTime > 5) {
@@ -419,9 +429,36 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
             setPowers(power * direction, power * direction, power * direction, power * direction);
         }
+        double lastAngle = 0.0;
+        double accumulatedError = 0.0;
+        double xError = 0.0;
+        double yError = 0.0;
+        double lastXError = 0.0;
+        double lastYError = 0.0;
+        double [] cameraCoordinates = {0.0, 0.0};
+        double [] targetCoordinates = {118.5, 35d};
+        if(alignOnLine){
+            while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
+                cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);
+
+                xError = targetCoordinates [0] - cameraCoordinates [0];
+                yError = targetCoordinates [1] - cameraCoordinates [1];
+
+                double dX = xError - lastXError;
+                double dY = yError - lastYError;
+
+                lastXError = xError;
+                lastYError = yError;
+                drive.FieldOrientedDrive(-0.1 * (xError) + 0.1 * dX,
+                        -0.1 * (yError) + 0.1 * dY,
+                        0.0,
+                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, telemetry);
+            }
+        }
 
         setPowers(0, 0, 0, 0);
         finalerror = error;
+
     }
 
     void driveForward(double distance) {
