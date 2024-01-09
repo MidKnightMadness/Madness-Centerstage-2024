@@ -69,8 +69,8 @@ public class TestingAuto extends LinearOpMode {
         }
 
         timer.reset();
-        double angularVelocity = 0.0;
         double lastAngle = 0.0;
+        double accumulatedError = 0.0;
         while(Math.abs(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d) > 5d * Math.PI / 180d){ // Turning right 90˚
             odometry.updatePosition();
             driveInputs = PIDDrive.updatePID();
@@ -78,13 +78,18 @@ public class TestingAuto extends LinearOpMode {
             telemetry.addLine("updated1");
             telemetry.update();
 
-            drive.normalDrive(1d, 0d, 0d, -1.5 * (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d) +
-                    0.3 * ((imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d) - lastAngle));
+            accumulatedError += imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d;
+            accumulatedError *= 0.75;
+
+            drive.normalDrive(1d, 0d, 0d, -1.2d * (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + (Math.PI / 2d)) +
+                    0.3 * ((imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d) - lastAngle -
+                            0.0d * accumulatedError)
+            );
             lastAngle = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d);
         }
         Thread.sleep(1000);
 
-        while(Math.sqrt(xError*xError + yError * yError) < 0.25){ // Align to tag 2
+        while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
             cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);
 
             xError = targetCoordinates [0] - cameraCoordinates [0];
