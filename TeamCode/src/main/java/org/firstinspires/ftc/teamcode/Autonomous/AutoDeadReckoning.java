@@ -47,6 +47,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         return 52;
     }
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
+    double inchesToPark = getInchesToPark();
     Servo intakeRightServo;
     Timer timer;
     ButtonToggle a, b, x, y;
@@ -156,10 +157,16 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
             moveForwardDistance(-33, false);
         }
 
-       //  park
+        //  park
+        // parking only
+        //moveForwardDistance(1, false);
         int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
         setTargetRotation(parkingDirection * 90);
         moveForwardDistance(getInchesToPark(), true);
+
+
+
+
     }
 
     void sleep(long milis) {
