@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
+import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -51,6 +52,16 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     OpenCvWebcam webcam;
     IMU imu;
     TeamPropMask teamPropMask;
+
+    // Variables for aligning to april tags
+    AprilTagLocalizer localizer;
+    double [] cameraCoordinates = {0.0, 0.0};
+    double [] targetCoordinates = {118.5, 35d};
+    double xError = 0.0;
+    double yError = 0.0;
+    double lastXError = 0.0;
+    double lastYError = 0.0;
+
     @Override
     public void init() {
         timer = new Timer();

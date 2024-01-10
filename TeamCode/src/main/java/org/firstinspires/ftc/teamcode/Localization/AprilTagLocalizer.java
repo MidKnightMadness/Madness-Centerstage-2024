@@ -27,7 +27,7 @@ public class AprilTagLocalizer extends Localizer {
     // VARIABLES COPIED FROM CONCEPT APRIL TAG CLASS ===============================================
     private final boolean USE_WEBCAM = true;
     private AprilTagProcessor aprilTag;
-    private VisionPortal visionPortal;
+    public VisionPortal visionPortal;
 
     // CLASS SPECIFIC VARIABLES ====================================================================
     public final double[][] APRIL_TAG_COORDS = { // hardcoded

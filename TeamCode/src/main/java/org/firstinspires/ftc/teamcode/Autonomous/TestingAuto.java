@@ -41,13 +41,15 @@ public class TestingAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         localizer = new AprilTagLocalizer(hardwareMap, telemetry, 0.0, 0.0);
+//        localizer.visionPortal.stopStreaming();
         timer = new ElapsedTime();
         init_IMU();
 
-        drive = new MecanumDrive(hardwareMap, telemetry);
         odometry = new Odometry(hardwareMap, Math.PI / 2.0d, new Vector2(0.0, 0.0));
         odometry.resetEncoders();
         odometry.setRotation(Math.PI / 2.0d);
+
+        drive = new MecanumDrive(hardwareMap, telemetry);
 
         PIDDrive = new PIDDrive(odometry, targetStates [0][0], targetStates [0][1], targetStates [0][2], telemetry);
 
@@ -71,7 +73,7 @@ public class TestingAuto extends LinearOpMode {
         timer.reset();
         double lastAngle = 0.0;
         double accumulatedError = 0.0;
-        while(Math.abs(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d) > 5d * Math.PI / 180d){ // Turning right 90˚
+        while(Math.abs(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 3d) > 5d * Math.PI / 180d){ // Turning right 90˚
             odometry.updatePosition();
             driveInputs = PIDDrive.updatePID();
             telemetry.addData("Angle", (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d) * 180d / Math.PI);
@@ -81,13 +83,20 @@ public class TestingAuto extends LinearOpMode {
             accumulatedError += imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d;
             accumulatedError *= 0.75;
 
-            drive.normalDrive(1d, 0d, 0d, -1.2d * (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + (Math.PI / 2d)) +
+            drive.normalDrive(1d, 0d, 0d, -1.2d * (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + (Math.PI / 3d)) +
                     0.3 * ((imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d) - lastAngle -
                             0.0d * accumulatedError)
             );
             lastAngle = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d - 0d);
         }
+
+        telemetry.addLine("Turned successfully");
+        telemetry.update();
         Thread.sleep(1000);
+        cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);
+        xError = targetCoordinates [0] - cameraCoordinates [0];
+        yError = targetCoordinates [1] - cameraCoordinates [1];
+//        localizer.visionPortal.resumeStreaming();
 
         while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
             cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);
@@ -104,6 +113,14 @@ public class TestingAuto extends LinearOpMode {
                     -0.1 * (yError) + 0.1 * dY,
                     0.0,
                     imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, telemetry);
+
+            if(cameraCoordinates != null){
+                telemetry.addData("Percieved x", cameraCoordinates [0]);
+                telemetry.addData("Percieved y", cameraCoordinates [1]);
+            }else{
+                telemetry.addLine("No detections");
+            }
+            telemetry.update();
         }
     }
 
