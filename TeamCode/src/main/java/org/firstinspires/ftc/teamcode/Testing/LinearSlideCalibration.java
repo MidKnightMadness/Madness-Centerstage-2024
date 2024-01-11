@@ -40,25 +40,13 @@ public class LinearSlideCalibration extends OpMode {
 
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
-
-        dPadUp = new ButtonToggle();
-        dPadDown = new ButtonToggle();
-
-        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void loop() {
-        if (dPadUp.update(this.gamepad1.y)) {
-            rightSideMultiplier += 0.005;
-        }
-        if (dPadDown.update(this.gamepad1.a)) {
-            rightSideMultiplier -= 0.005;
-        }
-
-        motorLeft.setPower(this.gamepad1.left_stick_y * 0.4);
-        motorRight.setPower(this.gamepad1.left_stick_y * 0.4 * rightSideMultiplier);
+        double both = -gamepad1.left_trigger + gamepad1.right_trigger;
+        motorLeft.setPower((gamepad1.left_stick_y + both) * 0.5);
+        motorRight.setPower((gamepad1.right_stick_y + both)* 0.5);
 
         if (this.gamepad1.right_bumper) {
             resetEncoders();

@@ -178,10 +178,10 @@ public class BasicOpMode extends OpMode {
 
             telemetry.addData("\nx velocity", odometry.getVelocity().x);
             telemetry.addData("y velocity", odometry.getVelocity().y);
-
-            telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
-            telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
-            telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
+//
+//            telemetry.addData("\nleft encoder", odometry.leftEncoder.getCurrentPosition());
+//            telemetry.addData("right encoder", odometry.rightEncoder.getCurrentPosition());
+          //  telemetry.addData("center encoder", odometry.horizontalEncoder.getCurrentPosition());
 //
 //        }
 //

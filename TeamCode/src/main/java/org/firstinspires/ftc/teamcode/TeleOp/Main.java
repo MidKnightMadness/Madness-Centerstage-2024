@@ -120,8 +120,8 @@ public class Main extends OpMode {
     }
 
     void handleOuttakeControls() {
-        motorLeft.setPower(this.gamepad1.left_stick_y * 0.4);
-        motorRight.setPower(this.gamepad1.left_stick_y * 0.4 * 0.75);
+        motorLeft.setPower(this.gamepad2.left_stick_y * 1);
+        motorRight.setPower(this.gamepad2.left_stick_y * 1);
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {

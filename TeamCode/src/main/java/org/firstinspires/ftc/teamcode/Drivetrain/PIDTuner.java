@@ -19,7 +19,7 @@ public class PIDTuner extends LinearOpMode { // Currently only for x and y corre
     // HARDWARE ====================================================================================
     MecanumDrive drive;
     Odometry odometry;
-    PIDDrive PIDDrive;
+//    PIDDrive PIDDrive;
 
     // NUMBERS AND CALCULATIONS ====================================================================
     double [][] PID = { // Initial variables

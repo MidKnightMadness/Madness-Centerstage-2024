@@ -64,7 +64,7 @@ public class LocalizationTester extends OpMode {
         }
         D += 0.005 * gamepad1.right_stick_y;
 
-        cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
+        /// cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
         double xError = targetCoordinates [0] - cameraCoordinates [0];
         double yError = targetCoordinates [1] - cameraCoordinates [1];
 
