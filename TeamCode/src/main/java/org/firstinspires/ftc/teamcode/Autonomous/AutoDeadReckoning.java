@@ -16,11 +16,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
-import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
-import org.firstinspires.ftc.teamcode.Localization.Localizer;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
+import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -41,21 +40,21 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     public CameraEnums.CameraModes getAllianceColor(){
         return CameraEnums.CameraModes.BLUE;
     }
-    public DcMotorEx FL, FR, BL, BR, leftEncoder, rightEncoder;
+
     CameraModes cameraMode = getAllianceColor();
     public double getInchesToPark() {
         return 52;
     }
+
+    DeadReckoningDrive deadReckoningDrive;
+
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
-    double inchesToPark = getInchesToPark();
     Servo intakeRightServo;
     Timer timer;
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
-    IMU imu;
     TeamPropMask teamPropMask;
-    Localizer localizer;
-    MecanumDrive drive;
+
     @Override
     public void init() {
         timer = new Timer();
@@ -64,6 +63,8 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         b = new ButtonToggle();
         y = new ButtonToggle();
         x = new ButtonToggle();
+
+        deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
 
         teamPropMask = new TeamPropMask(640, 360, telemetry);
         teamPropMask.setMode(cameraMode);
@@ -86,55 +87,16 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
                 telemetry.addData("Error " + errorCode, "error accessing camera stream");
             }
         });
-
-        init_IMU();
-        drive = new MecanumDrive(hardwareMap, telemetry);
     }
-
-    void init_IMU() {
-
-        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
-        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
-
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        imu.resetYaw();
-    }
-
-//    void init_motors() {
-//        leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
-//        rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
-//
-//        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//        FL = hardwareMap.get(DcMotorEx.class, "FL");
-//        FR = hardwareMap.get(DcMotorEx.class, "FR");
-//        BL = hardwareMap.get(DcMotorEx.class, "BL");
-//        BR = hardwareMap.get(DcMotorEx.class, "BR");
-//
-//        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//
-//        FL.setDirection(DcMotorSimple.Direction.REVERSE);
-//        BL.setDirection(DcMotorSimple.Direction.REVERSE);
-//
-//        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//    }
 
     @Override
     public void init_loop() {
+        telemetry.clear();
         teamPropPosition = teamPropMask.getSpikeMarkPosition();
-        telemetry.addData("imu yaw", getRobotDegrees());
+        telemetry.addData("imu yaw", deadReckoningDrive.getRobotDegrees());
         telemetry.addData("Detected spike mark position", teamPropPosition);
+        deadReckoningDrive.updateDisplacement();
+        telemetry.addData("Displacement", deadReckoningDrive.getDisplacement());
     }
 
     @Override
@@ -143,30 +105,30 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 
         if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
             int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
-            moveForwardDistance(24, false);
-            setTargetRotation(spikeMarkDirection * 90);
-            moveForwardDistance(5, false);
+            deadReckoningDrive.moveForwardDistance(24);
+            deadReckoningDrive.setTargetRotation(spikeMarkDirection * 90);
+            deadReckoningDrive.moveForwardDistance(5);
             sleep(1000);
-            moveForwardDistance(-5, false);
-            setTargetRotation(0);
-//            moveForwardDistance(-24);
+            deadReckoningDrive.moveForwardDistance(-5);
+            deadReckoningDrive.setTargetRotation(-90);
         }
         else {
-            moveForwardDistance(33,false);
+            deadReckoningDrive.moveForwardDistance(33);
             sleep(1000);
-            moveForwardDistance(-33, false);
+            deadReckoningDrive.moveForwardDistance(-9);
         }
 
-        //  park
-        // parking only
-        //moveForwardDistance(1, false);
-        int parkingDirection = cameraMode == CameraModes.RED ? -1 : 1;  // red : turn right, blue : turn left
-        setTargetRotation(parkingDirection * 90);
-        moveForwardDistance(getInchesToPark(), true);
-
-
-
-
+        // go to backdrop
+        if (teamPropPosition == SpikeMarkPositions.RIGHT) {
+            deadReckoningDrive.setTargetRotation(-90);
+            deadReckoningDrive.moveRightDistance(16);
+            deadReckoningDrive.moveForwardDistance(30);
+            deadReckoningDrive.moveRightDistance(-18);
+            deadReckoningDrive.setTargetRotation(-90);
+        } else {
+            deadReckoningDrive.setTargetRotation(-90);
+            deadReckoningDrive.moveForwardDistance(30);
+        }
     }
 
     void sleep(long milis) {
@@ -178,354 +140,68 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         }
 
     }
-
-    void park() {
-        setMotorPowersForTime(2.5, 1, 1, 1, 1);
-    }
-
     double increment = 0.0005;
-
+    double kp = 0.2;
 
     @Override
     public void loop() {
+        telemetry.clear();
+
         if (y.update(gamepad1.y)) {
-            setTargetRotation(getRobotDegrees() + 90);
+//            deadReckoningDrive.moveRightDistance(-24);
+            deadReckoningDrive.setTargetRotation(0);
+//            setTargetRotation(Math.round(getRobotDegrees()) + 90);
 //            driveForwardForTime(2, 0.5);
         }
-
+//
         if (a.update(gamepad1.a)) {
-            setTargetRotation(getRobotDegrees() - 90);
+            deadReckoningDrive.moveRightDistance(24);
+//            setTargetRotation(Math.round(getRobotDegrees()) - 90);
 //            driveForward(12);
         }
-
+//
         if (b.update(gamepad1.b)) {
-            moveForwardDistance(12, false);
+            deadReckoningDrive.setTargetRotation(90);
         }
         if (x.update(gamepad1.x)) {
-            setTargetRotation(0);
+            deadReckoningDrive.setTargetRotation(-90);
         }
-
-        if (gamepad1.left_bumper) {
-            setPowers(1, 1, 1, 1);
-        }
-        else {
-            setPowers(0, 0, 0, 0);
-        }
-
+//
+//        if (gamepad1.left_bumper) {
+//            setPowers(1, 1, 1, 1);
+//        }
+//        else {
+//            setPowers(0, 0, 0, 0);
+//        }
+//
         if (this.gamepad1.dpad_up) {
-            kP += increment;
+            kp += increment;
         }
+
         if (gamepad1.dpad_down) {
-            kP -= increment;
+            kp -= increment;
         }
 
-        telemetry.clear();
-        telemetry.addData("Forward distance traveled", forwardDisplacement);
-        updateForwardDisplacement();
+        telemetry.addData("KP", kp);
 
-        telemetry.addData("Left ticks", leftEncoder.getCurrentPosition());
-        telemetry.addData("Right ticks", rightEncoder.getCurrentPosition());
-
-        telemetry.addData("imu yaw", getRobotDegrees());
-        telemetry.addData("final error", finalerror);
-        telemetry.addData("KP", kP);
-
-        if (this.gamepad1.right_bumper) {
-            resetForwardDisplacement();
-        }
+        deadReckoningDrive.setRotationKp(kp);
+//
+//        telemetry.clear();
+//        telemetry.addData("Forward distance traveled", forwardDisplacement);
+//        updateForwardDisplacement();
+//
+//        telemetry.addData("Left ticks", leftEncoder.getCurrentPosition());
+//        telemetry.addData("Right ticks", rightEncoder.getCurrentPosition());
+//
+//        telemetry.addData("imu yaw", getRobotDegrees());
+//        telemetry.addData("final error", finalerror);
+//        telemetry.addData("KP", kP);
+//
+//        if (this.gamepad1.right_bumper) {
+//            resetForwardDisplacement();
+//        }
 
 //        telemetryMotorVelocities();
     }
 
-//    final double IN_PER_TICK = 0.00079829719;
-    final double TICKS_PER_INCH = 1248.66631083;
-    double forwardDisplacement = 0;
-    void updateForwardDisplacement() {
-        int leftPos = leftEncoder.getCurrentPosition();
-        int rightPos = rightEncoder.getCurrentPosition();
-
-        // left encoder is reversed
-//        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
-        forwardDisplacement = (-leftPos+ rightPos) / (2d * TICKS_PER_INCH);
-    }
-
-    void resetForwardDisplacement() {
-        resetEncoders();
-        forwardDisplacement = 0;
-    }
-    void resetEncoders() {
-        leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    double radPSToRPM(double radiansPerSec) {
-        return radiansPerSec * 30d / Math.PI;
-    }
-
-    double RPMtoRadPS(double rpm) {
-        return rpm / 30d * Math.PI;
-    }
-
-    void setMotorVelocities(double flRPM, double frRPM, double blRPM, double brRPM) {
-        FL.setVelocity(RPMtoRadPS(flRPM), AngleUnit.RADIANS);
-        FR.setVelocity(RPMtoRadPS(frRPM) * 25d/16, AngleUnit.RADIANS);
-        BL.setVelocity(RPMtoRadPS(blRPM), AngleUnit.RADIANS);
-        BR.setVelocity(RPMtoRadPS(brRPM) * 25d/16, AngleUnit.RADIANS);
-    }
-
-    double[] lastPowers = {0, 0, 0, 0};
-
-    void setPowers(double fl, double fr, double bl, double br) {
-        FL.setPower(fl * RPMMultipliers[0]);
-        FR.setPower(fr * RPMMultipliers[1]);
-        BL.setPower(bl * RPMMultipliers[2]);
-        BR.setPower(br * RPMMultipliers[3]);
-
-        lastPowers = new double[] {fl, fr, bl, br};
-    }
-
-    void setPowersSmoothed(double flPow, double frPow, double blPow, double brPow) {
-        double k = 1/50d;
-
-        double fl = flPow * RPMMultipliers[0];
-        double fr = frPow * RPMMultipliers[1];
-        double bl = blPow * RPMMultipliers[2];
-        double br = brPow * RPMMultipliers[3];
-
-        FL.setPower(fl = lastPowers[0] * (1 - k) + fl * k);
-        FR.setPower(fr = lastPowers[1] * (1 - k) + fr * k);
-        BL.setPower(bl = lastPowers[2] * (1 - k) + bl * k);
-        BR.setPower(br = lastPowers[3] * (1 - k) + br * k);
-
-        lastPowers = new double[] {fl, fr, bl, br};
-    }
-
-    void driveForwardForTime(double seconds, double power) {
-        setPowersForTimeSmoothed(seconds, power, power, power, power);
-    }
-
-    void telemetryMotorVelocities() {
-        telemetry.addData("FL RPM", radPSToRPM(FL.getVelocity(AngleUnit.RADIANS)));
-        telemetry.addData("FR RPM", radPSToRPM(FR.getVelocity(AngleUnit.RADIANS)));
-        telemetry.addData("BL RPM", radPSToRPM(BL.getVelocity(AngleUnit.RADIANS)));
-        telemetry.addData("BR RPM", radPSToRPM(BR.getVelocity(AngleUnit.RADIANS)));
-    }
-    void telemetryMotorPowers() {
-        telemetry.addData("FL Pow", FL.getPower());
-        telemetry.addData("FR Pow", FR.getPower());
-        telemetry.addData("BL Pow", BL.getPower());
-        telemetry.addData("BR Pow", BR.getPower());
-    }
-
-    double finalerror = 0;
-
-    void setTargetRotation(double targetRotation) {
-        targetRotation = normalizeAngle(targetRotation);
-
-        double maxPower = 0.7;
-        double minPower = 0.225;
-
-        double percentToStop = 0.9995;
-
-        double startTime = timer.updateTime();
-        double currentTime = startTime;
-
-        double startingYaw = getRobotDegrees();
-
-        double rotation = normalizeAngle(targetRotation - startingYaw);
-        double targetYawDegrees = startingYaw + rotation;
-
-        double error = rotation;
-
-        if (rotation - startingYaw < 1) {
-            maxPower = minPower;
-        }
-
-        // -1 for right, 1 for left
-
-
-        // stops if within 0.25 degrees
-        while (Math.abs(error) > 0.18) {
-            // hard cap
-//            if (currentTime - startTime > 5) {
-//                break;
-//            }
-
-            // power proportional to error between min and max power
-            error = normalizeAngle( normalizeAngle(targetYawDegrees) - getRobotDegrees());
-            telemetry.clear();
-
-            double proportionalPower = Math.abs((error / rotation)) * (maxPower - minPower) + minPower;
-            double direction = Math.signum(error);
-
-
-            telemetry.addData("current rot", getRobotDegrees());
-            telemetry.addData("target rot", targetYawDegrees);
-            telemetry.addData("error", error);
-            telemetry.addData("proportional power", proportionalPower * direction);
-            telemetry.update();
-
-            if (proportionalPower > maxPower) proportionalPower = maxPower;
-            setPowers(-proportionalPower * direction, proportionalPower * direction,
-                    -proportionalPower * direction, proportionalPower * direction);
-
-            currentTime = timer.updateTime();
-        }
-
-        //add the method for PID here
-
-        finalerror = error;
-
-        setPowers(0, 0, 0, 0);
-    }
-
-    public void turnByTIme(double time){
-
-    }
-
-    double getRobotDegrees() {
-        return normalizeAngle(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-    }
-
-    double normalizeAngle(double angle) {
-        return (angle + 180) % 360 - 180;
-    }
-
-    @Deprecated
-    void moveForwardDistanceByTime(double distance) {
-        // dist = 28.57t - 10.02
-        driveForwardForTime((distance + 10.02) / 28.57, 0.7);
-    }
-
-    double kP = 1/12d;
-    void moveForwardDistance(double distance, boolean alignOnLine) {
-//        moveForwardDistanceByTime(distance);
-        double minPower = 0.225;
-        double maxPower = 0.5;
-
-        resetForwardDisplacement();
-
-//        double startTime = timer.updateTime();
-//        double currentTime = startTime;
-
-        double error = distance;
-        double direction = Math.signum(distance);
-        while (Math.abs(error) > 0.1) {
-            // hard cap
-//            if (currentTime - startTime > 5) {
-//                break;
-//            }
-            updateForwardDisplacement();
-
-            error = distance - forwardDisplacement;
-
-            double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
-
-            telemetry.addData("Error", error);
-            telemetry.addData("Power", power * direction);
-            telemetryMotorPowers();
-            telemetry.addLine("-------");
-
-            telemetry.update();
-
-            setPowers(power * direction, power * direction, power * direction, power * direction);
-        }
-        double lastAngle = 0.0;
-        double accumulatedError = 0.0;
-        double xError = 0.0;
-        double yError = 0.0;
-        double lastXError = 0.0;
-        double lastYError = 0.0;
-        double [] cameraCoordinates = {0.0, 0.0};
-        double [] targetCoordinates = {118.5, 35d};
-        if(alignOnLine){
-            while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
-                cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);
-
-                xError = targetCoordinates [0] - cameraCoordinates [0];
-                yError = targetCoordinates [1] - cameraCoordinates [1];
-
-                double dX = xError - lastXError;
-                double dY = yError - lastYError;
-
-                lastXError = xError;
-                lastYError = yError;
-                drive.FieldOrientedDrive(-0.1 * (xError) + 0.1 * dX,
-                        -0.1 * (yError) + 0.1 * dY,
-                        0.0,
-                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, telemetry);
-            }
-        }
-
-        setPowers(0, 0, 0, 0);
-        finalerror = error;
-
-    }
-
-    void driveForward(double distance) {
-        double minPower = 0.225;
-        double maxPower = 0.5;
-
-        resetForwardDisplacement();
-        double error;
-
-        do {
-            updateForwardDisplacement();
-
-            error = distance - forwardDisplacement;
-            double power = minPower + (maxPower - minPower) * Math.abs(error) * kP;
-            double direction = Math.signum(error);
-
-            power = Math.min(power, maxPower) * direction;
-
-            setPowers(power, power, power, power);
-
-            telemetry.clear();
-            telemetry.addLine(String.format("Power: %.3f", power));
-            telemetry.addLine(String.format("Error: %.2f", error));
-            telemetry.addLine(String.format("Forward displacement %.3f", forwardDisplacement));
-            telemetry.update();
-
-        } while (Math.abs(error) > 0.1);
-
-        setPowers(0, 0, 0, 0);
-
-        finalerror = error;
-
-    }
-    void setPowersForTimeSmoothed(double seconds, double fl, double fr, double bl, double br) {
-        double startTime = timer.updateTime();
-
-        // run for time
-        while (timer.getTime() - startTime < seconds) {
-            setPowersSmoothed(fl, fr, bl, br);
-//            telemetryMotorVelocities();
-            timer.updateTime();
-        }
-
-        while (Math.abs(FL.getPower()) > 0.1) {
-            setPowersSmoothed(0, 0, 0, 0);
-        }
-
-        setPowers(0, 0, 0, 0);
-    }
-
-    void setMotorPowersForTime(double seconds, double fl, double fr, double bl, double br) {
-        double startTime = timer.updateTime();
-
-        // run for time
-        while (timer.getTime() - startTime < seconds) {
-            setPowers(fl, fr, bl, br);
-//            telemetryMotorVelocities();
-            timer.updateTime();
-        }
-
-        setPowers(0, 0, 0, 0);
-    }
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Testing.UltrasonicSensor;
+package org.firstinspires.ftc.teamcode.Testing.SplineDrive;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -32,15 +32,15 @@ public class SingleServoTest extends OpMode{
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "servo");
-        controller = servo.getController();
+        servo = hardwareMap.get(Servo.class, "Right wrist servo");
+//        controller = servo.getController();
     }
 
     @Override
     public void loop() {
         telemetry.addData("Target Pos", servo.getPosition());
         telemetry.addData("Center Pos", centerTicks);
-        telemetry.addData("pwm", controller.getPwmStatus());
+//        telemetry.addData("pwm", controller.getPwmStatus());
         telemetry.update();
         servo.setPosition(targetTicks);
 

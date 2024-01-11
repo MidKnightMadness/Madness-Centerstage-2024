@@ -96,9 +96,9 @@ public class SplineDrivingTest extends OpMode {
     }
 
     public void telemetry(){
-        telemetry.addData("\nleft ticks", odometry.leftEncoder.getCurrentPosition());
-        telemetry.addData("right ticks", odometry.rightEncoder.getCurrentPosition());
-        telemetry.addData("center ticks", odometry.horizontalEncoder.getCurrentPosition());
+//        telemetry.addData("\nleft ticks", odometry.leftEncoder.getCurrentPosition());
+//        telemetry.addData("right ticks", odometry.rightEncoder.getCurrentPosition());
+//        telemetry.addData("center ticks", odometry.horizontalEncoder.getCurrentPosition());
 
         telemetry.addData("\nx", odometry.getXCoordinate());
         telemetry.addData("y", odometry.getYCoordinate());
