@@ -24,7 +24,7 @@ public class RangeSensorLocalizer extends Localizer{
     }
 
     @Override
-    double[] getRelCoords(double robotHeading, double currentX, double currentY) {
+    public double[] getRelCoords(double robotHeading, double currentX, double currentY) {
         // Assumes pointing at top or bottom wall (not audience or backstage side)
         this.robotHeading = robotHeading;
         this.robotHeading %= Math.PI * 2.0;

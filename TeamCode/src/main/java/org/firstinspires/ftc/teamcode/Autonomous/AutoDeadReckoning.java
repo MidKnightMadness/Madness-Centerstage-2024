@@ -11,12 +11,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
+import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
@@ -47,13 +50,25 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     }
 
     DeadReckoningDrive deadReckoningDrive;
+    AprilTagLocalizerTwo localizer;
+    IMU imu;
 
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
-    Servo intakeRightServo;
+    Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     Timer timer;
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
+    public WebcamName webcamName;
     TeamPropMask teamPropMask;
+
+    // April tag alignment
+    double [] cameraCoordinates = {0.0, 0.0};
+    int tagID = 0;
+    double [][] targetCoordinates = {{118.5, 41d}, {118.5, 35d}, {118.5, 29d}};
+    double xError = 0.0;
+    double yError = 0.0;
+    double lastXError = 0.0;
+    double lastYError = 0.0;
 
     @Override
     public void init() {
@@ -65,13 +80,14 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         x = new ButtonToggle();
 
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
+        rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
 
         teamPropMask = new TeamPropMask(640, 360, telemetry);
         teamPropMask.setMode(cameraMode);
         intakeRightServo = hardwareMap.get(Servo.class, "Right intake servo");
         intakeRightServo.setPosition(0.1);
 
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(teamPropMask);
@@ -103,17 +119,22 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     public void start() {
         webcam.stopStreaming();
 
-        if (teamPropPosition == SpikeMarkPositions.LEFT || teamPropPosition == SpikeMarkPositions.RIGHT) {
-            int spikeMarkDirection = teamPropPosition == SpikeMarkPositions.LEFT ? 1 : -1;  // right: -1, left: 1
-            deadReckoningDrive.moveForwardDistance(24);
-            deadReckoningDrive.setTargetRotation(spikeMarkDirection * 90);
-            deadReckoningDrive.moveForwardDistance(5);
-            sleep(1000);
-            deadReckoningDrive.moveForwardDistance(-5);
+        if(teamPropPosition == SpikeMarkPositions.LEFT){
+            deadReckoningDrive.moveForwardDistance(18d);
+            deadReckoningDrive.setTargetRotation(60);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
+            sleep(500);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d);
             deadReckoningDrive.setTargetRotation(-90);
-        }
-        else {
-            deadReckoningDrive.moveForwardDistance(33);
+        }else if(teamPropPosition == SpikeMarkPositions.RIGHT){
+            deadReckoningDrive.moveForwardDistance(5d);
+            deadReckoningDrive.setTargetRotation(-42);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 12d);
+            sleep(500);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d);
+            deadReckoningDrive.setTargetRotation(-90);
+        }else{
+            deadReckoningDrive.moveForwardDistance(27d);
             sleep(1000);
             deadReckoningDrive.moveForwardDistance(-9);
         }
@@ -121,14 +142,89 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         // go to backdrop
         if (teamPropPosition == SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(-90);
-            deadReckoningDrive.moveRightDistance(16);
-            deadReckoningDrive.moveForwardDistance(30);
-            deadReckoningDrive.moveRightDistance(-18);
+            deadReckoningDrive.moveRightDistance(10d);
+            deadReckoningDrive.moveForwardDistance(25d);
+            deadReckoningDrive.moveRightDistance(-13);
             deadReckoningDrive.setTargetRotation(-90);
         } else {
             deadReckoningDrive.setTargetRotation(-90);
-            deadReckoningDrive.moveForwardDistance(30);
+            deadReckoningDrive.moveForwardDistance(27);
         }
+
+        // Aligning code, may be broken from here on
+        if(teamPropPosition == SpikeMarkPositions.LEFT){
+            deadReckoningDrive.moveRightDistance(-10d);
+            deadReckoningDrive.setMotorPowersForTime(1.5d, 0.2, 0.2, 0.2, 0.2);
+            double extensionStartingTime = timer.getTime();
+            while(timer.getTime() < extensionStartingTime + 2){
+
+            }
+        }else if(teamPropPosition == SpikeMarkPositions.RIGHT){
+
+        }else{
+
+        }
+
+        // Just testing tags detected
+//        localizer = new AprilTagLocalizerTwo(webcamName, hardwareMap, telemetry, 0.0, 0.0);
+//        init_IMU();
+//        double startDetectionTime = timer.getTime();
+//        while(timer.getTime() - startDetectionTime < 10000){
+//            cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
+//
+//            telemetry.addData("imu yaw", getRobotDegrees());
+//            if(cameraCoordinates != null){
+//                telemetry.addData("Percieved x", cameraCoordinates [0]);
+//                telemetry.addData("Percieved y", cameraCoordinates [1]);
+//            }else{
+//                telemetry.addLine("No detections");
+//            }
+//
+//            telemetry.addData("P", -0.1);
+//            telemetry.addData("D", -0.1);
+//            telemetry.addLine("\n\n\n========================");
+//        }
+
+
+//        if(teamPropPosition == SpikeMarkPositions.LEFT){
+//            tagID = 4;
+//        }else if(teamPropPosition == SpikeMarkPositions.CENTER){
+//            tagID = 5;
+//        }else{
+//            tagID = 6;
+//        }
+//        localizer = new AprilTagLocalizer(hardwareMap, telemetry, 0.0, 0.0);
+//        init_IMU();
+//        sleep(1000);
+//        cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
+//        xError = targetCoordinates [tagID - 4][0] - cameraCoordinates [0];
+//        yError = targetCoordinates [tagID - 4][1] - cameraCoordinates [1];
+//
+//        while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
+//            cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
+//
+//            xError = targetCoordinates [tagID - 4][0] - cameraCoordinates [0];
+//            yError = targetCoordinates [tagID - 4][1] - cameraCoordinates [1];
+//
+//            double dX = xError - lastXError;
+//            double dY = yError - lastYError;
+//
+//            lastXError = xError;
+//            lastYError = yError;
+//
+//            FieldOrientedDrive(-0.1 * (xError) + 0.1 * dX,
+//                    -0.1 * (yError) + 0.1 * dY,
+//                    0.0,
+//                    imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
+//
+//            if(cameraCoordinates != null){
+//                telemetry.addData("Percieved x", cameraCoordinates [0]);
+//                telemetry.addData("Percieved y", cameraCoordinates [1]);
+//            }else{
+//                telemetry.addLine("No detections");
+//            }
+//            telemetry.update();
+//        }
     }
 
     void sleep(long milis) {
@@ -204,4 +300,82 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
 //        telemetryMotorVelocities();
     }
 
+    void init_IMU() {
+
+        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
+        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
+
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        imu.resetYaw();
+    }
+
+    double [] motorInputs = {0.0, 0.0, 0.0, 0.0};
+    double previousX = 0.0;
+    double previousY = 0.0;
+    public static final double [] FORWARD = {-1.0, 1.0, -1.0, -1.0};
+    ///forward: -1.0, 1.0, -1.0, -1.0
+    public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
+    public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
+    public static final double POWER_MULTIPLIER = 1;
+    public void FieldOrientedDrive(double x, double y, double rotation, double angle, Telemetry telemetry){ // Angle of front from horizontal right, meant for controller inputs
+        double maxPowerLevel = 0.0;
+
+        // Low pass
+        double lowPassX = 0.05 * x + 0.95 * previousX;
+        double lowPassY = 0.05 * y + 0.95 * previousY;
+
+
+        // Rotate x and y by negative of angle
+        double newX = lowPassX*Math.cos(angle - (Math.PI / 2.0)) + lowPassY*Math.sin(angle - (Math.PI / 2.0));
+        double newY = -lowPassX*Math.sin(angle - (Math.PI / 2.0)) + lowPassY*Math.cos(angle - (Math.PI / 2.0));
+
+        // Update low pass previous variables
+        previousX = x;
+        previousY = y;
+
+        // Linear combination of drive vectors
+        for(int i = 0; i < 4; i++){
+            motorInputs [i] = ((FORWARD [i] * newY) + (RIGHT [i] * newX) + (CLOCKWISE [i] * rotation)) * POWER_MULTIPLIER * RPMMultipliers[i] ;
+
+            if(Math.abs(motorInputs [i]) > maxPowerLevel){
+                maxPowerLevel = Math.abs(motorInputs [i]);
+            }
+        }
+
+        // Normalize power inputs within envelope, dead zone 0.2
+        double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]);
+        if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
+            for(int i = 0; i < 4; i++){
+                motorInputs [i] /= maxPowerLevel;
+            }
+        }
+
+//        telemetry.addData("\nPower envelope", powerEnvelope);
+//        telemetry.addData("Max Power", maxPowerLevel);
+//        telemetry.addData("X", newX);
+//        telemetry.addData("Y", newY);
+//
+        telemetry.addData("FL", motorInputs [0]);
+        telemetry.addData("FR", motorInputs [1]);
+        telemetry.addData("BL", motorInputs [2]);
+        telemetry.addData("BR", motorInputs [3]);
+//        telemetry.addData("Low pass latency", 0.5);
+
+        setMotorPowers();
+    }
+
+    void setMotorPowers() {
+        deadReckoningDrive.FL.setPower( motorInputs [0]);
+        deadReckoningDrive.FR.setPower( motorInputs [1]);
+        deadReckoningDrive.BL.setPower( motorInputs [2]);
+        deadReckoningDrive.BR.setPower( motorInputs [3]);
+    }
+
+    double getRobotDegrees() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
 }

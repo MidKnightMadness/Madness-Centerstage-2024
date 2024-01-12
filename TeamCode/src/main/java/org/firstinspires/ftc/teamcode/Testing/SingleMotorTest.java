@@ -25,7 +25,7 @@ public class SingleMotorTest extends OpMode {
     @Override
     public void loop() {
 
-        if (this.gamepad1.x) {
+        if (gamepad1.x) {
             testMotor.setPower(1);
         }
         if (gamepad1.y) {
@@ -34,6 +34,10 @@ public class SingleMotorTest extends OpMode {
 
         if (gamepad1.a) {
             testMotor.setPower(0);
+        }
+
+        if(! gamepad1.x && ! gamepad1.y && ! gamepad1.a){
+            testMotor.setPower(gamepad1.right_stick_y);
         }
 
         telemetry.addData("Power", testMotor.getPower());

@@ -96,7 +96,6 @@ public class TestingAuto extends LinearOpMode {
         cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);
         xError = targetCoordinates [0] - cameraCoordinates [0];
         yError = targetCoordinates [1] - cameraCoordinates [1];
-//        localizer.visionPortal.resumeStreaming();
 
         while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
             cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d, 0.0, 0.0);

@@ -208,7 +208,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             // power proportional to error between min and max power
             error = normalizeAngle(targetRotation - getRobotDegrees());
 
-            double proportionalPower = Math.abs(error / rotation) * (maxPower - minPower) + minPower;
+            double proportionalPower = Math.abs(error / 90d) * (maxPower - minPower) + minPower;
             double direction = Math.signum(error);
 
             proportionalPower = Math.min(maxPower, proportionalPower);
@@ -278,7 +278,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - forwardDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
+            double power = minPower + (maxPower - minPower) * Math.abs(error / 16d);
 
             telemetry.addData("Error", error);
             telemetry.addData("Power", power * direction);
