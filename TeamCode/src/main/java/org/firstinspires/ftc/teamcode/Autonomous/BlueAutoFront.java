@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 @Autonomous
 public class BlueAutoFront extends AutoDeadReckoning {
     @Override
-    public double getInchesToPark() {
-        return 52;
+    public StartingPosition getStartingPosition() {
+        return StartingPosition.NEAR;
     }
 
     @Override

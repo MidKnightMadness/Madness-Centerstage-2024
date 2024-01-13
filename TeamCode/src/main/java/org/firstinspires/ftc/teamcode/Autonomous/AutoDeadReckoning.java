@@ -5,9 +5,6 @@ import android.annotation.SuppressLint;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -17,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
 import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
+import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
-import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
@@ -39,20 +36,18 @@ Contains:
  */
 @TeleOp
 @SuppressLint("DefaultLocale")
-public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
+public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPositions {
     public CameraEnums.CameraModes getAllianceColor(){
-        return CameraEnums.CameraModes.BLUE;
+        return CameraEnums.CameraModes.RED;
+    }
+
+    public StartingPosition getStartingPosition() {
+        return StartingPosition.NEAR;
     }
 
     CameraModes cameraMode = getAllianceColor();
-    public double getInchesToPark() {
-        return 52;
-    }
-
     DeadReckoningDrive deadReckoningDrive;
-    AprilTagLocalizerTwo localizer;
     IMU imu;
-
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     Timer timer;
@@ -60,15 +55,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     OpenCvWebcam webcam;
     public WebcamName webcamName;
     TeamPropMask teamPropMask;
-
-    // April tag alignment
-    double [] cameraCoordinates = {0.0, 0.0};
-    int tagID = 0;
-    double [][] targetCoordinates = {{118.5, 41d}, {118.5, 35d}, {118.5, 29d}};
-    double xError = 0.0;
-    double yError = 0.0;
-    double lastXError = 0.0;
-    double lastYError = 0.0;
 
     @Override
     public void init() {
@@ -119,113 +105,73 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
     public void start() {
         webcam.stopStreaming();
 
-        if(teamPropPosition == SpikeMarkPositions.LEFT){
+        if (getStartingPosition() == StartingPosition.FAR) {
+            farCase();
+        }
+        else {
+            nearCase();
+        }
+
+    }
+
+    void farCase() {
+
+    }
+
+    void goToBackdrop() {
+
+        if (teamPropPosition == SpikeMarkPositions.LEFT){
             deadReckoningDrive.moveForwardDistance(18d);
             deadReckoningDrive.setTargetRotation(60);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
-            sleep(500);
+            sleep(100);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d);
             deadReckoningDrive.setTargetRotation(-90);
-        }else if(teamPropPosition == SpikeMarkPositions.RIGHT){
+        }
+        else if(teamPropPosition == SpikeMarkPositions.RIGHT){
             deadReckoningDrive.moveForwardDistance(5d);
             deadReckoningDrive.setTargetRotation(-42);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 12d);
-            sleep(500);
+            sleep(100);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d);
             deadReckoningDrive.setTargetRotation(-90);
-        }else{
+        }
+        else{
             deadReckoningDrive.moveForwardDistance(27d);
-            sleep(1000);
+            sleep(100);
             deadReckoningDrive.moveForwardDistance(-9);
         }
 
-        // go to backdrop
-        if (teamPropPosition == SpikeMarkPositions.RIGHT) {
-            deadReckoningDrive.setTargetRotation(-90);
-            deadReckoningDrive.moveRightDistance(10d);
-            deadReckoningDrive.moveForwardDistance(25d);
-            deadReckoningDrive.moveRightDistance(-13);
-            deadReckoningDrive.setTargetRotation(-90);
-        } else {
-            deadReckoningDrive.setTargetRotation(-90);
-            deadReckoningDrive.moveForwardDistance(27);
-        }
-
-        // Aligning code, may be broken from here on
-        if(teamPropPosition == SpikeMarkPositions.LEFT){
-            deadReckoningDrive.moveRightDistance(-10d);
-            deadReckoningDrive.setMotorPowersForTime(1.5d, 0.2, 0.2, 0.2, 0.2);
-            double extensionStartingTime = timer.getTime();
-            while(timer.getTime() < extensionStartingTime + 2){
-
-            }
-        }else if(teamPropPosition == SpikeMarkPositions.RIGHT){
-
-        }else{
-
-        }
-
-        // Just testing tags detected
-//        localizer = new AprilTagLocalizerTwo(webcamName, hardwareMap, telemetry, 0.0, 0.0);
-//        init_IMU();
-//        double startDetectionTime = timer.getTime();
-//        while(timer.getTime() - startDetectionTime < 10000){
-//            cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
-//
-//            telemetry.addData("imu yaw", getRobotDegrees());
-//            if(cameraCoordinates != null){
-//                telemetry.addData("Percieved x", cameraCoordinates [0]);
-//                telemetry.addData("Percieved y", cameraCoordinates [1]);
-//            }else{
-//                telemetry.addLine("No detections");
-//            }
-//
-//            telemetry.addData("P", -0.1);
-//            telemetry.addData("D", -0.1);
-//            telemetry.addLine("\n\n\n========================");
-//        }
-
-
-//        if(teamPropPosition == SpikeMarkPositions.LEFT){
-//            tagID = 4;
-//        }else if(teamPropPosition == SpikeMarkPositions.CENTER){
-//            tagID = 5;
-//        }else{
-//            tagID = 6;
-//        }
-//        localizer = new AprilTagLocalizer(hardwareMap, telemetry, 0.0, 0.0);
-//        init_IMU();
-//        sleep(1000);
-//        cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
-//        xError = targetCoordinates [tagID - 4][0] - cameraCoordinates [0];
-//        yError = targetCoordinates [tagID - 4][1] - cameraCoordinates [1];
-//
-//        while(Math.sqrt(xError*xError + yError * yError) > 0.25){ // Align to tag 2
-//            cameraCoordinates = localizer.getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0.0, 0.0);
-//
-//            xError = targetCoordinates [tagID - 4][0] - cameraCoordinates [0];
-//            yError = targetCoordinates [tagID - 4][1] - cameraCoordinates [1];
-//
-//            double dX = xError - lastXError;
-//            double dY = yError - lastYError;
-//
-//            lastXError = xError;
-//            lastYError = yError;
-//
-//            FieldOrientedDrive(-0.1 * (xError) + 0.1 * dX,
-//                    -0.1 * (yError) + 0.1 * dY,
-//                    0.0,
-//                    imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
-//
-//            if(cameraCoordinates != null){
-//                telemetry.addData("Percieved x", cameraCoordinates [0]);
-//                telemetry.addData("Percieved y", cameraCoordinates [1]);
-//            }else{
-//                telemetry.addLine("No detections");
-//            }
-//            telemetry.update();
-//        }
     }
+    void nearCase() {
+
+
+        double direction = cameraMode == CameraModes.BLUE ? 1 : - 1; // blue : 1, red: -1
+
+        // go to backdrop
+        if (cameraMode == CameraModes.RED) {
+
+            return;
+        }
+
+        boolean detourAroundSpikeMark = (cameraMode == CameraModes.RED && teamPropPosition == SpikeMarkPositions.RIGHT) ||
+                                        (cameraMode == CameraModes.BLUE && teamPropPosition == SpikeMarkPositions.LEFT);
+
+        if (detourAroundSpikeMark) {
+            // avoid pushing pixel
+            deadReckoningDrive.setTargetRotation(90 * direction);
+            deadReckoningDrive.moveRightDistance(10d * -direction);
+            deadReckoningDrive.moveForwardDistance(25d);
+            deadReckoningDrive.moveRightDistance(13 * direction);
+            deadReckoningDrive.setTargetRotation(90 * direction);
+        }
+
+        // go straight to backdrop (don't need to worry about pushing purple pixel)
+        deadReckoningDrive.setTargetRotation(-90);
+        deadReckoningDrive.moveForwardDistance(27);
+    }
+
+
 
     void sleep(long milis) {
         try {
@@ -281,23 +227,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig {
         telemetry.addData("KP", kp);
 
         deadReckoningDrive.setRotationKp(kp);
-//
-//        telemetry.clear();
-//        telemetry.addData("Forward distance traveled", forwardDisplacement);
-//        updateForwardDisplacement();
-//
-//        telemetry.addData("Left ticks", leftEncoder.getCurrentPosition());
-//        telemetry.addData("Right ticks", rightEncoder.getCurrentPosition());
-//
-//        telemetry.addData("imu yaw", getRobotDegrees());
-//        telemetry.addData("final error", finalerror);
-//        telemetry.addData("KP", kP);
-//
-//        if (this.gamepad1.right_bumper) {
-//            resetForwardDisplacement();
-//        }
-
-//        telemetryMotorVelocities();
     }
 
     void init_IMU() {
