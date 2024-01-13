@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.Components.ServoPositions.wristServoIn;
+import static org.firstinspires.ftc.teamcode.Components.ServoPositions.wristServoOut;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
@@ -21,19 +25,17 @@ public class Main extends OpMode {
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     double[] rightIntakeServoPositions = {0.3075, 0.2425, 0.2223, 0.1605, 0.126};
     double[] leftIntakeServoPositions = {0.8375, 0.89, 0.893, 0.939, 0.9575};
-    double wristVertical = 0.58;
-    double wristDown = 0.388;
 
     boolean isIntakeMode = true;
-
-    Gamepad gamepad;
-
+    ElapsedTime timer;
+    double updateRate = 0.0;
 
     @Override
     public void init() {
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
         intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
+        timer = new ElapsedTime();
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
                 g2Y = new ButtonToggle();
@@ -72,11 +74,13 @@ public class Main extends OpMode {
 //            }
 //        }
         mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+        timer.reset();
+        updateRate = 1d / timer.milliseconds();
     }
 
     int currentIntakeServoIndex = 0;
 
-    double wristPos = wristDown;
+    double wristPos = wristServoIn;
     public void handleManipulatorControls() {
         if (g2LeftBump.update(gamepad2.left_bumper)) {
             gamepad2.rumble(1000);
@@ -120,8 +124,13 @@ public class Main extends OpMode {
     }
 
     void handleOuttakeControls() {
-        motorLeft.setPower(this.gamepad2.left_stick_y * 1);
-        motorRight.setPower(this.gamepad2.left_stick_y * 1);
+        if(gamepad2.left_stick_y < 0){
+            motorLeft.setPower(-this.gamepad2.left_stick_y * 1);
+            motorRight.setPower(-this.gamepad2.left_stick_y * 1);
+        }else{
+            motorLeft.setPower(this.gamepad2.left_stick_y * 0.5);
+            motorRight.setPower(this.gamepad2.left_stick_y * 0.5);
+        }
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
@@ -134,8 +143,8 @@ public class Main extends OpMode {
         }
 
         if (g2X.update(gamepad2.x)) {
-            if (wristPos == wristDown) {wristPos = wristVertical; }
-            else { wristPos = wristDown; }
+            if (wristPos == wristServoIn) {wristPos = wristServoOut; }
+            else { wristPos = wristServoIn; }
             rightWristServo.setPosition(wristPos);
         }
     }
@@ -144,6 +153,5 @@ public class Main extends OpMode {
         telemetry.addData("Mode", isIntakeMode ? "Intake" : "Outtake");
 
     }
-
 }
 

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -58,7 +59,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     LinearSlides slides;
-    Timer timer;
+    ElapsedTime timer;
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
     public WebcamName webcamName;
@@ -80,7 +81,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
     @Override
     public void init() {
-        timer = new Timer();
+        timer = new ElapsedTime();
         telemetry.setAutoClear(false);
         a = new ButtonToggle();
         b = new ButtonToggle();
@@ -291,4 +292,14 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
 
     public void drive(){}
+
+    public void rotateBoxTo(double position){
+        timer.reset();
+        double servoPosition = boxServo.getPosition();
+        while(boxServo.getPosition() < position){
+            boxServo.setPosition(servoPosition);
+            servoPosition += 0.05;
+            sleep(1);
+        }
+    }
 }
