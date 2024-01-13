@@ -16,9 +16,4 @@ public class RedAutoBack extends AutoDeadReckoning {
         return CameraEnums.CameraModes.RED;
     }
 
-    @Override
-    void goToBackdrop() {
-
-    }
-
 }
