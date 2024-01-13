@@ -20,9 +20,6 @@ public class Main extends OpMode implements ServoPositions {
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
-    double wristVertical = 0.58;
-    double wristDown = 0.388;
-
     boolean isIntakeMode = true;
 
     Servo launcherServo;
@@ -64,8 +61,9 @@ public class Main extends OpMode implements ServoPositions {
     double power = 1;
     public void handleDriverControls() {
         if (g1RightBump.update(gamepad1.right_bumper)) {
+            gamepad1.rumble(300);
             if (power == 1) {
-                power = 0.25;
+                power = 0.35;
             }
             else {
                 power = 1;
@@ -83,12 +81,8 @@ public class Main extends OpMode implements ServoPositions {
         telemetry();
     }
 
-    double wristPos = wristDown;
+    double wristPos = wristServoIn;
     public void handleManipulatorControls() {
-//        if (g2LeftBump.update(gamepad2.left_bumper)) {
-//            gamepad2.rumble(1000);
-//            isIntakeMode = !isIntakeMode;
-//        }
         handleIntakeControls();
         handleOuttakeControls();
 
@@ -106,10 +100,11 @@ public class Main extends OpMode implements ServoPositions {
     }
 
     void handleIntakeControls() {
-        intakeMotor.setPower( gamepad2.left_trigger);
+        double intakeDirection = gamepad2.a ? 1 : -1;
+        intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
 
         if (gamepad2.y) {
-            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.right_trigger);;
+            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
         }
         else {
             rightIntakeServo.setPosition(intakeDefault);
@@ -117,7 +112,7 @@ public class Main extends OpMode implements ServoPositions {
     }
 
     void handleOuttakeControls() {
-        double slidesDirection = gamepad2.a ? 1 : -1;
+        double slidesDirection = gamepad2.a ? -1 : 1;
         motorLeft.setPower(slidesDirection * gamepad2.right_trigger);
         motorRight.setPower(slidesDirection * gamepad2.right_trigger);
 
@@ -132,8 +127,8 @@ public class Main extends OpMode implements ServoPositions {
         }
 
         if (g2X.update(gamepad2.x)) {
-            if (wristPos == wristDown) { wristPos = wristVertical; }
-            else { wristPos = wristDown; }
+            if (wristPos == wristServoIn) { wristPos = wristServoOut; }
+            else { wristPos = wristServoIn; }
             rightWristServo.setPosition(wristPos);
         }
     }

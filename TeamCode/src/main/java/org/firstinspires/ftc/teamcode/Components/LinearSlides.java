@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
@@ -42,6 +43,7 @@ public class LinearSlides{
         dPadDown = new ButtonToggle();
 
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         toggleTargetExtension();

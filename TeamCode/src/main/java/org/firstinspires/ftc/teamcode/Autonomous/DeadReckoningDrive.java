@@ -268,10 +268,10 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         double currentTime = startTime;
 
         double error = distance;
-
-        while (Math.abs(error) > 0.1) {
-            if (currentTime - startTime > 5) {
-                break;
+        double errorToStop = 0.1;
+        while (Math.abs(error) > errorToStop) {
+            if (currentTime - startTime > 6) {
+                errorToStop += 0.05;
             }
             updateDisplacement();
 
@@ -302,10 +302,10 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         double currentTime = startTime;
 
         double error = distance;
-
-        while (Math.abs(error) > 0.1) {
-            if (currentTime - startTime > 5) {
-                break;
+        double errorToStop = 0.1;
+        while (Math.abs(error) > errorToStop) {
+            if (currentTime - startTime > 6) {
+                errorToStop += 0.05;
             }
             updateDisplacement();
 

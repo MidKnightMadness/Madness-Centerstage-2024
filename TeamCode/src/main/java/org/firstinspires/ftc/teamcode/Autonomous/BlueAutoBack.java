@@ -48,6 +48,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
             sleep(750);
 //            boxServo.setPosition(boxServoRight); // right
             rotateBoxTo(boxServoRight); // slow
+            deadReckoningDrive.moveRightDistance(-18);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.setTargetRotation(95);
             deadReckoningDrive.setMotorPowersForTime(3, 0.3, 0.3, 0.3, 0.3);
@@ -57,6 +58,8 @@ public class BlueAutoBack extends AutoDeadReckoning {
             sleep(750);
 //            boxServo.setPosition(boxServoLeft); // left
             rotateBoxTo(boxServoLeft); // slow
+            deadReckoningDrive.moveRightDistance(-10);
+
         } else {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(3d);
@@ -67,7 +70,9 @@ public class BlueAutoBack extends AutoDeadReckoning {
             sleep(750);
 //            boxServo.setPosition(boxServoRight); // right
             rotateBoxTo(boxServoRight); // slow
+            deadReckoningDrive.moveRightDistance(-15);
         }
+
     }
 
     @Override

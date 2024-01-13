@@ -28,11 +28,11 @@ public class SingleServoTest extends OpMode{
 //    double [] bounds = {0.85, 0.1}; // outboard, inboard
 
     // Box Servo
-    double centerTicks = 0.55;
+    double centerTicks = 0.2;
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "Launcher servo");
+        servo = hardwareMap.get(Servo.class, "Right intake servo");
 //        controller = servo.getController();
     }
 
