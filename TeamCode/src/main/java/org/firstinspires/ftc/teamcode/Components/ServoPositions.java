@@ -8,4 +8,7 @@ public interface ServoPositions {
     double boxServoRight = 0.45;
     double boxServoLeft = 0.85;
 
+    double launcherOpen = 0.585;
+    double launncherClosed = 0.5575;
+
 }
