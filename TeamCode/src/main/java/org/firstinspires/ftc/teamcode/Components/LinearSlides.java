@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.Components;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.Timer;
 
 public class LinearSlides{
     public DcMotorEx motorRight;
@@ -31,7 +28,10 @@ public class LinearSlides{
     double currentPos; // Inches from starting length
     boolean movementToggled = false;
 
+    Timer timer;
+
     public LinearSlides(HardwareMap hardwareMap) {
+        timer = new Timer();
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
@@ -73,6 +73,22 @@ public class LinearSlides{
         motorLeft.setPower(leftPowerInput * slidesMotorMultipliers [0]);
         motorRight.setPower(rightPowerInput * slidesMotorMultipliers [1]);
     }
+
+    public void extendForTime(double left, double right, double seconds) {
+        double startTime = timer.updateTime();
+
+        // run for time
+        while (timer.getTime() - startTime < seconds) {
+            motorLeft.setPower(left);
+            motorRight.setPower(right);
+
+            timer.updateTime();
+        }
+
+        motorRight.setPower(0);
+        motorLeft.setPower(0);
+    }
+
 
     public void update(double targetPosition){ // Run this each tick to set power based on position differences
         targetPos = targetPosition;
