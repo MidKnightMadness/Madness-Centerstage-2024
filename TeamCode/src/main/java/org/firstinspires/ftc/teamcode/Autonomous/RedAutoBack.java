@@ -41,30 +41,30 @@ public class RedAutoBack extends AutoDeadReckoning {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveRightDistance(-10d);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            double extensionStartingTime = timer.getTime();
-//            while(timer.getTime() < extensionStartingTime + 2){
-//                motorLeft.setPower(0.5);
-//                motorRight.setPower(0.5);
-//            }
-//            sleep(500);
-//            rightWristServo.setPosition(wristVertical);
-//            sleep(250);
-//            boxServo.setPosition(0.45); // right
+            slides.extendForTime(0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+//            boxServo.setPosition(boxServoRight); // right
+            rotateBoxTo(boxServoRight); // slow
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveRightDistance(-1d);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            double extensionStartingTime = timer.getTime();
-//            while(timer.getTime() < extensionStartingTime + 2){
-//                motorLeft.setPower(0.5);
-//                motorRight.setPower(0.5);
-//            }
-//            sleep(500);
-//            rightWristServo.setPosition(wristVertical);
-//            sleep(250);
-//            boxServo.setPosition(0.85); // left
+            slides.extendForTime(0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+//            boxServo.setPosition(boxServoLeft); // left
+            rotateBoxTo(boxServoLeft); // slow
         } else {
             deadReckoningDrive.moveRightDistance(-5d);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
+            slides.extendForTime(0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+//            boxServo.setPosition(boxServoRight); // right
+            rotateBoxTo(boxServoRight); // slow
         }
     }
 

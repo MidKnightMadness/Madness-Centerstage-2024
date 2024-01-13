@@ -24,15 +24,12 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(-25);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            double extensionStartingTime = timer.getTime();
-//            while(timer.getTime() < extensionStartingTime + 2){
-//                motorLeft.setPower(0.5);
-//                motorRight.setPower(0.5);
-//            }
-//            sleep(500);
-//            rightWristServo.setPosition(wristVertical);
-//            sleep(250);
-//            boxServo.setPosition(0.85); // left
+            slides.extendForTime(0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+//            boxServo.setPosition(boxServoLeft); // left
+            rotateBoxTo(boxServoLeft); // slow
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d);
@@ -50,15 +47,12 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(-16);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            double extensionStartingTime = timer.getTime();
-//            while(timer.getTime() < extensionStartingTime + 2){
-//                motorLeft.setPower(0.5);
-//                motorRight.setPower(0.5);
-//            }
-//            sleep(500);
-//            rightWristServo.setPosition(wristVertical);
-//            sleep(250);
-//            boxServo.setPosition(0.45); // right
+            slides.extendForTime(0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+//            boxServo.setPosition(boxServoRight); // right
+            rotateBoxTo(boxServoRight); // slow
 
         } else {
             deadReckoningDrive.moveForwardDistance(27);
@@ -74,15 +68,12 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(-21);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            double extensionStartingTime = timer.getTime();
-//            while(timer.getTime() < extensionStartingTime + 2){
-//                motorLeft.setPower(0.5);
-//                motorRight.setPower(0.5);
-//            }
-//            sleep(500);
-//            rightWristServo.setPosition(wristVertical);
-//            sleep(250);
-//            boxServo.setPosition(0.45); // right
+            slides.extendForTime(0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+//            boxServo.setPosition(boxServoRight); // right
+            rotateBoxTo(boxServoRight); // slow
         }
     }
 
