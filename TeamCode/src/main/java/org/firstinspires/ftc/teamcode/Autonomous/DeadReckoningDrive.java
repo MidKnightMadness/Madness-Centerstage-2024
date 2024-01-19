@@ -148,18 +148,20 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         lastPowers = new double[] {fl, fr, bl, br};
     }
 
-    void setPowersSmoothed(double flPow, double frPow, double blPow, double brPow) {
-        double k = 1/50d;
 
+    // + -> -    (-)
+    // - -> +    (-)
+    //
+    void setPowersSmoothed(double flPow, double frPow, double blPow, double brPow, double k) {
         double fl = flPow * RPMMultipliers[0];
         double fr = frPow * RPMMultipliers[1];
         double bl = blPow * RPMMultipliers[2];
         double br = brPow * RPMMultipliers[3];
 
-        FL.setPower(fl = lastPowers[0] * (1 - k) + fl * k);
-        FR.setPower(fr = lastPowers[1] * (1 - k) + fr * k);
-        BL.setPower(bl = lastPowers[2] * (1 - k) + bl * k);
-        BR.setPower(br = lastPowers[3] * (1 - k) + br * k);
+        FL.setPower(fl = Math.abs(lastPowers[0]) * Math.signum(fl) * (1 - k) + fl * k);
+        FR.setPower(fr = Math.abs(lastPowers[1]) * Math.signum(fr) * (1 - k) + fr * k);
+        BL.setPower(bl = Math.abs(lastPowers[2]) * Math.signum(bl) * (1 - k) + bl * k);
+        BR.setPower(br = Math.abs(lastPowers[3]) * Math.signum(br) * (1 - k) + br * k);
 
         lastPowers = new double[] {fl, fr, bl, br};
     }
@@ -180,49 +182,46 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         telemetry.addData("BL Pow", BL.getPower());
         telemetry.addData("BR Pow", BR.getPower());
     }
-
+    int lastErrorCheckLength = 8;
+    double lastErrorCheck;
 
     void setTargetRotation(double targetRotation) {
         targetRotation = normalizeAngle(targetRotation);
 
-        double maxPower = 0.7;
+        double maxPower = 1;
         double minPower = 0.225;
 
         double startingYaw = getRobotDegrees();
-
         double rotation = normalizeAngle(targetRotation - startingYaw);
 
         double error = rotation;
-//
         double startTime = timer.updateTime();
 
-        if (rotation - startingYaw < 1) {
-            maxPower = minPower;
-        }
-
         double degreesTillStop = 0.18;
-        // stops if within degrees
         while (Math.abs(error) > degreesTillStop) {
+
             if (startTime - timer.updateTime() > 10)  degreesTillStop += 0.1;
 
             // power proportional to error between min and max power
             error = normalizeAngle(targetRotation - getRobotDegrees());
 
-            double proportionalPower = Math.abs(error / 90d) * (maxPower - minPower) + minPower;
+            double percentOfMaxPower = Math.min(1d, Math.abs(error / 90d));
+            double proportionalPower = percentOfMaxPower * (maxPower - minPower) + minPower;
             double direction = Math.signum(error);
-
-            proportionalPower = Math.min(maxPower, proportionalPower);
 
             telemetry.clear();
             telemetry.addData("error", error);
             telemetry.addData("rotation", rotation);
 
-            telemetry.addData("kp", rotationKp);
-            telemetry.addData("proportional power", proportionalPower * direction);
+            telemetry.addData("proportional power", proportionalPower);
+            telemetry.addData("direction", direction);
+
             telemetry.update();
 
-            setPowers(-proportionalPower * direction, proportionalPower * direction,
-                    -proportionalPower * direction, proportionalPower * direction);
+//            setPowersSmoothed(proportionalPower * -direction, proportionalPower * direction,
+//                    proportionalPower * -direction, proportionalPower * direction, 1/12d);
+            setPowers(proportionalPower * -direction, proportionalPower * direction,
+                    proportionalPower * -direction, proportionalPower * direction);
         }
 
         setPowers(0, 0, 0, 0);
@@ -257,7 +256,6 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         driveForwardForTime((distance + 10.02) / 28.57, 0.7);
     }
 
-    double kP = 1/16d;
     void moveForwardDistance(double distance) {
         double minPower = 0.225;
         double maxPower = 0.5;
@@ -341,7 +339,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - forwardDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + (maxPower - minPower) * Math.abs(error) * kP;
+            double power = minPower + (maxPower - minPower) * Math.abs(error / 16d);
 
             power = Math.min(power, maxPower) * direction;
 
@@ -363,13 +361,13 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
         // run for time
         while (timer.getTime() - startTime < seconds) {
-            setPowersSmoothed(fl, fr, bl, br);
+            setPowersSmoothed(fl, fr, bl, br, 1/50d);
 //            telemetryMotorVelocities();
             timer.updateTime();
         }
 
         while (Math.abs(FL.getPower()) > 0.1) {
-            setPowersSmoothed(0, 0, 0, 0);
+            setPowersSmoothed(0, 0, 0, 0, 1/50);
         }
 
         setPowers(0, 0, 0, 0);

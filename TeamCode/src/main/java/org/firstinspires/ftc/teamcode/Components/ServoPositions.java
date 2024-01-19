@@ -12,7 +12,7 @@ public interface ServoPositions {
     double launcherClosed = 0.57;
 
 
-    double intakeDefault = 0.177;
+    double intakeDefault = 0.1778;
     double intakeLowest = 0.126;
     double intakeHighest = 0.305;
 

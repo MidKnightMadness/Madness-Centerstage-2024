@@ -97,7 +97,6 @@ import java.util.Locale;
  * The BNO055 datasheet: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
  */
 @TeleOp(name = "Sensor: BNO055 IMU Calibration", group = "Sensor")
-@Disabled
 public class SensorBNO055IMUCalibration extends LinearOpMode
     {
 

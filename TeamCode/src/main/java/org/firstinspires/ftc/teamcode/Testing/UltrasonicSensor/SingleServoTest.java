@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Testing.SplineDrive;
+package org.firstinspires.ftc.teamcode.Testing.UltrasonicSensor;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
