@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
-@TeleOp(group= "[Game]", name = "Driver Controlled TeleOp")
+@TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
 public class Main extends OpMode implements ServoPositions {
     MecanumDrive mecanumDrive;
     DcMotor intakeMotor;

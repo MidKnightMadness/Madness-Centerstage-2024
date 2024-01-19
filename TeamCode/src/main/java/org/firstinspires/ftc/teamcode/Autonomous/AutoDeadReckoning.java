@@ -21,11 +21,8 @@ import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
 import org.firstinspires.ftc.teamcode.Components.LinearSlides;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
-import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
-import org.firstinspires.ftc.teamcode.Utility.Vector2;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -44,44 +41,29 @@ Contains:
 @SuppressLint("DefaultLocale")
 public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPositions {
     public CameraEnums.CameraModes getAllianceColor(){
-        return CameraEnums.CameraModes.BLUE;
+        return CameraEnums.CameraModes.RED;
+    }
+
+    public StartingPosition getStartingPosition() {
+        return StartingPosition.NEAR;
     }
 
     CameraModes cameraMode = getAllianceColor();
-    public double getInchesToPark() {
-        return 52;
-    }
-
     DeadReckoningDrive deadReckoningDrive;
-    AprilTagLocalizerTwo localizer;
     IMU imu;
-
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
-    LinearSlides slides;
-    ElapsedTime timer;
+    Timer timer;
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
     public WebcamName webcamName;
     TeamPropMask teamPropMask;
-
-    // April tag alignment
-    double [] cameraCoordinates = {0.0, 0.0};
-    int tagID = 0;
-    double [][] targetCoordinates = {{118.5, 41d}, {118.5, 35d}, {118.5, 29d}};
-    double xError = 0.0;
-    double yError = 0.0;
-    double lastXError = 0.0;
-    double lastYError = 0.0;
-
-    // Scoring
-
-    double wristVertical = 0.323;
-    double wristDown = 0.16;
+    LinearSlides slides;
 
     @Override
     public void init() {
-        timer = new ElapsedTime();
+        timer = new Timer();
+        slides = new LinearSlides(hardwareMap);
         telemetry.setAutoClear(false);
         a = new ButtonToggle();
         b = new ButtonToggle();
@@ -90,14 +72,10 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
-        rightWristServo.setPosition(wristDown);
-
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
 
-        slides = new LinearSlides(hardwareMap);
-
         teamPropMask = new TeamPropMask(640, 360, telemetry);
-        teamPropMask.setMode(cameraMode);
+        teamPropMask.setMode(getAllianceColor());
         intakeRightServo = hardwareMap.get(Servo.class, "Right intake servo");
         intakeRightServo.setPosition(0.1);
 
@@ -137,11 +115,13 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     @Override
     public void start() {
         webcam.stopStreaming();
-
-        boxServo.setPosition(0.6435); // center
-
-        drive();
+//
+//        boxServo.setPosition(0.6435); // center
+//
+//        drive();
     }
+
+
 
     void sleep(long milis) {
         try {
@@ -167,7 +147,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         }
 //
         if (a.update(gamepad1.a)) {
-            deadReckoningDrive.moveRightDistance(24);
+            deadReckoningDrive.setTargetRotation(180);
 //            setTargetRotation(Math.round(getRobotDegrees()) - 90);
 //            driveForward(12);
         }
@@ -194,30 +174,10 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
             kp -= increment;
         }
 
-        telemetry.addData("KP", kp);
-
-        deadReckoningDrive.setRotationKp(kp);
-//
-//        telemetry.clear();
-//        telemetry.addData("Forward distance traveled", forwardDisplacement);
-//        updateForwardDisplacement();
-//
-//        telemetry.addData("Left ticks", leftEncoder.getCurrentPosition());
-//        telemetry.addData("Right ticks", rightEncoder.getCurrentPosition());
-//
-//        telemetry.addData("imu yaw", getRobotDegrees());
-//        telemetry.addData("final error", finalerror);
-//        telemetry.addData("KP", kP);
-//
-//        if (this.gamepad1.right_bumper) {
-//            resetForwardDisplacement();
-//        }
-
-//        telemetryMotorVelocities();
+        telemetry.addData("Robot degrees", deadReckoningDrive.getRobotDegrees());
     }
 
     void init_IMU() {
-
         RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
         RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
 
@@ -299,7 +259,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public void drive(){}
 
     public void rotateBoxTo(double position){
-        timer.reset();
         double servoPosition = boxServo.getPosition();
         while(boxServo.getPosition() < position){
             boxServo.setPosition(servoPosition);
