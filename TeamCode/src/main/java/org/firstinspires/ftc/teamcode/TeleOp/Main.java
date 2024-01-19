@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
@@ -19,6 +22,7 @@ public class Main extends OpMode implements ServoPositions {
     ButtonToggle g1A, g1RightBump;
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
+    IMU imu;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     boolean isIntakeMode = true;
 
@@ -30,6 +34,7 @@ public class Main extends OpMode implements ServoPositions {
         intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
+        init_IMU();
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
         g2Y = new ButtonToggle();
@@ -70,7 +75,14 @@ public class Main extends OpMode implements ServoPositions {
             }
         }
 
-        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+//        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
+        telemetry.addData("Yaw, ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        telemetry.update();
+
+        if(gamepad1.x){
+            imu.resetYaw();
+        }
     }
 
     @Override
@@ -137,5 +149,17 @@ public class Main extends OpMode implements ServoPositions {
         telemetry.addData("Mode", isIntakeMode ? "Intake" : "Outtake");
     }
 
+    void init_IMU() {
+
+        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
+        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
+
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        imu.resetYaw();
+    }
 }
 

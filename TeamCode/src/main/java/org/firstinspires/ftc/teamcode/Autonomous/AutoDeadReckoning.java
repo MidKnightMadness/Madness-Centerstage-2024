@@ -127,6 +127,11 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         telemetry.addData("Detected spike mark position", teamPropPosition);
         deadReckoningDrive.updateDisplacement();
         telemetry.addData("Displacement", deadReckoningDrive.getDisplacement());
+        if(cameraMode == CameraModes.RED){
+            telemetry.addLine("Camera Mode: RED");
+        }else{
+            telemetry.addLine("Camera Mode: BLUE");
+        }
     }
 
     @Override
