@@ -42,6 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 
 import java.util.Locale;
 

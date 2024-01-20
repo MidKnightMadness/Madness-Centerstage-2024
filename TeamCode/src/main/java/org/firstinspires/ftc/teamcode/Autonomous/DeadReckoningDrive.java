@@ -48,6 +48,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         imu.resetYaw();
+
     }
 
     void init_motors(HardwareMap hardwareMap) {
@@ -185,10 +186,9 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     int lastErrorCheckLength = 8;
     double lastErrorCheck;
 
-    void setTargetRotation(double targetRotation) {
+    void setTargetRotation(double targetRotation, double maxPower) {
         targetRotation = normalizeAngle(targetRotation);
 
-        double maxPower = 1;
         double minPower = 0.225;
 
         double startingYaw = getRobotDegrees();
@@ -227,6 +227,10 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         setPowers(0, 0, 0, 0);
     }
 
+    void setTargetRotation(double targetRotation) {
+        setTargetRotation(targetRotation, 0.5);
+    }
+
     double clamp(double min, double max, double val) {
         if (val < min) return min;
         else if (val > max) return max;
@@ -256,9 +260,8 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         driveForwardForTime((distance + 10.02) / 28.57, 0.7);
     }
 
-    void moveForwardDistance(double distance) {
+    void moveForwardDistance(double distance, double maxPower) {
         double minPower = 0.225;
-        double maxPower = 0.5;
 
         resetDisplacement();
 
@@ -289,6 +292,10 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
         setPowers(0, 0, 0, 0);
     }
+    void moveForwardDistance(double distance) {
+        moveForwardDistance(distance, 0.5);
+    }
+
 
     void moveRightDistance(double distance) {
         double minPower = 0.3;
