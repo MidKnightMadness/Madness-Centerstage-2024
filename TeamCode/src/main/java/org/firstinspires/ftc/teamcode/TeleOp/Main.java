@@ -27,6 +27,7 @@ public class Main extends OpMode implements ServoPositions {
     boolean isIntakeMode = true;
 
     Servo launcherServo;
+    double [] lastInputs = {0.0, 0.0, 0.0};
 
     @Override
     public void init() {
@@ -75,8 +76,15 @@ public class Main extends OpMode implements ServoPositions {
             }
         }
 
-//        mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
-        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
+//        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
+        mecanumDrive.normalDrive(power,
+                -(0.9 * lastInputs [0] + 0.1 * gamepad1.left_stick_x),
+                0.9 * lastInputs [0] + 0.1 * gamepad1.left_stick_y,
+                -(0.9 * lastInputs [0] + 0.1 * gamepad1.right_stick_x));
+        lastInputs [0] = -gamepad1.left_stick_x;
+        lastInputs [1] = gamepad1.left_stick_y;
+        lastInputs [2] = -gamepad1.right_stick_x;
+
         telemetry.addData("Yaw, ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         telemetry.update();
 
@@ -147,6 +155,8 @@ public class Main extends OpMode implements ServoPositions {
 
     void telemetry() {
         telemetry.addData("Mode", isIntakeMode ? "Intake" : "Outtake");
+        telemetry.addData("\nLeft motor", motorLeft.getCurrentPosition());
+        telemetry.addData("Right motor", motorRight.getCurrentPosition());
     }
 
     void init_IMU() {

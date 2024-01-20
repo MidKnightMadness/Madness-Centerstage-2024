@@ -56,7 +56,7 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
         } else {
             deadReckoningDrive.moveForwardDistance(27);
-            deadReckoningDrive.moveForwardDistance(-1);
+            deadReckoningDrive.moveForwardDistance(-1.5);
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(90);
@@ -64,10 +64,8 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
             // Align to backdrop
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(100);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.2, 0.2, 0.2, 0.2);
+            deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
 //            slides.extendForTime(0.5, 0.375, 1.05);
 //            sleep(500);
 //            rightWristServo.setPosition(wristServoOut);

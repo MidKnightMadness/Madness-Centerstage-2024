@@ -159,10 +159,10 @@ public class MecanumDrive implements WheelRPMConfig {
 //        telemetry.addData("X", newX);
 //        telemetry.addData("Y", newY);
 //
-        telemetry.addData("FL", motorInputs [0]);
-        telemetry.addData("FR", motorInputs [1]);
-        telemetry.addData("BL", motorInputs [2]);
-        telemetry.addData("BR", motorInputs [3]);
+//        telemetry.addData("FL", motorInputs [0]);
+//        telemetry.addData("FR", motorInputs [1]);
+//        telemetry.addData("BL", motorInputs [2]);
+//        telemetry.addData("BR", motorInputs [3]);
 //        telemetry.addData("Low pass latency", 0.5);
 
         setMotorPowers();
