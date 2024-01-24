@@ -9,12 +9,12 @@ public class BlueAutoFront extends AutoDeadReckoning {
     @Override
     public void drive(){
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveForwardDistance(18d, 0.8);
+            deadReckoningDrive.moveForwardDistance(15d, 0.8);
             deadReckoningDrive.setTargetRotation(60);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d, 0.8);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d, 0.8);
             deadReckoningDrive.setTargetRotation(0);
-            deadReckoningDrive.moveForwardDistance(26d, 0.8);
+            deadReckoningDrive.moveForwardDistance(28d, 0.8);
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(90);
@@ -22,19 +22,19 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(-27);
+            deadReckoningDrive.moveRightDistance(-28);
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            slides.extendForTime(0.5, 0.375, 1.05);
+            slides.extendForTime(-0.5, -0.5, 2);
 //            sleep(500);
-//            rightWristServo.setPosition(wristServoOut);
+            rightWristServo.setPosition(wristServoOut);
 //            sleep(750);
-//            boxServo.setPosition(boxServoLeft); // left
+            boxServo.setPosition(boxServoLeft); // left
 //            rotateBoxTo(boxServoLeft); // slow
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8);
-            deadReckoningDrive.setTargetRotation(-42);
+            deadReckoningDrive.setTargetRotation(-40);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 10d, 0.8);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 10d, 0.8);
             deadReckoningDrive.setTargetRotation(0);
@@ -48,11 +48,11 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(-17);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            slides.extendForTime(0.5, 0.375, 1.05);
+            slides.extendForTime(-0.5, -0.5, 2);
 //            sleep(500);
-//            rightWristServo.setPosition(wristServoOut);
+            rightWristServo.setPosition(wristServoOut);
 //            sleep(750);
-//            boxServo.setPosition(boxServoRight); // right
+            boxServo.setPosition(boxServoRight); // right
 //            rotateBoxTo(boxServoRight); // slow
 
         } else {
@@ -66,12 +66,14 @@ public class BlueAutoFront extends AutoDeadReckoning {
             // Align to backdrop
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
+            deadReckoningDrive.moveRightDistance(1);
+            deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            slides.extendForTime(0.5, 0.375, 1.05);
+            slides.extendForTime(-0.5, -0.5, 2);
 //            sleep(500);
-//            rightWristServo.setPosition(wristServoOut);
+            rightWristServo.setPosition(wristServoOut);
 //            sleep(750);
-//            boxServo.setPosition(boxServoRight); // right
+            boxServo.setPosition(boxServoRight); // right
 //            rotateBoxTo(boxServoRight); // slow
         }
     }

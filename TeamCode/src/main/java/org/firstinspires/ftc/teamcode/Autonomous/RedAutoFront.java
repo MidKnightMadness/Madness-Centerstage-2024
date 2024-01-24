@@ -25,11 +25,11 @@ public class RedAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(-90);
             deadReckoningDrive.moveRightDistance(22);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            slides.extendForTime(0.5, 0.375, 1.05);
-//            sleep(500);
-//            rightWristServo.setPosition(wristServoOut);
-//            sleep(750);
-//            boxServo.setPosition(boxServoRight); // right
+            slides.extendForTime(-0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+            boxServo.setPosition(boxServoRight); // right
 //            rotateBoxTo(boxServoRight); // slow
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
@@ -50,11 +50,11 @@ public class RedAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(-90);
             deadReckoningDrive.moveRightDistance(14);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            slides.extendForTime(0.5, 0.375, 1.05);
-//            sleep(500);
-//            rightWristServo.setPosition(wristServoOut);
-//            sleep(750);
-//            boxServo.setPosition(boxServoLeft); // left
+            slides.extendForTime(-0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+            boxServo.setPosition(boxServoLeft); // left
 //            rotateBoxTo(boxServoLeft); // slow
 
         } else {
@@ -68,11 +68,11 @@ public class RedAutoFront extends AutoDeadReckoning {
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(-90);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-//            slides.extendForTime(0.5, 0.375, 1.05);
-//            sleep(500);
-//            rightWristServo.setPosition(wristServoOut);
-//            sleep(750);
-//            boxServo.setPosition(boxServoLeft); // left
+            slides.extendForTime(-0.5, 0.375, 1.05);
+            sleep(500);
+            rightWristServo.setPosition(wristServoOut);
+            sleep(750);
+            boxServo.setPosition(boxServoLeft); // left
 //            rotateBoxTo(boxServoLeft); // slow
         }
     }
