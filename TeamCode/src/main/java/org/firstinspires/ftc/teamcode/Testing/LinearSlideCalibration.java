@@ -25,6 +25,7 @@ public class LinearSlideCalibration extends OpMode {
 
     int [] leftBounds = {0, 0}; // Bottom, top
     int [] rightBounds = {0, 0}; // Bottom, top
+    int [] startingPositions = {0, 0}; // Left, right
     double inPerTickLeftSlide = 0.0;
     double inPerTickRightSlide = 0.0;
     double slidesDifferenceTolerance = 0.0; // Length difference between two slides tolerated
@@ -33,7 +34,7 @@ public class LinearSlideCalibration extends OpMode {
 
     int targetPos;
 
-    double rightSideMultiplier = 0.75; // Default
+    double multiplier = 0.75; // Default
     public void init() {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
@@ -45,22 +46,23 @@ public class LinearSlideCalibration extends OpMode {
 
     public void loop() {
         double both = -gamepad1.left_trigger + gamepad1.right_trigger;
-        motorLeft.setPower((gamepad1.left_stick_y + both) * 0.5);
-        motorRight.setPower((gamepad1.right_stick_y + both)* 0.5);
+        motorLeft.setPower((gamepad1.left_stick_y + both) * multiplier);
+        motorRight.setPower((gamepad1.right_stick_y + both)* multiplier);
 
         if (this.gamepad1.right_bumper) {
             resetEncoders();
         }
-//
-//
-//        motorLeft.setTargetPosition(targetPos);
-//        motorRight.setTargetPosition(targetPos);
 
+        if(gamepad1.dpad_up && !gamepad1.dpad_down){
+            multiplier += 0.005;
+        }else if(!gamepad1.dpad_up && gamepad1.dpad_down){
+            multiplier -= 0.005;
+        }
 
         telemetry.addData("Target pos", targetPos);
         telemetry.addData("Left motor Power", motorLeft.getPower());
         telemetry.addData("Right motor Power", motorRight.getPower());
-        telemetry.addData("Right side multiplier", rightSideMultiplier);
+        telemetry.addData("Multiplier", multiplier);
 
         telemetry.addData("Left motor", motorLeft.getCurrentPosition());
         telemetry.addData("Right motor", motorRight.getCurrentPosition());

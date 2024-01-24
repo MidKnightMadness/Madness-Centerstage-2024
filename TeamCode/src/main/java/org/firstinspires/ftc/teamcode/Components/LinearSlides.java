@@ -19,13 +19,18 @@ public class LinearSlides{
     ButtonToggle y;
     ButtonToggle a;
 
-    int [] leftBounds = {0, 0}; // Bottom, top
-    int [] rightBounds = {0, 0}; // Bottom, top
-    double inPerTickLeftSlide = 0.0;
-    double inPerTickRightSlide = 0.0;
     double [] mainExtensionConstants = {0.0, 0.0}; // For both sides to follow based on distance to target; left, right
     double correctionConstant = 0.0; // Left slide follows right side, to help witn synchronization
-    double targetPos; // Inches from starting length
+    double [] lastInputs = {0.0, 0.0, 0.0};
+    int [] leftBounds = {0, -2629}; // Bottom, top
+    int [] rightBounds = {0, 2974}; // Bottom, top
+    int [] startingPositions = {0, 0}; // Left, right
+    double inPerTickLeftSlide = -21.5 / 2629d;
+    double inPerTickRightSlide = 21.5 / 2974d;
+    double slidesDifferenceTolerance = 0.0; // Length difference between two slides tolerated
+    double extensionLength = 0.0; // Extended length, use length of right side (lead side)
+
+    double targetPos; // Inches
     double currentPos; // Inches from starting length
     boolean movementToggled = false;
 
@@ -47,6 +52,34 @@ public class LinearSlides{
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         toggleTargetExtension();
+    }
+
+    public LinearSlides(HardwareMap hardwareMap, int leftPos, int rightPose) {
+        timer = new Timer();
+        motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
+        motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
+
+        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        dPadUp = new ButtonToggle();
+        dPadDown = new ButtonToggle();
+
+        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        setStartingPositions(leftPos, rightPose);
+
+        toggleTargetExtension();
+    }
+
+    public void setStartingPositions(int leftPos, int rightPos){
+        startingPositions [0] = leftPos;
+        startingPositions [1] = rightPos;
+
+        leftBounds [0] += leftPos;
+        leftBounds [0] += rightPos;
     }
 
     public void resetEncoders() {

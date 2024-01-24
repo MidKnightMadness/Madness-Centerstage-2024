@@ -197,7 +197,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         double error = rotation;
         double startTime = timer.updateTime();
 
-        double degreesTillStop = 0.18;
+        double degreesTillStop = 0.1;
         while (Math.abs(error) > degreesTillStop) {
 
             if (startTime - timer.updateTime() > 10)  degreesTillStop += 0.1;

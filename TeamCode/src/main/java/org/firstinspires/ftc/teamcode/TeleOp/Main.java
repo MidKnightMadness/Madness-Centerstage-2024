@@ -78,9 +78,9 @@ public class Main extends OpMode implements ServoPositions {
 
 //        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
         mecanumDrive.normalDrive(power,
-                -(0.9 * lastInputs [0] + 0.1 * gamepad1.left_stick_x),
-                0.9 * lastInputs [0] + 0.1 * gamepad1.left_stick_y,
-                -(0.9 * lastInputs [0] + 0.1 * gamepad1.right_stick_x));
+                0.9 * lastInputs [0] - 0.1 * gamepad1.left_stick_x,
+                0.9 * lastInputs [1] + 0.1 * gamepad1.left_stick_y,
+                0.9 * lastInputs [2] - 0.1 * gamepad1.right_stick_x);
         lastInputs [0] = -gamepad1.left_stick_x;
         lastInputs [1] = gamepad1.left_stick_y;
         lastInputs [2] = -gamepad1.right_stick_x;
