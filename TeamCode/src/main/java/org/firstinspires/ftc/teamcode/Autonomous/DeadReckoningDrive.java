@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
@@ -327,6 +329,38 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             telemetry.update();
 
             setPowers(power * direction, power * -direction, power * -direction, power * direction);
+        }
+
+        setPowers(0, 0, 0, 0);
+    }
+
+    double backDropToWallTolerance = 10d;
+    void strafeUntilBackdrop(ModernRoboticsI2cRangeSensor rangeSensor) {
+        double minPower = 0.3;
+        double maxPower = 0.5;
+
+        resetDisplacement();
+
+        double startTime = timer.updateTime();
+        double currentTime = startTime;
+        double initialDistance = rangeSensor.getDistance(DistanceUnit.CM);
+
+        double errorToStop = 0.1;
+        while (rangeSensor.getDistance(DistanceUnit.CM) < initialDistance - backDropToWallTolerance) {
+            if (currentTime - startTime > 6) {
+                errorToStop += 0.05;
+            }
+            updateDisplacement();
+
+            double power = minPower + (maxPower - minPower) * 0.25;
+
+            telemetry.clear();
+            telemetry.addData("Power", power);
+            telemetry.addLine("-------");
+
+            telemetry.update();
+
+            setPowers(power * 0.25, power * -0.25, power * -0.25, power * 0.25);
         }
 
         setPowers(0, 0, 0, 0);
