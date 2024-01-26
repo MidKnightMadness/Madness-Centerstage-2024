@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,15 +18,15 @@ import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 public class Main extends OpMode implements ServoPositions {
     MecanumDrive mecanumDrive;
     DcMotor intakeMotor;
-    ButtonToggle g1A, g1RightBump;
+    ButtonToggle g1A, g1RightBump, g1LeftBump;
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
-    IMU imu;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     boolean isIntakeMode = true;
+    IMU imu;
 
     Servo launcherServo;
-    double [] lastInputs = {0.0, 0.0, 0.0};
+    boolean isUsingFieldOriented;
 
     @Override
     public void init() {
@@ -35,7 +34,8 @@ public class Main extends OpMode implements ServoPositions {
         intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
-        init_IMU();
+
+        imu = hardwareMap.get(IMU.class, "imu");
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
         g2Y = new ButtonToggle();
@@ -45,6 +45,7 @@ public class Main extends OpMode implements ServoPositions {
         g1RightBump = new ButtonToggle();
         g2X = new ButtonToggle();
         g2LeftBump = new ButtonToggle();
+        g1LeftBump = new ButtonToggle();
         rightIntakeServo = hardwareMap.get(Servo.class, "Right intake servo");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
@@ -54,14 +55,9 @@ public class Main extends OpMode implements ServoPositions {
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
-        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addLine("Initialized");
     }
@@ -78,21 +74,28 @@ public class Main extends OpMode implements ServoPositions {
             }
         }
 
-//        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
-        mecanumDrive.normalDrive(power,
-                0.9 * lastInputs [0] - 0.1 * gamepad1.left_stick_x,
-                0.9 * lastInputs [1] + 0.1 * gamepad1.left_stick_y,
-                0.9 * lastInputs [2] - 0.1 * gamepad1.right_stick_x);
-        lastInputs [0] = -gamepad1.left_stick_x;
-        lastInputs [1] = gamepad1.left_stick_y;
-        lastInputs [2] = -gamepad1.right_stick_x;
+        if (g1LeftBump.update(gamepad1.left_bumper)) {
+            isUsingFieldOriented = !isUsingFieldOriented;
+            gamepad1.rumble(100);
+        }
 
-        telemetry.addData("Yaw, ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-        telemetry.update();
+        if (!gamepad2.left_bumper) {
+            if (!isUsingFieldOriented) {
+                mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+            }
+            else {
+                mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x,
+                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2,
+                        telemetry);
+            }
+        }
 
-        if(gamepad1.x){
+        if (gamepad1.a) {
             imu.resetYaw();
         }
+
+        telemetry.addData("Driver mode", isUsingFieldOriented ? "Field Oriented" : "Normal");
+        telemetry.addData("Driver speed", power == 1 ? "High" : "Low");
     }
 
     @Override
@@ -108,7 +111,7 @@ public class Main extends OpMode implements ServoPositions {
         handleIntakeControls();
         handleOuttakeControls();
 
-        if (gamepad2.left_stick_x > 0.1 || gamepad2.right_stick_x > 0.1 || gamepad2.left_stick_y > 0.1) {
+        if (gamepad2.left_bumper) {
             mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
         }
 
@@ -156,22 +159,8 @@ public class Main extends OpMode implements ServoPositions {
     }
 
     void telemetry() {
-        telemetry.addData("Mode", isIntakeMode ? "Intake" : "Outtake");
-        telemetry.addData("\nLeft motor", motorLeft.getCurrentPosition());
-        telemetry.addData("Right motor", motorRight.getCurrentPosition());
+
     }
 
-    void init_IMU() {
-
-        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
-        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
-
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        imu.resetYaw();
-    }
 }
 
