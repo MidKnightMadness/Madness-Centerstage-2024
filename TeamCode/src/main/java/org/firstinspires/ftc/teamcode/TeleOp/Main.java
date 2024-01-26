@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
@@ -23,11 +25,13 @@ public class Main extends OpMode implements ServoPositions {
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     IMU imu;
+    ModernRoboticsI2cRangeSensor rangeSensor;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     boolean isIntakeMode = true;
 
     Servo launcherServo;
     double [] lastInputs = {0.0, 0.0, 0.0};
+    double angleResetCorrection = 0; // We reset angle at 90˚ facing forward
 
     @Override
     public void init() {
@@ -36,6 +40,7 @@ public class Main extends OpMode implements ServoPositions {
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
         init_IMU();
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
         g2Y = new ButtonToggle();
@@ -78,20 +83,25 @@ public class Main extends OpMode implements ServoPositions {
             }
         }
 
-//        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry);
-        mecanumDrive.normalDrive(power,
-                0.9 * lastInputs [0] - 0.1 * gamepad1.left_stick_x,
-                0.9 * lastInputs [1] + 0.1 * gamepad1.left_stick_y,
-                0.9 * lastInputs [2] - 0.1 * gamepad1.right_stick_x);
-        lastInputs [0] = -gamepad1.left_stick_x;
-        lastInputs [1] = gamepad1.left_stick_y;
-        lastInputs [2] = -gamepad1.right_stick_x;
+//        mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d + angleResetCorrection, telemetry);
+        if(gamepad2.dpad_up){
+            alignToBoardContinuous();
+        }else {
+            mecanumDrive.normalDrive(power,
+                    0.9 * lastInputs[0] - 0.1 * gamepad1.left_stick_x,
+                    0.9 * lastInputs[1] + 0.1 * gamepad1.left_stick_y,
+                    0.9 * lastInputs[2] - 0.1 * gamepad1.right_stick_x);
+            lastInputs[0] = -gamepad1.left_stick_x;
+            lastInputs[1] = gamepad1.left_stick_y;
+            lastInputs[2] = -gamepad1.right_stick_x;
+        }
 
         telemetry.addData("Yaw, ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         telemetry.update();
 
         if(gamepad1.x){
             imu.resetYaw();
+            angleResetCorrection = Math.PI / 2d;
         }
     }
 
@@ -172,6 +182,16 @@ public class Main extends OpMode implements ServoPositions {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         imu.resetYaw();
+    }
+
+    double backDropAligned = 3.5d; // CM
+    double rotationCorrectionConstant = 0.05;
+    public double alignToBoardContinuous(){
+        if(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned > 0.5){
+            mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - rotationCorrectionConstant));
+        }
+
+        return rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned;
     }
 }
 
