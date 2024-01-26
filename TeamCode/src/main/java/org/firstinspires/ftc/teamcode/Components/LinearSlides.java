@@ -48,9 +48,6 @@ public class LinearSlides{
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
 
-        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -81,9 +78,6 @@ public class LinearSlides{
     public void setStartingPositions(int leftPos, int rightPos){
         startingPositions [0] = leftPos;
         startingPositions [1] = rightPos;
-
-        leftBounds [0] += leftPos;
-        leftBounds [0] += rightPos;
     }
 
     public void resetEncoders() {
@@ -131,7 +125,7 @@ public class LinearSlides{
 
     public void update(double targetPosition){ // Run this each tick to set power based on position differences
         targetPos = targetPosition;
-        currentPos = (inPerTickRightSlide * motorRight.getCurrentPosition() - inPerTickLeftSlide * motorLeft.getCurrentPosition()) / 2.0d;
+        currentPos = (inPerTickRightSlide * (motorRight.getCurrentPosition() - startingPositions [1]) - inPerTickLeftSlide * (motorLeft.getCurrentPosition() * startingPositions [0])) / 2.0d;
     }
 
     public void extendToDistance(double targetDistance){
