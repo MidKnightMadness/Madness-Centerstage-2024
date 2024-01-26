@@ -191,6 +191,9 @@ public class Main extends OpMode implements ServoPositions {
             mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - rotationCorrectionConstant));
         }
 
+        telemetry.addData("Distance to board", rangeSensor.getDistance(DistanceUnit.CM));
+        telemetry.update();
+
         return rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned;
     }
 }
