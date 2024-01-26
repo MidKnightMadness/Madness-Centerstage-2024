@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
@@ -24,6 +27,7 @@ public class Main extends OpMode implements ServoPositions {
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     boolean isIntakeMode = true;
     IMU imu;
+    ModernRoboticsI2cRangeSensor rangeSensor;
 
     Servo launcherServo;
     boolean isUsingFieldOriented;
@@ -35,7 +39,8 @@ public class Main extends OpMode implements ServoPositions {
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
 
-        imu = hardwareMap.get(IMU.class, "imu");
+        init_IMU();
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
         g2Y = new ButtonToggle();
@@ -88,6 +93,10 @@ public class Main extends OpMode implements ServoPositions {
                         imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2,
                         telemetry);
             }
+        }
+
+        if(gamepad1.dpad_up){
+            alignToBoardContinuous();
         }
 
         if (gamepad1.a) {
@@ -162,5 +171,30 @@ public class Main extends OpMode implements ServoPositions {
 
     }
 
+    void init_IMU() {
+
+        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
+        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
+
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        imu.resetYaw();
+    }
+
+    double backDropAligned = 3.5d; // CM
+    double rotationCorrectionConstant = 0.05;
+    public double alignToBoardContinuous(){
+        if(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned > 0.5){
+            mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - rotationCorrectionConstant));
+        }
+
+        telemetry.addData("Distance to board", rangeSensor.getDistance(DistanceUnit.CM));
+        telemetry.update();
+
+        return rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned;
+    }
 }
 
