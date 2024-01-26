@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Utility.Timer;
 public class LinearSlides{
     public DcMotorEx motorRight;
     public DcMotorEx motorLeft;
-    public double [] slidesMotorMultipliers = {0.25, 0.3}; // Left, right
+    public double [] slidesMotorMultipliers = {0.75, 0.75}; // Left, right
 
     ButtonToggle dPadUp;
     ButtonToggle dPadDown;
@@ -19,16 +20,15 @@ public class LinearSlides{
     ButtonToggle y;
     ButtonToggle a;
 
-    double [] mainExtensionConstants = {0.0, 0.0}; // For both sides to follow based on distance to target; left, right
+    double [] mainExtensionConstants = {0.1, 0.1}; // For both sides to follow based on distance to target; left, right
     double correctionConstant = 0.0; // Left slide follows right side, to help witn synchronization
-    double [] lastInputs = {0.0, 0.0, 0.0};
     int [] leftBounds = {0, -2629}; // Bottom, top
     int [] rightBounds = {0, 2974}; // Bottom, top
     int [] startingPositions = {0, 0}; // Left, right
     double inPerTickLeftSlide = -21.5 / 2629d;
     double inPerTickRightSlide = 21.5 / 2974d;
     double slidesDifferenceTolerance = 0.0; // Length difference between two slides tolerated
-    double extensionLength = 0.0; // Extended length, use length of right side (lead side)
+    double slidesExtensionTolerance = 0.25;
 
     double targetPos; // Inches
     double currentPos; // Inches from starting length
@@ -41,11 +41,15 @@ public class LinearSlides{
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
 
+
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
+
+        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -127,15 +131,36 @@ public class LinearSlides{
 
     public void update(double targetPosition){ // Run this each tick to set power based on position differences
         targetPos = targetPosition;
-        currentPos = (inPerTickRightSlide * motorRight.getCurrentPosition() + inPerTickLeftSlide * motorLeft.getCurrentPosition()) / 2.0d;
+        currentPos = (inPerTickRightSlide * motorRight.getCurrentPosition() - inPerTickLeftSlide * motorLeft.getCurrentPosition()) / 2.0d;
+    }
 
-        if(movementToggled){
-            motorRight.setPower((targetPosition - currentPos) * mainExtensionConstants [0]);
-            motorLeft.setPower((targetPosition - currentPos) * mainExtensionConstants [1] +
-                    correctionConstant * (inPerTickLeftSlide * motorRight.getCurrentPosition() - inPerTickRightSlide * motorLeft.getCurrentPosition())); // For following
-        }else{
-            motorRight.setPower(0.0);
-            motorLeft.setPower(0.0);
+    public void extendToDistance(double targetDistance){
+        this.update(targetDistance);
+        while(this.targetPos - this.currentPos > slidesExtensionTolerance){
+            this.update(targetDistance);
+            if(movementToggled){
+                motorRight.setPower((targetDistance - currentPos) * mainExtensionConstants [0]);
+                motorLeft.setPower((targetDistance - currentPos) * mainExtensionConstants [1] +
+                        correctionConstant * (inPerTickLeftSlide * motorRight.getCurrentPosition() - inPerTickRightSlide * motorLeft.getCurrentPosition())); // For following
+            }else{
+                motorRight.setPower(0.0);
+                motorLeft.setPower(0.0);
+            }
+        }
+    }
+
+    public void extendToDistanceAsync(double targetDistance){ // "Async", only allows extension while driving; run every frame
+        this.update(targetDistance);
+        if(this.targetPos - this.currentPos > slidesExtensionTolerance){
+            this.update(targetDistance);
+            if(movementToggled){
+                motorRight.setPower((targetDistance - currentPos) * mainExtensionConstants [0]);
+                motorLeft.setPower((targetDistance - currentPos) * mainExtensionConstants [1] +
+                        correctionConstant * (inPerTickLeftSlide * motorRight.getCurrentPosition() - inPerTickRightSlide * motorLeft.getCurrentPosition())); // For following
+            }else{
+                motorRight.setPower(0.0);
+                motorLeft.setPower(0.0);
+            }
         }
     }
 }
