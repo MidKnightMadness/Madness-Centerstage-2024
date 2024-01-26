@@ -18,7 +18,8 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(75, 0.6);
+            deadReckoningDrive.moveForwardDistance(75, 0.5);
+            // if needed, we can always make it stop in the middle
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
@@ -42,7 +43,8 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(75, 0.6);
+            deadReckoningDrive.moveForwardDistance(75, 0.5);
+            // if needed, we can always make it stop in the middle
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
@@ -61,7 +63,8 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(75, 0.6);
+            deadReckoningDrive.moveForwardDistance(75, 0.5);
+            // if needed, we can always make it stop in the middle
 
             // Align to backdrop
             // Align to backdrop
