@@ -11,10 +11,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
@@ -28,9 +30,12 @@ public class Main extends OpMode implements ServoPositions {
     boolean isIntakeMode = true;
     IMU imu;
     ModernRoboticsI2cRangeSensor rangeSensor;
+    WebcamName webcamName;
+    AprilTagLocalizerTwo localizer;
 
     Servo launcherServo;
     boolean isUsingFieldOriented;
+    double rotationResetConstant = 0.0;
 
     @Override
     public void init() {
@@ -41,6 +46,7 @@ public class Main extends OpMode implements ServoPositions {
 
         init_IMU();
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
+        localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
         g2Y = new ButtonToggle();
@@ -90,7 +96,7 @@ public class Main extends OpMode implements ServoPositions {
             }
             else {
                 mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x,
-                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2,
+                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2 + rotationResetConstant,
                         telemetry);
             }
         }
@@ -99,8 +105,9 @@ public class Main extends OpMode implements ServoPositions {
             alignToBoardContinuous();
         }
 
-        if (gamepad1.a) {
+        if (gamepad1.a) { // Temporary for field oriented drive, may come up with auto align functionality
             imu.resetYaw();
+            rotationResetConstant = Math.PI / 2; // Assumes resetting at 90˚ from starting position, aka facing backstage side
         }
 
         telemetry.addData("Driver mode", isUsingFieldOriented ? "Field Oriented" : "Normal");
@@ -188,13 +195,17 @@ public class Main extends OpMode implements ServoPositions {
     double rotationCorrectionConstant = 0.05;
     public double alignToBoardContinuous(){
         if(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned > 0.5){
-            mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - rotationCorrectionConstant));
+            mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - Math.PI / 2d -  rotationResetConstant));
         }
 
         telemetry.addData("Distance to board", rangeSensor.getDistance(DistanceUnit.CM));
         telemetry.update();
 
         return rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned;
+    }
+
+    public boolean alignToLaunchPositionContinuous(){ // Uses april tags, has contingency to test whether or not  april tags are visible
+        return false;
     }
 }
 

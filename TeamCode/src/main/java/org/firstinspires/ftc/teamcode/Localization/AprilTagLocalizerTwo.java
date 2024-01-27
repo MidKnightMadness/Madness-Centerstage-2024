@@ -46,7 +46,7 @@ public class AprilTagLocalizerTwo extends Localizer {
     double [] robotCoordinates = {0d, 0d};
     double rangeCoefficient = 0.0; // Used as average intermediate
 
-    public AprilTagLocalizerTwo(WebcamName webCam, HardwareMap hardwareMap, Telemetry telemetry, double relativeX, double relativeY){
+    public AprilTagLocalizerTwo(String webCam, HardwareMap hardwareMap, Telemetry telemetry, double relativeX, double relativeY){
         // Match instance fields
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
@@ -143,7 +143,7 @@ public class AprilTagLocalizerTwo extends Localizer {
 
     // COPIED OVER FROM REFERENCE CLASS ============================================================
 
-    private void initAprilTag(WebcamName Webcam) {
+    private void initAprilTag(String Webcam) {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
@@ -168,7 +168,7 @@ public class AprilTagLocalizerTwo extends Localizer {
 
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
-            builder.setCamera(Webcam);
+            builder.setCamera(hardwareMap.get(WebcamName.class, Webcam));
         } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
