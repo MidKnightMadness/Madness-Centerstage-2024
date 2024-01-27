@@ -48,9 +48,9 @@ public class LinearSlides{
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
 
-        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         toggleTargetExtension();
     }
@@ -66,11 +66,11 @@ public class LinearSlides{
         dPadUp = new ButtonToggle();
         dPadDown = new ButtonToggle();
 
-        motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        setStartingPositions(leftPos, rightPose);
+        setStartingPositions(motorLeft.getCurrentPosition(), motorRight.getCurrentPosition());
 
         toggleTargetExtension();
     }
@@ -103,8 +103,13 @@ public class LinearSlides{
     }
 
     public void extendWithPower(double leftPowerInput, double rightPowerInput){
-        motorLeft.setPower(leftPowerInput * slidesMotorMultipliers [0]);
-        motorRight.setPower(rightPowerInput * slidesMotorMultipliers [1]);
+//        if(motorLeft.getCurrentPosition() < startingPositions [0] && motorLeft.getCurrentPosition() > startingPositions [0] + leftBounds [1] &&
+//        motorRight.getCurrentPosition() > startingPositions [1] && motorRight.getCurrentPosition() < startingPositions [1] + rightBounds [1] &&
+//                (leftPowerInput + rightPowerInput) / 2d > 0) {
+        if(true){
+            motorLeft.setPower(leftPowerInput * slidesMotorMultipliers[0]);
+            motorRight.setPower(rightPowerInput * slidesMotorMultipliers[1]);
+        }
     }
 
     public void extendForTime(double left, double right, double seconds) {

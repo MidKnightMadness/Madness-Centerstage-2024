@@ -114,6 +114,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
     @Override
     public void start() {
+        imu.resetYaw();
         webcam.stopStreaming();
 
         boxServo.setPosition(0.6435); // center
