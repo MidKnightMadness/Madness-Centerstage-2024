@@ -67,7 +67,7 @@ public class LinearSlides{
         dPadDown = new ButtonToggle();
 
         motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         setStartingPositions(leftPos, rightPose);
