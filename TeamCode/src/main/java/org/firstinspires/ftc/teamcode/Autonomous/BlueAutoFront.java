@@ -26,7 +26,7 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.moveRightDistance(-28);
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-            slides.extendForTime(-0.5, -0.5, 2);
+            slides.extendForTime(0.5, 0.5, 2);
 //            sleep(500);
             rightWristServo.setPosition(wristServoOut);
 //            sleep(750);
@@ -50,7 +50,7 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(-17);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-            slides.extendForTime(-0.5, -0.5, 2);
+            slides.extendForTime(0.5, 0.5, 2);
 //            sleep(500);
             rightWristServo.setPosition(wristServoOut);
 //            sleep(750);
@@ -72,7 +72,7 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.moveRightDistance(1);
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-            slides.extendForTime(-0.5, -0.5, 2);
+            slides.extendForTime(0.5, 0.5, 2);
 //            sleep(500);
             rightWristServo.setPosition(wristServoOut);
 //            sleep(750);

@@ -47,9 +47,10 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public StartingPosition getStartingPosition() {
         return StartingPosition.NEAR;
     }
+    public double slidesExtensionTimeConstant = 2.5;
 
     CameraModes cameraMode = getAllianceColor();
-    DeadReckoningDrive deadReckoningDrive;
+    public DeadReckoningDrive deadReckoningDrive;
     IMU imu;
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
@@ -73,6 +74,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
+        init_IMU();
 
         teamPropMask = new TeamPropMask(640, 360, telemetry);
         teamPropMask.setMode(getAllianceColor());
@@ -117,7 +119,10 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         imu.resetYaw();
         webcam.stopStreaming();
 
-        boxServo.setPosition(0.6435); // center
+        // Reset servos
+        boxServo.setPosition(boxServoNeutral);
+        rightWristServo.setPosition(wristServoIn);
+        intakeRightServo.setPosition(intakeHighest);
 
         drive();
     }
@@ -259,12 +264,15 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
     public void drive(){}
 
-    public void rotateBoxTo(double position){
+    public void rotateBoxTo(double position) {
         double servoPosition = boxServo.getPosition();
         while(boxServo.getPosition() < position){
-            boxServo.setPosition(servoPosition);
-            servoPosition += 0.05;
-            sleep(1);
+            boxServo.setPosition(boxServo.getPosition() + 0.01);
+            try {
+                Thread.sleep((long) Math.round(10.0 * Math.PI / (Math.PI)));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

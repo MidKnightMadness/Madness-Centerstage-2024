@@ -199,7 +199,6 @@ public class Main extends OpMode implements ServoPositions {
         }
 
         telemetry.addData("Distance to board", rangeSensor.getDistance(DistanceUnit.CM));
-        telemetry.update();
 
         return rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned;
     }
