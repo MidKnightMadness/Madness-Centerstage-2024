@@ -84,7 +84,7 @@ public class CameraFullProcedureTest extends OpMode {
         });
 
         // Init for april tag localizer
-        localizer = new AprilTagLocalizerTwo(webcamName, hardwareMap, telemetry, 0, 0);
+        localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
     }
 
     @Override

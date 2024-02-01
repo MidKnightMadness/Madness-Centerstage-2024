@@ -298,6 +298,45 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         moveForwardDistance(distance, 0.5);
     }
 
+    public void moveForwardDistance(double distance, double maxPower, double targetAngle) {
+        double currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
+        double minPower = 0.225;
+
+        resetDisplacement();
+
+        double startTime = timer.updateTime();
+        double currentTime = startTime;
+
+        double error = distance;
+        double errorToStop = 0.1;
+        while (Math.abs(error) > errorToStop) {
+            if (currentTime - startTime > 6) {
+                errorToStop += 0.05;
+            }
+            updateDisplacement();
+
+            // Makes sure angle is between 0 and 360˚
+            currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
+            double rotationCorrection = targetAngle - currentAngleCorrected;
+
+            error = distance - forwardDisplacement;
+            double direction = Math.signum(error);
+
+            double power = minPower + (maxPower - minPower) * Math.abs(error / 16d);
+
+            telemetry.addData("Error", error);
+            telemetry.addData("Angle error", rotationCorrection);
+            telemetry.addData("Power", power * direction);
+            telemetry.addLine("-------");
+
+            telemetry.update();
+
+            setPowers(power * (direction + rotationCorrectionConstant * rotationCorrection), power * (direction - rotationCorrectionConstant * rotationCorrection), power * (direction + rotationCorrectionConstant * rotationCorrection), power * (direction - rotationCorrectionConstant * rotationCorrection));
+        }
+
+        setPowers(0, 0, 0, 0);
+    }
+
 
     void moveRightDistance(double distance) {
         double minPower = 0.3;
@@ -329,6 +368,49 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             telemetry.update();
 
             setPowers(power * direction, power * -direction, power * -direction, power * direction);
+        }
+
+        setPowers(0, 0, 0, 0);
+    }
+
+    private final double rotationCorrectionConstant = 0.05;
+    private final double rotationCorrectionConstantForRotation = 0.15;
+    public void moveRightDistance(double distance, double targetAngle) { // Angle in radians
+        double currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
+        double minPower = 0.3;
+        double maxPower = 0.5;
+
+        resetDisplacement();
+
+        double startTime = timer.updateTime();
+        double currentTime = startTime;
+
+        double error = distance;
+        double errorToStop = 0.1;
+        while (Math.abs(error) > errorToStop) {
+            if (currentTime - startTime > 6) {
+                errorToStop += 0.05;
+            }
+            updateDisplacement();
+
+            // Makes sure angle is between 0 and 360˚
+            currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
+            double rotationCorrection = targetAngle - currentAngleCorrected;
+
+            error = distance - lateralDisplacement;
+            double direction = Math.signum(error);
+
+            double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
+
+            telemetry.clear();
+            telemetry.addData("Error", error);
+            telemetry.addData("Angle error", rotationCorrection);
+            telemetry.addData("Power", power * direction);
+            telemetry.addLine("-------");
+
+            telemetry.update();
+
+            setPowers(power * (direction + rotationCorrectionConstantForRotation * rotationCorrection), power * -(direction - rotationCorrectionConstantForRotation * rotationCorrection), power * -(direction + rotationCorrectionConstantForRotation * rotationCorrection), power * (direction - rotationCorrectionConstantForRotation * rotationCorrection));
         }
 
         setPowers(0, 0, 0, 0);
