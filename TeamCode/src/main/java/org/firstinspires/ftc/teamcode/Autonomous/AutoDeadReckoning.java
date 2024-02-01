@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.Components.LinearSlides;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -60,6 +61,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public WebcamName webcamName;
     TeamPropMask teamPropMask;
     LinearSlides slides;
+    ServoSmooth boxServoController;
 
     @Override
     public void init() {
@@ -74,6 +76,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
+        boxServoController = new ServoSmooth(boxServo);
         init_IMU();
 
         teamPropMask = new TeamPropMask(640, 360, telemetry);

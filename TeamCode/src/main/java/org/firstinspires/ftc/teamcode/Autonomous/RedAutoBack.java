@@ -42,8 +42,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            boxServo.setPosition(boxServoLeft); // right
-//            rotateBoxTo(boxServoRight);
+            while(!boxServoController.setServoPosition(boxServoLeft, 2, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
@@ -64,8 +63,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            boxServo.setPosition(boxServoRight); // left
-//            rotateBoxTo(boxServoRight);
+            while(!boxServoController.setServoPosition(boxServoRight, 2, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
@@ -87,8 +85,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            boxServo.setPosition(boxServoRight); // right
-//            rotateBoxTo(boxServoRight);
+            while(!boxServoController.setServoPosition(boxServoRight, 2, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
