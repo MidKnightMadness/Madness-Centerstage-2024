@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 public interface ServoPositions {
-    double wristServoIn = 0.165;
-    double wristServoOut = 0.323;
-    double wristServoFlat = 0;
+    double wristServoIn = 0.5;
+    double wristServoOut = 0.665;
+    double wristServoFlat = 0.3615;
+    double wristServoUpperBound = 0.25;
 
-    double boxServoNeutral = 0.6435;
-    double boxServoRight = 0.45;
-    double boxServoLeft = 0.85;
+    double boxServoNeutral = 0.5135;
+    double boxServoRight = 0.724;
+    double boxServoLeft = 0.267;
 
     double launcherOpen = 0.485;
     double launcherClosed = 0.57;

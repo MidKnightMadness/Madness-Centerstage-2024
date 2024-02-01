@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
 public class Main extends OpMode implements ServoPositions {
@@ -27,9 +27,11 @@ public class Main extends OpMode implements ServoPositions {
 
     Servo launcherServo;
     boolean isUsingFieldOriented;
+    ServoSmooth boxServoController;
 
     @Override
     public void init() {
+
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
         intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
@@ -38,7 +40,7 @@ public class Main extends OpMode implements ServoPositions {
         imu = hardwareMap.get(IMU.class, "imu");
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
-        g2Y = new ButtonToggle();
+                g2Y = new ButtonToggle();
         g2A = new ButtonToggle();
         g2LeftBump = new ButtonToggle();
         g1A = new ButtonToggle();
@@ -51,6 +53,7 @@ public class Main extends OpMode implements ServoPositions {
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
 
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
+        boxServoController = new ServoSmooth(boxServo);
 
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
@@ -99,6 +102,13 @@ public class Main extends OpMode implements ServoPositions {
     }
 
     @Override
+    public void start() {
+        while (!boxServoController.setServoPosition(boxServoLeft, 1, telemetry)) {}
+        while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
+        while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
+
+    }
+    @Override
     public void loop() {
         handleDriverControls();
         handleManipulatorControls();
@@ -143,18 +153,22 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServo.setPosition(boxServoRight);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 1, telemetry);  // right
             } else {
-                boxServo.setPosition(boxServoLeft);  // left
+                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
             }
         } else {
-            boxServo.setPosition(boxServoNeutral);   // center
+            boxServoController.setServoPosition(boxServoNeutral, 0.5, telemetry);  // center
         }
 
         if (g2X.update(gamepad2.x)) {
             if (wristPos == wristServoIn) { wristPos = wristServoOut; }
             else { wristPos = wristServoIn; }
             rightWristServo.setPosition(wristPos);
+        }
+
+        if (gamepad2.b) {
+            rightWristServo.setPosition(wristServoFlat);
         }
     }
 
