@@ -6,8 +6,8 @@ public interface ServoPositions {
     double wristServoFlat = 0;
 
     double boxServoNeutral = 0.508;
-    double boxServoRight = 0.258;
-    double boxServoLeft = 0.758;
+    double boxServoRight = 0.2;
+    double boxServoLeft = 0.8;
 
     double launcherOpen = 0.485;
     double launcherClosed = 0.57;

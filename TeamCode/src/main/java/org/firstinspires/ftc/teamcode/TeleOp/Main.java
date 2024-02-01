@@ -191,7 +191,7 @@ public class Main extends OpMode implements ServoPositions {
         imu.resetYaw();
     }
 
-    double backDropAligned = 3.5d; // CM
+    double backDropAligned = 5d; // CM
     double rotationCorrectionConstant = 0.05;
     public double alignToBoardContinuous(){
         if(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned > 0.5){

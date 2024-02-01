@@ -11,8 +11,8 @@ public class RedAutoBack extends AutoDeadReckoning {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(16d);
             deadReckoningDrive.setTargetRotation(60);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 7d);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 7d);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d);
             deadReckoningDrive.setTargetRotation(-42);
@@ -42,7 +42,8 @@ public class RedAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            while(!boxServoController.setServoPosition(boxServoLeft, 2, telemetry)){}
+            boxServo.setPosition(boxServoLeft);
+//            while(!boxServoController.setServoPosition(boxServoLeft, 2, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
@@ -63,7 +64,8 @@ public class RedAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            while(!boxServoController.setServoPosition(boxServoRight, 2, telemetry)){}
+            boxServo.setPosition(boxServoRight);
+//            while(!boxServoController.setServoPosition(boxServoRight, 2, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
@@ -85,7 +87,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            while(!boxServoController.setServoPosition(boxServoRight, 2, telemetry)){}
+            while(!boxServoController.setServoPosition(boxServoRight, 1, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);

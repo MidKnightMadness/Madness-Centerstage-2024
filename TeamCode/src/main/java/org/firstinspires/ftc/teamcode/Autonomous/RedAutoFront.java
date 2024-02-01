@@ -19,7 +19,7 @@ public class RedAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(-90, 0.8);
-            deadReckoningDrive.moveForwardDistance(75, 0.5);
+            deadReckoningDrive.moveForwardDistance(70, 0.5, -Math.PI / 2d);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(-90, 0.8);
@@ -44,7 +44,7 @@ public class RedAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(-90, 0.8);
-            deadReckoningDrive.moveForwardDistance(75, 0.5);
+            deadReckoningDrive.moveForwardDistance(70, 0.5, -Math.PI / 2d);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(-90, 0.8);
@@ -58,12 +58,12 @@ public class RedAutoFront extends AutoDeadReckoning {
 //            rotateBoxTo(boxServoLeft); // slow
 
         } else {
-            deadReckoningDrive.moveForwardDistance(25, 0.8);
+            deadReckoningDrive.moveForwardDistance(23, 0.8);
             deadReckoningDrive.moveForwardDistance(-3, 0.8);
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(-90, 0.8);
-            deadReckoningDrive.moveForwardDistance(75, 0.5);
+            deadReckoningDrive.moveForwardDistance(70, 0.5, -Math.PI / 2d);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(-90, 0.8);
@@ -72,7 +72,7 @@ public class RedAutoFront extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            boxServo.setPosition(boxServoLeft); // left
+            while(!boxServoController.setServoPosition(boxServoRight, 1, telemetry)){}
 //            rotateBoxTo(boxServoLeft); // slow
         }
     }
