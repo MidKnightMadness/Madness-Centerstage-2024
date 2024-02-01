@@ -374,7 +374,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     }
 
     private final double rotationCorrectionConstant = 0.05;
-    private final double rotationCorrectionConstantForStrafe = 0.05;
+    private final double rotationCorrectionConstantForRotation = 0.15;
     public void moveRightDistance(double distance, double targetAngle) { // Angle in radians
         double currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
         double minPower = 0.3;
@@ -406,15 +406,11 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             telemetry.addData("Error", error);
             telemetry.addData("Angle error", rotationCorrection);
             telemetry.addData("Power", power * direction);
-            telemetry.addData("FL", FL.getPower());
-            telemetry.addData("FR", FR.getPower());
-            telemetry.addData("BL", BL.getPower());
-            telemetry.addData("BR", BR.getPower());
             telemetry.addLine("-------");
 
             telemetry.update();
 
-            setPowers(power * (direction + rotationCorrectionConstantForStrafe * rotationCorrection), power * -(direction - rotationCorrectionConstantForStrafe * rotationCorrection), power * -(direction + rotationCorrectionConstantForStrafe * rotationCorrection), power * (direction - rotationCorrectionConstantForStrafe * rotationCorrection));
+            setPowers(power * (direction + rotationCorrectionConstantForRotation * rotationCorrection), power * -(direction - rotationCorrectionConstantForRotation * rotationCorrection), power * -(direction + rotationCorrectionConstantForRotation * rotationCorrection), power * (direction - rotationCorrectionConstantForRotation * rotationCorrection));
         }
 
         setPowers(0, 0, 0, 0);
