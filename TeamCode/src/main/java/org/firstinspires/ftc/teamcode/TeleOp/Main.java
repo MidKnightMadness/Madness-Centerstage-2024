@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
-import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
+//import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
 public class Main extends OpMode implements ServoPositions {
@@ -36,7 +36,8 @@ public class Main extends OpMode implements ServoPositions {
 
     Servo launcherServo;
     boolean isUsingFieldOriented;
-    ServoSmooth boxServoController;
+//    ServoSmooth boxServoController;
+    double rotationResetConstant = 0;
 
     @Override
     public void init() {
@@ -63,7 +64,7 @@ public class Main extends OpMode implements ServoPositions {
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
 
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
-        boxServoController = new ServoSmooth(boxServo);
+//        boxServoController = new ServoSmooth(boxServo);
 
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
@@ -73,6 +74,9 @@ public class Main extends OpMode implements ServoPositions {
         motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addLine("Initialized");
+
+        startingPositions [0] = motorLeft.getCurrentPosition();
+        startingPositions [1] = motorRight.getCurrentPosition();
     }
 
     double power = 1;
@@ -114,13 +118,15 @@ public class Main extends OpMode implements ServoPositions {
 
         telemetry.addData("Driver mode", isUsingFieldOriented ? "Field Oriented" : "Normal");
         telemetry.addData("Driver speed", power == 1 ? "High" : "Low");
+        telemetry.addData("Left side position", motorLeft.getCurrentPosition());
+        telemetry.addData("Right side position", motorRight.getCurrentPosition());
     }
 
     @Override
     public void start() {
-        while (!boxServoController.setServoPosition(boxServoLeft, 1, telemetry)) {}
-        while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
-        while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
+//        while (!boxServoController.setServoPosition(boxServoLeft, 1, telemetry)) {}
+//        while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
+//        while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
 
     }
     @Override
@@ -161,6 +167,13 @@ public class Main extends OpMode implements ServoPositions {
         }
     }
 
+    // For setting motor bounds and allowing automatic servo movement
+    double [] mainExtensionConstants = {0.1, 0.1}; // For both sides to follow based on distance to target; left, right
+    int [] slidesBounds = {-2629, 2974};
+    int [] startingPositions = {0, 0};
+    double inPerTickLeftSlide = -21.5 / 2629d;
+    double inPerTickRightSlide = 21.5 / 2974d;
+
     void handleOuttakeControls() {
         double slidesDirection = gamepad2.a ? -1 : 1;
         motorLeft.setPower(slidesDirection * gamepad2.right_trigger);
@@ -168,12 +181,12 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 1, telemetry);  // right
+//                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 1, telemetry);  // right
             } else {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
+//                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
             }
         } else {
-            boxServoController.setServoPosition(boxServoNeutral, 0.5, telemetry);  // center
+//            boxServoController.setServoPosition(boxServoNeutral, 0.5, telemetry);  // center
         }
 
         if (g2X.update(gamepad2.x)) {
@@ -208,7 +221,7 @@ public class Main extends OpMode implements ServoPositions {
     double rotationCorrectionConstant = 0.05;
     public double alignToBoardContinuous(){
         if(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned > 0.5){
-            mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - Math.PI / 2d -  rotationResetConstant));
+            mecanumDrive.normalDrive(1, 0.0, -(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - Math.PI / 2d -  rotationResetConstant));
         }
 
         telemetry.addData("Distance to board", rangeSensor.getDistance(DistanceUnit.CM));
