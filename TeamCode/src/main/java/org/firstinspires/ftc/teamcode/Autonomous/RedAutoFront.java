@@ -19,10 +19,11 @@ public class RedAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(-90, 0.8);
-            deadReckoningDrive.moveForwardDistance(70, 0.5, -Math.PI / 2d);
+            imu.resetYaw();
+            deadReckoningDrive.moveForwardDistance(70, 0.5, 0);
 
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(-90, 0.8);
+            deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveRightDistance(22);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, 2);
@@ -44,10 +45,11 @@ public class RedAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(-90, 0.8);
-            deadReckoningDrive.moveForwardDistance(70, 0.5, -Math.PI / 2d);
+            imu.resetYaw();
+            deadReckoningDrive.moveForwardDistance(70, 0.5, 0);
 
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(-90, 0.8);
+            deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveRightDistance(14);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, 2);
@@ -63,10 +65,11 @@ public class RedAutoFront extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(-90, 0.8);
-            deadReckoningDrive.moveForwardDistance(70, 0.5, -Math.PI / 2d);
+            imu.resetYaw();
+            deadReckoningDrive.moveForwardDistance(70, 0.5, 0);
 
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(-90, 0.8);
+            deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, 2);
             sleep(500);
