@@ -9,15 +9,15 @@ public class BlueAutoBack extends AutoDeadReckoning {
     @Override
     public void drive() {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
-            deadReckoningDrive.moveForwardDistance(18d);
-            deadReckoningDrive.setTargetRotation(-60);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5.25d);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5.25d);
-            deadReckoningDrive.setTargetRotation(90);
+            deadReckoningDrive.moveForwardDistance(18d, 0.8, 0);
+            deadReckoningDrive.setTargetRotation(-60, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5.25d, 0.8, -60);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5.25d, 0.8, -60);
+            deadReckoningDrive.setTargetRotation(90, 0.8);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveForwardDistance(5d);
-            deadReckoningDrive.setTargetRotation(33);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d);
+            deadReckoningDrive.moveForwardDistance(5d, 0.8, 0);
+            deadReckoningDrive.setTargetRotation(33, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d, 0.8, 33);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d);
             deadReckoningDrive.setTargetRotation(90);
         } else {
