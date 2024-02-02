@@ -51,7 +51,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Hit backdrop to make sure pixel is scored
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.7, 0.7, 0.7, 0.7);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
@@ -73,7 +73,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Hit backdrop to make sure pixel is scored
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.7, 0.7, 0.7, 0.7);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
@@ -95,7 +95,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Hit backdrop to make sure pixel is scored
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.7, 0.7, 0.7, 0.7);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);

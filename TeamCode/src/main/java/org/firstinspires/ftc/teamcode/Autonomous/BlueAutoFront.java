@@ -10,74 +10,105 @@ public class BlueAutoFront extends AutoDeadReckoning {
     public void drive(){
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(15d, 0.8);
-            deadReckoningDrive.setTargetRotation(60);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d, 0.8);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d, 0.8);
-            deadReckoningDrive.setTargetRotation(0);
-            deadReckoningDrive.moveForwardDistance(28d, 0.8);
+            deadReckoningDrive.setTargetRotation(60, 0.7);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 6d, 0.6);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 6d, 0.6);
+            deadReckoningDrive.setTargetRotation(0, 0.7);
+            deadReckoningDrive.moveForwardDistance(26d, 0.8);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(75, 0.5);
-            // if needed, we can always make it stop in the middle
+            deadReckoningDrive.setTargetRotation(90, 0.4);
+            deadReckoningDrive.moveForwardDistance(65, 0.5, 90);
 
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(-28);
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-            slides.extendForTime(0.5, 0.5, 2);
-//            sleep(500);
+            deadReckoningDrive.setTargetRotation(90, 0.7);
+            deadReckoningDrive.moveRightDistance(-29, 0.7);
+            deadReckoningDrive.setTargetRotation(90, 0.7);
+            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
+            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
+            sleep(500);
             rightWristServo.setPosition(wristServoOut);
-//            sleep(750);
-            boxServo.setPosition(boxServoLeft); // left
-//            rotateBoxTo(boxServoLeft); // slow
+            while(!boxServoController.setServoPosition(boxServoLeft, 1.25, telemetry)){}
+            sleep(500);
+            rightWristServo.setPosition(wristServoIn);
+            boxServo.setPosition(boxServoNeutral);
+            sleep(500);
+            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
+
+            // Hit backdrop to make sure pixel is scored
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
+
+            // Park
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.moveRightDistance(-23);
+            deadReckoningDrive.moveForwardDistance(6);
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8);
             deadReckoningDrive.setTargetRotation(-40);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 10d, 0.8);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 10d, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d, 0.8);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d, 0.8);
             deadReckoningDrive.setTargetRotation(0);
-            deadReckoningDrive.moveForwardDistance(39d, 0.8);
+            deadReckoningDrive.moveForwardDistance(32d, 0.8);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(75, 0.5);
-            // if needed, we can always make it stop in the middle
+            deadReckoningDrive.setTargetRotation(90, 0.4);
+            deadReckoningDrive.moveForwardDistance(65, 0.5, 90);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(-17);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-            slides.extendForTime(0.5, 0.5, 2);
-//            sleep(500);
+            deadReckoningDrive.moveRightDistance(-26);
+            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
+            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
+            sleep(500);
             rightWristServo.setPosition(wristServoOut);
-//            sleep(750);
-            boxServo.setPosition(boxServoRight); // right
-//            rotateBoxTo(boxServoRight); // slow
+            while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
+            sleep(500);
+            rightWristServo.setPosition(wristServoIn);
+            boxServo.setPosition(boxServoNeutral);
+            sleep(500);
+            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
+
+            // Hit backdrop to make sure pixel is scored
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
+
+            // Park
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.moveRightDistance(13d);
+            deadReckoningDrive.moveForwardDistance(6);
 
         } else {
-            deadReckoningDrive.moveForwardDistance(27, 0.8);
-            deadReckoningDrive.moveForwardDistance(-1.5, 0.8);
+            deadReckoningDrive.moveForwardDistance(25d, 0.6, 0);
+            deadReckoningDrive.moveForwardDistance(-1, 0.6, 0);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(75, 0.5);
-            // if needed, we can always make it stop in the middle
+            deadReckoningDrive.setTargetRotation(90, 0.4);
+            deadReckoningDrive.moveForwardDistance(65, 0.5, 90);
 
             // Align to backdrop
-            // Align to backdrop
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(1);
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
-            slides.extendForTime(0.5, 0.5, 2);
-//            sleep(500);
+            deadReckoningDrive.setTargetRotation(90, 0.7);
+            deadReckoningDrive.setTargetRotation(90, 0.7);
+            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
+            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
+            sleep(500);
             rightWristServo.setPosition(wristServoOut);
-//            sleep(750);
-            boxServo.setPosition(boxServoRight); // right
-//            rotateBoxTo(boxServoRight); // slow
+            while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
+            sleep(500);
+            rightWristServo.setPosition(wristServoIn);
+            boxServo.setPosition(boxServoNeutral);
+            sleep(500);
+            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
+
+            // Hit backdrop to make sure pixel is scored
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
+
+            // Park
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.moveRightDistance(11);
+            deadReckoningDrive.moveForwardDistance(6);
         }
     }
 
