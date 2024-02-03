@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.annotation.SuppressLint;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -48,13 +49,15 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public StartingPosition getStartingPosition() {
         return StartingPosition.NEAR;
     }
-    public double slidesExtensionTimeConstant = 2.5;
+    public double slidesExtensionTimeConstant = 1.75;
+    public double rammingPower = 0.5;
 
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
     IMU imu;
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
+    ModernRoboticsI2cRangeSensor rangeSensor;
     Timer timer;
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
@@ -83,6 +86,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         teamPropMask.setMode(getAllianceColor());
         intakeRightServo = hardwareMap.get(Servo.class, "Right intake servo");
         intakeRightServo.setPosition(0.1);
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
 
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

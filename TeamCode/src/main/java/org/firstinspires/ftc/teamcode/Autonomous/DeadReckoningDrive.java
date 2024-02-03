@@ -416,7 +416,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     }
 
     double backDropToWallTolerance = 10d;
-    void strafeUntilBackdrop(ModernRoboticsI2cRangeSensor rangeSensor) {
+    void strafeUntilBackdrop(ModernRoboticsI2cRangeSensor rangeSensor, boolean right) {
         double minPower = 0.3;
         double maxPower = 0.5;
 
@@ -441,7 +441,9 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
             telemetry.update();
 
-            setPowers(power * 0.25, power * -0.25, power * -0.25, power * 0.25);
+            int direction = right? 1 : -1;
+
+            setPowers(power * direction * 0.25, power * direction * -0.25, power * direction * -0.25, power * direction * 0.25);
         }
 
         setPowers(0, 0, 0, 0);
