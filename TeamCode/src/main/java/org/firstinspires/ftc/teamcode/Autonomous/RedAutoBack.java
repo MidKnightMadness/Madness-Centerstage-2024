@@ -19,8 +19,8 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 2d);
         } else {
-            deadReckoningDrive.moveForwardDistance(22.5);
-            deadReckoningDrive.moveForwardDistance(-3d);
+            deadReckoningDrive.moveForwardDistance(20);
+            deadReckoningDrive.moveForwardDistance(-2d);
         }
 
         // go to backdrop
@@ -37,13 +37,13 @@ public class RedAutoBack extends AutoDeadReckoning {
         // Aligning code, may be broken from here on
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveRightDistance(-11.5d);
-            deadReckoningDrive.setMotorPowersForTime(3d, 0.2, 0.2, 0.2, 0.2);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
 //            boxServo.setPosition(boxServoLeft);
-            while(!boxServoController.setServoPosition(boxServoLeft, 2, telemetry)){}
+            while(!boxServoController.setServoPosition(boxServoLeft, 1, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
@@ -59,13 +59,13 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(2);
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
-            deadReckoningDrive.setMotorPowersForTime(3d, 0.2, 0.2, 0.2, 0.2);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
 //            boxServo.setPosition(boxServoRight);
-            while(!boxServoController.setServoPosition(boxServoRight, 2, telemetry)){}
+            while(!boxServoController.setServoPosition(boxServoRight, 1, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
@@ -81,8 +81,8 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(2);
 
         } else {
-            deadReckoningDrive.moveRightDistance(-4d);
-            deadReckoningDrive.setMotorPowersForTime(3d, 0.2, 0.2, 0.2, 0.2);
+            deadReckoningDrive.moveRightDistance(-1d);
+            deadReckoningDrive.setMotorPowersForTime(1d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
