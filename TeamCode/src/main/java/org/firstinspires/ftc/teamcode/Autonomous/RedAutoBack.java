@@ -9,7 +9,7 @@ public class RedAutoBack extends AutoDeadReckoning {
     @Override
     public void drive(){
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveForwardDistance(16d);
+            deadReckoningDrive.moveForwardDistance(15d);
             deadReckoningDrive.setTargetRotation(60);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 6d, 0.5);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 7d, 0.5);
@@ -19,19 +19,19 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 2d);
         } else {
-            deadReckoningDrive.moveForwardDistance(23.5);
-            deadReckoningDrive.moveForwardDistance(-7d);
+            deadReckoningDrive.moveForwardDistance(22.5);
+            deadReckoningDrive.moveForwardDistance(-3d);
         }
 
         // go to backdrop
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(-92);
             deadReckoningDrive.moveForwardDistance(22);
-            deadReckoningDrive.moveRightDistance(-5);
-            deadReckoningDrive.setTargetRotation(-90);
+            deadReckoningDrive.moveRightDistance(-4);
+            deadReckoningDrive.setTargetRotation(-92);
         } else {
             deadReckoningDrive.setTargetRotation(-92);
-            deadReckoningDrive.moveForwardDistance(27);
+            deadReckoningDrive.moveForwardDistance(25);
         }
 
         // Aligning code, may be broken from here on
@@ -81,7 +81,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(2);
 
         } else {
-            deadReckoningDrive.moveRightDistance(-5d);
+            deadReckoningDrive.moveRightDistance(-4d);
             deadReckoningDrive.setMotorPowersForTime(3d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);

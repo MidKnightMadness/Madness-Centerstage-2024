@@ -49,7 +49,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public StartingPosition getStartingPosition() {
         return StartingPosition.NEAR;
     }
-    public double slidesExtensionTimeConstant = 1.75;
+    public double slidesExtensionTimeConstant = 1.5;
     public double rammingPower = 0.5;
 
     CameraModes cameraMode = getAllianceColor();
