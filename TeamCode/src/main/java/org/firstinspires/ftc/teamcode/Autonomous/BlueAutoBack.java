@@ -9,7 +9,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
     @Override
     public void drive() {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
-            deadReckoningDrive.moveForwardDistance(14d, 0.8, 0);
+            deadReckoningDrive.moveForwardDistance(13d, 0.8, 0);
             deadReckoningDrive.setTargetRotation(-60, 0.7);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5.25d, 0.8, -60);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5.25d, 0.8, -60);
