@@ -9,7 +9,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
     @Override
     public void drive() {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
-            deadReckoningDrive.moveForwardDistance(15d, 0.8, 0);
+            deadReckoningDrive.moveForwardDistance(14d, 0.8, 0);
             deadReckoningDrive.setTargetRotation(-60, 0.7);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5.25d, 0.8, -60);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5.25d, 0.8, -60);
@@ -21,8 +21,8 @@ public class BlueAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d);
             deadReckoningDrive.setTargetRotation(90, 0.7);
         } else {
-            deadReckoningDrive.moveForwardDistance(25d, 0.8, 0);
-            deadReckoningDrive.moveForwardDistance(-7, 0.8, 0);
+            deadReckoningDrive.moveForwardDistance(20d, 0.8, 0);
+            deadReckoningDrive.moveForwardDistance(-4, 0.8, 0);
         }
 
         // go to backdrop
@@ -37,19 +37,15 @@ public class BlueAutoBack extends AutoDeadReckoning {
         // Aligning code, may be broken from here on
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(5d);
-            deadReckoningDrive.setMotorPowersForTime(3, 0.3, 0.3, 0.3, 0.3);
+            deadReckoningDrive.moveRightDistance(7d);
+            deadReckoningDrive.setMotorPowersForTime(1.5, 0.5, 0.5, 0.5, 0.5);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
-            sleep(750);
-            boxServo.setPosition(boxServoRight); // right
-
+            while(!boxServoController.setServoPosition(boxServoRight, 1.5, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
-            sleep(500);
             boxServo.setPosition(boxServoNeutral);
-            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -64,18 +60,14 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.setTargetRotation(95);
-            deadReckoningDrive.setMotorPowersForTime(3, 0.3, 0.3, 0.3, 0.3);
+            deadReckoningDrive.setMotorPowersForTime(1.5, 0.5, 0.5, 0.5, 0.5);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
-            sleep(750);
-            boxServo.setPosition(boxServoLeft); // left
-
+            while(!boxServoController.setServoPosition(boxServoLeft, 1.5, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
-            sleep(500);
             boxServo.setPosition(boxServoNeutral);
-            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -89,18 +81,15 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
         } else {
             deadReckoningDrive.setTargetRotation(90, 0.8);
-            deadReckoningDrive.moveRightDistance(1);
-            deadReckoningDrive.setMotorPowersForTime(3, 0.3, 0.3, 0.3, 0.3);
+            deadReckoningDrive.moveRightDistance(2);
+            deadReckoningDrive.setMotorPowersForTime(1.5, 0.5, 0.5, 0.5, 0.5);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
-            sleep(750);
-            while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
+            while(!boxServoController.setServoPosition(boxServoRight, 1.5, telemetry)){}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
-            sleep(500);
             boxServo.setPosition(boxServoNeutral);
-            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
