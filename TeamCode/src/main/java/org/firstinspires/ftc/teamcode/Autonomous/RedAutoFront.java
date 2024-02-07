@@ -59,11 +59,15 @@ public class RedAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(-92, 0.5);
             sleep(250);
             imu.resetYaw();
-            deadReckoningDrive.moveForwardDistance(63, 0.8, 0);
+            deadReckoningDrive.moveForwardDistance(30, 0.8, 0);
+            sleep(1000);
+            deadReckoningDrive.setTargetRotation(0);
+            imu.resetYaw();
+            deadReckoningDrive.moveForwardDistance(33, 0.8, 0);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(0, 0.8);
-            deadReckoningDrive.moveRightDistance(6);
+            deadReckoningDrive.moveRightDistance(8);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.2, 0.2, 0.2, 0.2);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
@@ -93,8 +97,8 @@ public class RedAutoFront extends AutoDeadReckoning {
             imu.resetYaw();
             deadReckoningDrive.moveForwardDistance(30, 0.8, 0);
             sleep(1000);
-            imu.resetYaw();
             deadReckoningDrive.setTargetRotation(0);
+            imu.resetYaw();
             deadReckoningDrive.moveForwardDistance(35, 0.8, 0);
 
             // Align to backdrop

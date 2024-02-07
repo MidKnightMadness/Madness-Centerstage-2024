@@ -52,12 +52,12 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 12d, 0.6);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.6);
             deadReckoningDrive.setTargetRotation(45, 0.8);
-            deadReckoningDrive.moveForwardDistance(6d, 0.6);
+            deadReckoningDrive.moveForwardDistance(5d, 0.6);
             deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveForwardDistance(25, 0.8);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(92, 0.4);
+            deadReckoningDrive.setTargetRotation(92, 0.4); // Set power level for rotation adjustment on all autons to thos
             sleep(250);
             deadReckoningDrive.moveForwardDistance(63, 0.8, 90);
 
@@ -99,8 +99,8 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90, 0.7);
 //            deadReckoningDrive.setTargetRotation(90, 0.7);
 //            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
-            deadReckoningDrive.strafeUntilBackdrop(rangeSensor, false);
-            deadReckoningDrive.moveRightDistance(-8d);
+//            deadReckoningDrive.strafeUntilBackdrop(rangeSensor, false);
+//            deadReckoningDrive.moveRightDistance(-8d);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.3, 0.3, 0.3, 0.3);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
