@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 //import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
@@ -34,10 +35,11 @@ public class Main extends OpMode implements ServoPositions {
     WebcamName webcamName;
     AprilTagLocalizerTwo localizer;
 
+    double rotationResetConstant = Math.PI / 2;
+
     Servo launcherServo;
     boolean isUsingFieldOriented;
-//    ServoSmooth boxServoController;
-    double rotationResetConstant = 0;
+    ServoSmooth boxServoController;
 
     @Override
     public void init() {
@@ -51,7 +53,7 @@ public class Main extends OpMode implements ServoPositions {
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
-                g2Y = new ButtonToggle();
+        g2Y = new ButtonToggle();
         g2A = new ButtonToggle();
         g2LeftBump = new ButtonToggle();
         g1A = new ButtonToggle();
@@ -64,7 +66,7 @@ public class Main extends OpMode implements ServoPositions {
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
 
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
-//        boxServoController = new ServoSmooth(boxServo);
+        boxServoController = new ServoSmooth(boxServo);
 
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
@@ -181,12 +183,15 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
+                boxServo.setPosition(boxServoRight);
 //                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 1, telemetry);  // right
             } else {
+                boxServo.setPosition(boxServoLeft); //left
 //                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
+//                boxServoController.setStartingPosition(boxServoNeutral);
             }
         } else {
-//            boxServoController.setServoPosition(boxServoNeutral, 0.5, telemetry);  // center
+            boxServo.setPosition(boxServoNeutral);  // center
         }
 
         if (g2X.update(gamepad2.x)) {

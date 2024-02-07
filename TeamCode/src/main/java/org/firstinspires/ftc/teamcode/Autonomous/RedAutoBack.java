@@ -11,16 +11,16 @@ public class RedAutoBack extends AutoDeadReckoning {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(16d);
             deadReckoningDrive.setTargetRotation(60);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 8d);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 7d);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 7d);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d);
             deadReckoningDrive.setTargetRotation(-42);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d);
-        } else {
-            deadReckoningDrive.moveForwardDistance(25d);
-            deadReckoningDrive.moveForwardDistance(-7d);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 9d);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 3d);
+        } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.CENTER){
+            deadReckoningDrive.moveForwardDistance(20d);
+            deadReckoningDrive.moveForwardDistance(-2d);
         }
 
         // go to backdrop
@@ -80,15 +80,14 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveRightDistance(8);
             deadReckoningDrive.moveForwardDistance(6);
 
-        } else {
-            deadReckoningDrive.moveRightDistance(-6d);
-            deadReckoningDrive.setMotorPowersForTime(3d, 0.2, 0.2, 0.2, 0.2);
+        } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.CENTER){
+            deadReckoningDrive.moveRightDistance(-2d);
+            deadReckoningDrive.setMotorPowersForTime(1.5d, 0.35, 0.35, 0.35, 0.35);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
-            sleep(500);
             rightWristServo.setPosition(wristServoOut);
             sleep(750);
-            boxServo.setPosition(boxServoRight); // right
-//            rotateBoxTo(boxServoRight);
+
+            while (!boxServoController.setServoPosition(boxServoRight, 1, telemetry)) {}
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);

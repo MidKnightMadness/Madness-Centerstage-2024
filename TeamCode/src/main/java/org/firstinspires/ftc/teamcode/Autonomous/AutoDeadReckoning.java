@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 //import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
+import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -48,7 +49,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public StartingPosition getStartingPosition() {
         return StartingPosition.NEAR;
     }
-    public double slidesExtensionTimeConstant = 2.5;
+    public double slidesExtensionTimeConstant = 1.75;
 
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
@@ -61,7 +62,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public WebcamName webcamName;
     TeamPropMask teamPropMask;
     LinearSlides slides;
-//    ServoSmooth boxServoController;
+    ServoSmooth boxServoController;
 
     @Override
     public void init() {
@@ -76,7 +77,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
-//        boxServoController = new ServoSmooth(boxServo);
+        boxServoController = new ServoSmooth(boxServo);
         init_IMU();
 
         teamPropMask = new TeamPropMask(640, 360, telemetry);
@@ -125,7 +126,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         // Reset servos
         boxServo.setPosition(boxServoNeutral);
         rightWristServo.setPosition(wristServoIn);
-        intakeRightServo.setPosition(intakeHighest);
+        intakeRightServo.setPosition(intakeDefault);
 
         drive();
     }
