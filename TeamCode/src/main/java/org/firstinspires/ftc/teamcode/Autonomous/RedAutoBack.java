@@ -11,7 +11,7 @@ public class RedAutoBack extends AutoDeadReckoning {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(12d, 0.8);
             deadReckoningDrive.setTargetRotation(60, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.5);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.5, 5, true);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 6d, 0.5);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8);
@@ -26,15 +26,15 @@ public class RedAutoBack extends AutoDeadReckoning {
         // go to backdrop
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(-94, 0.8);
-            deadReckoningDrive.moveForwardDistance(20, 0.8);
+            deadReckoningDrive.moveForwardDistance(20, 0.8, 5, true);
             deadReckoningDrive.moveRightDistance(-4);
             deadReckoningDrive.setTargetRotation(-94, 0.8);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.setTargetRotation(-94, 0.8);
-            deadReckoningDrive.moveForwardDistance(23, 0.8);
+            deadReckoningDrive.moveForwardDistance(23, 0.8, 5, true);
         } else {
             deadReckoningDrive.setTargetRotation(-94, 0.8);
-            deadReckoningDrive.moveForwardDistance(25, 0.8);
+            deadReckoningDrive.moveForwardDistance(25, 0.8, 5, true);
         }
 
         // Aligning code, may be broken from here on

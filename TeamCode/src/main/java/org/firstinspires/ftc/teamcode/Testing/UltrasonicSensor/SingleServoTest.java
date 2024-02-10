@@ -13,7 +13,7 @@ public class SingleServoTest extends OpMode{
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "Right intake servo");
+        servo = hardwareMap.get(Servo.class, "Launcher servo");
     }
 
     @Override
