@@ -21,7 +21,9 @@ public class RedAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(-92, 0.5);
             sleep(250);
             imu.resetYaw();
-            deadReckoningDrive.moveForwardDistance(67, 0.5, 0);
+            deadReckoningDrive.moveForwardDistance(30, 0.5, 0);
+            sleep(1000);
+            deadReckoningDrive.moveForwardDistance(37, 0.5, 0);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(0, 0.8);

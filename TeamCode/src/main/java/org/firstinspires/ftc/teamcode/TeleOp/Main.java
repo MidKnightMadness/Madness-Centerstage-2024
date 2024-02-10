@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
+import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
 public class Main extends OpMode implements ServoPositions {
@@ -36,6 +37,9 @@ public class Main extends OpMode implements ServoPositions {
     Servo launcherServo;
     boolean isUsingFieldOriented;
     double rotationResetConstant = 0.0;
+    ServoSmooth servoSmooth;
+
+    int [] presets = {0, -1500, -2974}; // For right side
 
     @Override
     public void init() {
@@ -62,6 +66,7 @@ public class Main extends OpMode implements ServoPositions {
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
 
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
+        servoSmooth = new ServoSmooth(boxServo);
 
         motorLeft = hardwareMap.get(DcMotorEx.class, "Left outtake motor");
         motorRight = hardwareMap.get(DcMotorEx.class, "Right outtake motor");
@@ -123,21 +128,46 @@ public class Main extends OpMode implements ServoPositions {
     }
 
     double wristPos = wristServoIn;
+    double slidesCorrectionConstant = 0.008;
     public void handleManipulatorControls() {
         handleIntakeControls();
-        handleOuttakeControls();
 
         if (gamepad2.left_bumper) {
             mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
         }
 
         // launcher
-        if (gamepad2.dpad_up && gamepad2.y) {
+        if (gamepad2.dpad_up) {
             launcherServo.setPosition(launcherOpen);
+            telemetry.addLine("Launching Drone");
         }
         else {
             launcherServo.setPosition(launcherClosed);
         }
+
+        handleOuttakeControls();
+        // Presets
+//        if(!gamepad2.cross && gamepad2.circle && !gamepad2.triangle){
+//            motorLeft.setPower(-slidesCorrectionConstant * (presets [1] - motorRight.getCurrentPosition()));
+//            motorRight.setPower(-slidesCorrectionConstant * (presets [1] - motorRight.getCurrentPosition()));
+//            telemetry.addData("Right Motor Position", motorRight.getCurrentPosition());
+//            if(motorRight.getCurrentPosition() < -1000) {
+//                rightWristServo.setPosition(wristServoOut);
+//            }else{
+//                rightWristServo.setPosition(wristServoIn);
+//            }
+//        }else if(!gamepad2.cross && !gamepad2.circle && gamepad2.triangle){
+//            motorLeft.setPower(-slidesCorrectionConstant * (presets [2] - motorRight.getCurrentPosition()));
+//            motorRight.setPower(-slidesCorrectionConstant * (presets [2] - motorRight.getCurrentPosition()));
+//            telemetry.addData("Right Motor Position", motorRight.getCurrentPosition());
+//            if(motorRight.getCurrentPosition() < -1000) {
+//                rightWristServo.setPosition(wristServoOut);
+//            }else{
+//                rightWristServo.setPosition(wristServoIn);
+//            }
+//        }else{
+//            handleOuttakeControls();
+//        }
     }
 
     void handleIntakeControls() {
@@ -159,9 +189,11 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServo.setPosition(boxServoRight);  // right
+//                boxServo.setPosition(boxServoRight);  // right
+                servoSmooth.setServoPosition(boxServoRight, 0.75, telemetry);
             } else {
-                boxServo.setPosition(boxServoLeft);  // left
+//                boxServo.setPosition(boxServoLeft);  // right
+                servoSmooth.setServoPosition(boxServoLeft, 0.75, telemetry);
             }
         } else {
             boxServo.setPosition(boxServoNeutral);   // center
@@ -191,13 +223,15 @@ public class Main extends OpMode implements ServoPositions {
         imu.resetYaw();
     }
 
-    double backDropAligned = 5d; // CM
+    double backDropAligned = 25d; // CM
     double rotationCorrectionConstant = 0.05;
+    double previousAlignmentPower = 0;
     public double alignToBoardContinuous(){
         if(rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned > 0.5){
-            mecanumDrive.normalDrive(1, (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05, 0.0, rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - Math.PI / 2d -  rotationResetConstant));
+            mecanumDrive.normalDrive(1, -gamepad2.left_stick_x,  (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05 * 0.05 + 0.95 * previousAlignmentPower, -gamepad2.right_stick_x);//rotationCorrectionConstant * (Math.PI - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - Math.PI / 2d -  rotationResetConstant));
         }
 
+        previousAlignmentPower = (rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned) * 0.05;
         telemetry.addData("Distance to board", rangeSensor.getDistance(DistanceUnit.CM));
 
         return rangeSensor.getDistance(DistanceUnit.CM) - backDropAligned;

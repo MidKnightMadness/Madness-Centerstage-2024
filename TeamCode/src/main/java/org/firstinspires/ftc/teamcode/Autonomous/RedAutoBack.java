@@ -82,7 +82,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(2);
 
         } else {
-            deadReckoningDrive.moveRightDistance(-3d);
+            deadReckoningDrive.moveRightDistance(-1d);
             deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);

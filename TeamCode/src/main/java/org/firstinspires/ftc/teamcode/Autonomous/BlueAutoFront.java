@@ -9,24 +9,24 @@ public class BlueAutoFront extends AutoDeadReckoning {
     @Override
     public void drive(){
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveForwardDistance(15d, 0.8);
-            deadReckoningDrive.setTargetRotation(60, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 3.5d, 0.6);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 3.5d, 0.6);
+            deadReckoningDrive.moveForwardDistance(13d, 0.8);
+            deadReckoningDrive.setTargetRotation(57, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.6);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.6);
             deadReckoningDrive.setTargetRotation(0, 0.8);
+            deadReckoningDrive.moveRightDistance(1d);
             deadReckoningDrive.moveForwardDistance(22d, 0.8);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(92, 0.5);
-            deadReckoningDrive.moveForwardDistance(65, 0.5, 90);
+            deadReckoningDrive.setTargetRotation(92, 0.3);
+            deadReckoningDrive.moveForwardDistance(25, 0.8, 0);
+            sleep(1000);
+            deadReckoningDrive.moveForwardDistance(35, 0.8, 90);
 
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(90, 0.7);
-//            deadReckoningDrive.moveRightDistance(-29, 0.7);
-//            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
-            deadReckoningDrive.strafeUntilBackdrop(rangeSensor, false);
-            deadReckoningDrive.moveRightDistance(-13d);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.3, 0.3, 0.3, 0.3);
+            deadReckoningDrive.setTargetRotation(91, 0.3);
+            deadReckoningDrive.moveRightDistance(-32d);
+            deadReckoningDrive.setMotorPowersForTime(2d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
@@ -49,26 +49,25 @@ public class BlueAutoFront extends AutoDeadReckoning {
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(2d, 0.8);
             deadReckoningDrive.setTargetRotation(-30, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 12d, 0.6);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.6);
-            deadReckoningDrive.setTargetRotation(45, 0.8);
-            deadReckoningDrive.moveForwardDistance(5d, 0.6);
-            deadReckoningDrive.setTargetRotation(0, 0.8);
-            deadReckoningDrive.moveForwardDistance(25, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 16d, 0.6);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 7d, 0.6);
+            deadReckoningDrive.setTargetRotation(0, 0.4);
+            deadReckoningDrive.moveRightDistance(-4);
+            deadReckoningDrive.moveForwardDistance(28, 0.8);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(92, 0.4); // Set power level for rotation adjustment on all autons to thos
+            deadReckoningDrive.setTargetRotation(92, 0.3); // Set power level for rotation adjustment on all autons to thos
             sleep(250);
-            deadReckoningDrive.moveForwardDistance(63, 0.8, 90);
+            deadReckoningDrive.moveForwardDistance(30, 0.8, 0);
+            sleep(1000);
+            deadReckoningDrive.setTargetRotation(92, 0.25); // Set power level for rotation adjustment on all autons to thos
+            deadReckoningDrive.moveForwardDistance(30, 0.8, 90);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
-//            deadReckoningDrive.moveRightDistance(-26);
-//            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
-            deadReckoningDrive.strafeUntilBackdrop(rangeSensor, false);
-            deadReckoningDrive.moveRightDistance(-18d);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.3, 0.3, 0.3, 0.3);
-            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
+            deadReckoningDrive.moveRightDistance(-22d);
+            deadReckoningDrive.setMotorPowersForTime(2d, rammingPower, rammingPower, rammingPower, rammingPower);
+            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant + 0.5);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
@@ -88,20 +87,20 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(6);
 
         } else {
-            deadReckoningDrive.moveForwardDistance(21.5, 0.8);
-            deadReckoningDrive.moveForwardDistance(-1, 0.8);
+            deadReckoningDrive.moveForwardDistance(21.5, 0.6);
+            deadReckoningDrive.moveForwardDistance(-1, 0.6);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(90, 0.4);
-            deadReckoningDrive.moveForwardDistance(65, 0.5, 90);
+            deadReckoningDrive.setTargetRotation(90, 0.3);
+            deadReckoningDrive.moveForwardDistance(30, 0.8, 0);
+            sleep(1000);
+            deadReckoningDrive.setTargetRotation(93, 0.3);
+            deadReckoningDrive.moveForwardDistance(35, 0.5, 90);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90, 0.7);
-//            deadReckoningDrive.setTargetRotation(90, 0.7);
-//            deadReckoningDrive.setMotorPowersForTime(2d, 0.4, 0.4, 0.4, 0.4);
-//            deadReckoningDrive.strafeUntilBackdrop(rangeSensor, false);
-//            deadReckoningDrive.moveRightDistance(-8d);
-            deadReckoningDrive.setMotorPowersForTime(2d, 0.3, 0.3, 0.3, 0.3);
+            deadReckoningDrive.moveRightDistance(-3);
+            deadReckoningDrive.setMotorPowersForTime(2d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
@@ -118,7 +117,7 @@ public class BlueAutoFront extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(11);
+            deadReckoningDrive.moveRightDistance(9);
             deadReckoningDrive.moveForwardDistance(6);
         }
     }

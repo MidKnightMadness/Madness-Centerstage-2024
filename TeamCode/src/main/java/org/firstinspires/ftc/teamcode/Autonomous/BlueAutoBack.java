@@ -10,16 +10,18 @@ public class BlueAutoBack extends AutoDeadReckoning {
     public void drive() {
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(13d, 0.8, 0);
-            deadReckoningDrive.setTargetRotation(-60, 0.7);
+            deadReckoningDrive.setTargetRotation(-60, 0.6);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 6d, 0.8, -60);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 7d, 0.8, -60);
-            deadReckoningDrive.setTargetRotation(90, 0.7);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 9d, 0.8, -60);
+            deadReckoningDrive.setTargetRotation(0, 0.6);
+            deadReckoningDrive.moveRightDistance(-2);
+            deadReckoningDrive.setTargetRotation(90, 0.6);
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8, 0);
-            deadReckoningDrive.setTargetRotation(33, 0.7);
+            deadReckoningDrive.setTargetRotation(33, 0.6);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d, 0.8, 33);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d);
-            deadReckoningDrive.setTargetRotation(90, 0.7);
+            deadReckoningDrive.setTargetRotation(90, 0.6);
         } else {
             deadReckoningDrive.moveForwardDistance(20d, 0.8, 0);
             deadReckoningDrive.moveForwardDistance(-4, 0.8, 0);
@@ -27,17 +29,17 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
         // go to backdrop
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveForwardDistance(25d);
+            deadReckoningDrive.moveForwardDistance(23d);
             deadReckoningDrive.setTargetRotation(90);
         } else {
-            deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveForwardDistance(25);
+            deadReckoningDrive.setTargetRotation(93);
+            deadReckoningDrive.moveForwardDistance(21);
         }
 
         // Aligning code, may be broken from here on
         if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(7d);
+            deadReckoningDrive.moveRightDistance(6d);
             deadReckoningDrive.setMotorPowersForTime(1.5, 0.5, 0.5, 0.5, 0.5);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
@@ -54,7 +56,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(-33);
+            deadReckoningDrive.moveRightDistance(-30);
             deadReckoningDrive.moveForwardDistance(6);
 
 
@@ -76,12 +78,11 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(-28);
+            deadReckoningDrive.moveRightDistance(-26);
             deadReckoningDrive.moveForwardDistance(6);
 
         } else {
             deadReckoningDrive.setTargetRotation(90, 0.8);
-            deadReckoningDrive.moveRightDistance(1);
             deadReckoningDrive.setMotorPowersForTime(1.5, 0.5, 0.5, 0.5, 0.5);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
