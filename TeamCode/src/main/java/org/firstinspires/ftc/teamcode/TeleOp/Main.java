@@ -157,14 +157,20 @@ public class Main extends OpMode implements ServoPositions {
 
     void handleIntakeControls() {
         double intakeDirection = gamepad2.a ? 1 : -1;
-        intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
-
-        if (gamepad2.y) {
-            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
-        }
-        else {
+        if(gamepad2.left_trigger != 0) {
+            intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
+            rightIntakeServo.setPosition(intakeLowest);
+        }else{
+            intakeMotor.setPower(0);
             rightIntakeServo.setPosition(intakeDefault);
         }
+
+//        if (gamepad2.y) {
+//            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
+//        }
+//        else {
+//            rightIntakeServo.setPosition(intakeDefault);
+//        }
     }
 
     // For setting motor bounds and allowing automatic servo movement
@@ -187,6 +193,10 @@ public class Main extends OpMode implements ServoPositions {
             }
         } else {
 //            boxServoController.setServoPosition(boxServoNeutral, 0.5, telemetry);  // center
+        }
+
+        if(gamepad2.b){
+            rightWristServo.setPosition(wristServoFlat);
         }
 
         if (g2X.update(gamepad2.x)) {
