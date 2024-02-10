@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.annotation.SuppressLint;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,7 +23,6 @@ import org.firstinspires.ftc.teamcode.Components.LinearSlides;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
-//import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -49,13 +49,15 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public StartingPosition getStartingPosition() {
         return StartingPosition.NEAR;
     }
-    public double slidesExtensionTimeConstant = 1.75;
+    public double slidesExtensionTimeConstant = 1.9;
+    public double rammingPower = 0.6;
 
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
     IMU imu;
     SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
+    ModernRoboticsI2cRangeSensor rangeSensor;
     Timer timer;
     ButtonToggle a, b, x, y;
     OpenCvWebcam webcam;
@@ -84,6 +86,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         teamPropMask.setMode(getAllianceColor());
         intakeRightServo = hardwareMap.get(Servo.class, "Right intake servo");
         intakeRightServo.setPosition(0.1);
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
 
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -126,7 +129,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         // Reset servos
         boxServo.setPosition(boxServoNeutral);
         rightWristServo.setPosition(wristServoIn);
-        intakeRightServo.setPosition(intakeDefault);
+        intakeRightServo.setPosition(intakeHighest);
 
         drive();
     }
