@@ -191,7 +191,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     void setTargetRotation(double targetRotation, double maxPower) {
         targetRotation = normalizeAngle(targetRotation);
 
-        double minPower = 0.2;
+        double minPower = 0.175;
 
         double startingYaw = getRobotDegrees();
         double rotation = normalizeAngle(targetRotation - startingYaw);

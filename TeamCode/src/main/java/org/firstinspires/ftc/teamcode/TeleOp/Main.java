@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
+import org.firstinspires.ftc.teamcode.Utility.Timer;
 //import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
@@ -30,6 +31,7 @@ public class Main extends OpMode implements ServoPositions {
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     boolean isIntakeMode = true;
+    int rightSideStartingPosition = 0;
     IMU imu;
     ModernRoboticsI2cRangeSensor rangeSensor;
     WebcamName webcamName;
@@ -39,6 +41,7 @@ public class Main extends OpMode implements ServoPositions {
     boolean isUsingFieldOriented;
     ServoSmooth boxServoController;
     double rotationResetConstant = 0;
+    Timer timer;
 
     @Override
     public void init() {
@@ -46,6 +49,7 @@ public class Main extends OpMode implements ServoPositions {
         intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
+        timer = new Timer();
 
         init_IMU();
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
@@ -73,7 +77,7 @@ public class Main extends OpMode implements ServoPositions {
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        rightSideStartingPosition = motorRight.getCurrentPosition();
         telemetry.addLine("Initialized");
 
         startingPositions [0] = motorLeft.getCurrentPosition();
@@ -161,22 +165,31 @@ public class Main extends OpMode implements ServoPositions {
         }
     }
 
+    boolean lastLeftTriggerPressed = false;
     void handleIntakeControls() {
         double intakeDirection = gamepad2.a ? 1 : -1;
-        if(gamepad2.left_trigger != 0) {
-            intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
-            rightIntakeServo.setPosition(intakeLowest);
-        }else{
-            intakeMotor.setPower(0);
+//        double intakeStartTime = 0;
+//        if(gamepad2.left_trigger != 0) {
+//            if(!lastLeftTriggerPressed){
+//                intakeStartTime = timer.getTime();
+//            }
+//            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
+                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
+//            }
+//            rightIntakeServo.setPosition(intakeLowest);
+//            lastLeftTriggerPressed = true;
+//        }else{
+//            intakeMotor.setPower(0);
+//            rightIntakeServo.setPosition(intakeDefault);
+//            lastLeftTriggerPressed = false;
+//        }
+
+        if (gamepad2.y) {
+            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
+        }
+        else {
             rightIntakeServo.setPosition(intakeDefault);
         }
-
-//        if (gamepad2.y) {
-//            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
-//        }
-//        else {
-//            rightIntakeServo.setPosition(intakeDefault);
-//        }
     }
 
     // For setting motor bounds and allowing automatic servo movement

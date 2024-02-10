@@ -57,7 +57,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
             deadReckoningDrive.moveRightDistance(16);
-            deadReckoningDrive.moveForwardDistance(2);
+            stop();
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
@@ -77,7 +77,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
             deadReckoningDrive.moveRightDistance(8);
-            deadReckoningDrive.moveForwardDistance(2);
+            stop();
 
         } else {
             deadReckoningDrive.moveRightDistance(-1);
@@ -98,7 +98,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
             deadReckoningDrive.moveRightDistance(10);
-            deadReckoningDrive.moveForwardDistance(2);
+            stop();
         }
     }
 
