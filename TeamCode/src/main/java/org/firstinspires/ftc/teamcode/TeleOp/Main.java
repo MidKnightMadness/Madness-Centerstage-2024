@@ -81,12 +81,13 @@ public class Main extends OpMode implements ServoPositions {
 
     double power = 1;
     public void handleDriverControls() {
-        if (g1RightBump.update(gamepad1.right_bumper)) {
+        if (g1RightBump.update(gamepad1.right_bumper)) {//toggle power to 0.35 or max for normal drive by clicking gamepad 1's right bumper
             gamepad1.rumble(300);
             if (power == 1) {
                 power = 0.35;
             }
             else {
+
                 power = 1;
             }
         }
@@ -98,9 +99,11 @@ public class Main extends OpMode implements ServoPositions {
 
         if (!gamepad2.left_bumper) {
             if (!isUsingFieldOriented) {
+                //if gamepad 1 left bumper not turned on, or if turned off, toggle normal drive controlled by driver one x, y movements on sticks
                 mecanumDrive.normalDrive(power, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
             }
             else {
+                //can use gamepad 1 left bumper to toggle field oriented drive controlled by driver one x, y movements on sticks
                 mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x,
                         imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2 + rotationResetConstant,
                         telemetry);
@@ -111,6 +114,7 @@ public class Main extends OpMode implements ServoPositions {
             alignToBoardContinuous();
         }
 
+        //reset imu at 90 degrees angle(facing backstage) when a is clicked
         if (gamepad1.a) { // Temporary for field oriented drive, may come up with auto align functionality
             imu.resetYaw();
             rotationResetConstant = Math.PI / 2; // Assumes resetting at 90˚ from starting position, aka facing backstage side
@@ -207,6 +211,7 @@ public class Main extends OpMode implements ServoPositions {
 
         if (gamepad2.b) {
             rightWristServo.setPosition(wristServoFlat);
+            wristPos = wristServoFlat;
         }
     }
 
