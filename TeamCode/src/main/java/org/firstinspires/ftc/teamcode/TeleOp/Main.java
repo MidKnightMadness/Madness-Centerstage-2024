@@ -193,7 +193,7 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 1, telemetry);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.5, telemetry);  // right
             } else {
                 boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
             }

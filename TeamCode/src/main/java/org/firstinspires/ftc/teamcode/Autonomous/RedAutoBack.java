@@ -16,11 +16,11 @@ public class RedAutoBack extends AutoDeadReckoning {
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8);
             deadReckoningDrive.setTargetRotation(-38, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d, 0.5);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 7d, 0.5);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 3d, 0.5);
         } else {
             deadReckoningDrive.moveForwardDistance(19, 0.6);
-            deadReckoningDrive.moveForwardDistance(-2d, 0.6);
+            deadReckoningDrive.moveForwardDistance(-3d, 0.6);
         }
 
         // go to backdrop
@@ -44,11 +44,10 @@ public class RedAutoBack extends AutoDeadReckoning {
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
-//            boxServo.setPosition(boxServoLeft);
             while(!boxServoController.setServoPosition(boxServoLeft, 1.5, telemetry)){}
-            sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
+            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -57,7 +56,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(-16);
+            deadReckoningDrive.moveRightDistance(16);
             deadReckoningDrive.moveForwardDistance(2);
 
         } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
@@ -65,11 +64,10 @@ public class RedAutoBack extends AutoDeadReckoning {
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
-//            boxServo.setPosition(boxServoRight);
             while(!boxServoController.setServoPosition(boxServoRight, 1.5, telemetry)){}
-            sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
+            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -78,19 +76,19 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(-24);
+            deadReckoningDrive.moveRightDistance(8);
             deadReckoningDrive.moveForwardDistance(2);
 
         } else {
-            deadReckoningDrive.moveRightDistance(-1d);
+            deadReckoningDrive.moveRightDistance(-1);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             while(!boxServoController.setServoPosition(boxServoRight, 1.5, telemetry)){}
-            sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
+            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -99,7 +97,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(-22);
+            deadReckoningDrive.moveRightDistance(10);
             deadReckoningDrive.moveForwardDistance(2);
         }
     }
