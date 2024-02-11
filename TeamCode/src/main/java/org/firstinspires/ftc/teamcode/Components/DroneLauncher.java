@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class DroneLauncher {
     Servo servo;
 
-    final double min = 0.8245;//1
-    final double max = 0.9265;//0
+    final double min = ServoPositions.launcherClosed;//1
+    final double max = ServoPositions.launcherOpen;//0
     final double difference = max-min;
 
 
@@ -19,8 +19,6 @@ public class DroneLauncher {
         servo = hardwareMap.get(Servo.class, "servo");
         servo.setDirection(Servo.Direction.FORWARD);
 
-        //set the initial position
-        servo.setPosition(0.9265);//0 of the start position
     }
 
     public void setPostion(double position) {
