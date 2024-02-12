@@ -84,6 +84,7 @@ public class SquaringOnLine extends OpMode {
     public void loop() {
         boolean leftSide = compareColor(colorSensor1);
         boolean rightSide = compareColor(colorSensor2);
+        //assuming can drive forward and line is in front
         if(rightSide==false && leftSide==false){
             setMotorPowers(-0.1,0.1, -0.1, -0.1);//forward
         }
@@ -98,7 +99,7 @@ public class SquaringOnLine extends OpMode {
             rightCompleted = true;
         }
 
-        if(leftCompleted == true && rightCompleted == true){
+        else{//both sides need to be on line
             setMotorPowers(0,0,0,0);
         }
 
