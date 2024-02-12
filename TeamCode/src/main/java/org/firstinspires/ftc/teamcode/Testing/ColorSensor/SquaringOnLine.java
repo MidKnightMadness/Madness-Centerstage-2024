@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Components.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Testing.ColorSensor.LinesEnum.lineColor;
-@TeleOp(name = "three")
+@TeleOp(name = "Squaring Testing")
 public class SquaringOnLine extends OpMode {
     ColorSensor colorSensor1;
     ColorSensor colorSensor2;
@@ -21,6 +21,9 @@ public class SquaringOnLine extends OpMode {
     lineColor lineColor = LinesEnum.lineColor.Red;
     public lineColor getLineColor(){
         return this.lineColor;
+    }
+    public void setLineColor(lineColor color){
+        this.lineColor = color;
     }
 
     public double RedMin = 0.6;
@@ -79,15 +82,17 @@ public class SquaringOnLine extends OpMode {
     boolean rightCompleted = false;
     @Override
     public void loop() {
-        if(compareRight()==false && compareLeft()==false){
+        boolean leftSide = compareColor(colorSensor1);
+        boolean rightSide = compareColor(colorSensor2);
+        if(rightSide==false && leftSide==false){
             setMotorPowers(-0.1,0.1, -0.1, -0.1);//forward
         }
-        else if(compareRight()==false && compareLeft() == true){
+        else if(rightSide==false && leftSide == true){
             setMotorPowers(0.1, 0.15, 0.1, -0.15);//turn right
             leftCompleted = true;
             rightCompleted = true;
         }
-        else if(compareRight()==true && compareLeft() == false){
+        else if(rightSide==true && leftSide == false){
             setMotorPowers(-0.15, 0.1, -0.15, -0.1);//turn right
             leftCompleted = true;
             rightCompleted = true;
@@ -100,34 +105,22 @@ public class SquaringOnLine extends OpMode {
 
     }
 
-    public boolean compareLeft(){
-        if(getLineColor() == lineColor.Red){
-            if(colorSensor1.red()>RedMin && colorSensor1.red()<RedMax){
-                return true;
-            }
+    public boolean compareColor(ColorSensor colorSensor){
+        if(colorSensor.red()>RedMin && colorSensor.red()<RedMax){
+            this.setLineColor(lineColor.Red);
+            return true;
         }
-        else{
-            if(colorSensor1.blue()>BlueMin && colorSensor1.red()<BlueMax){
-                return true;
-            }
+
+        else if(colorSensor.blue()>BlueMin && colorSensor.blue()<BlueMax){
+            this.setLineColor(lineColor.Blue);
+            return true;
         }
+
         return false;
     }
 
 
-    public boolean compareRight(){
-        if(getLineColor() == lineColor.Red){
-            if(colorSensor2.red()>RedMin && colorSensor2.red()<RedMax){
-                return true;
-            }
-        }
-        else{
-            if(colorSensor2.blue()>BlueMin && colorSensor2.red()<BlueMax){
-                return true;
-            }
-        }
-        return false;
-    }
+
 
 
 }
