@@ -103,7 +103,8 @@ public class SquaringOnLine extends OpMode {
             setMotorPowers(0,0,0,0);
         }
 
-
+        telemetry.addLine("Left color sensor status " + leftCompleted);
+        telemetry.addLine("Right color sensor status " + rightCompleted);
     }
 
     public boolean compareColor(ColorSensor colorSensor){
