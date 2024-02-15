@@ -55,6 +55,8 @@ public class OutakeColorSensors {//implementable file(takes care of color sensor
         telemetry.addData("Inner pixel spot ", pixelColorInner);
         telemetry.addData("Outer pixel spot ", pixelColorOuter);
         telemetry.addData("Number of pixels ", pixelCount);
+        telemetry.addLine("Inner color sensor RGB percentages " +  inner.getR() + " " + inner.getG() + " " +  inner.getB());
+        telemetry.addLine("Outer color sensor RGB percentages " +  outer.getR() + " " + outer.getG() + " " +  outer.getB());
 
     }
 

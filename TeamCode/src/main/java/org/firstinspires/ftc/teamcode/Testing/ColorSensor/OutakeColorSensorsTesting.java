@@ -40,14 +40,18 @@ public class OutakeColorSensorsTesting extends OpMode {
     int pixelCount = 0;
     pixelColors pixelColorInner;
     pixelColors pixelColorOuter;
+    RGBColor inner;
+    RGBColor outer;
     @Override
     public void loop() {
         telemetry.clear();
        if(gamepad1.x) {
            colorSensorWrapperInner.update();
            colorSensorWrapperOuter.update();
-           RGBColor inner = colorSensorWrapperInner.getValue();
-           RGBColor outer = colorSensorWrapperOuter.getValue();
+
+           inner = colorSensorWrapperInner.getValue();
+           outer = colorSensorWrapperOuter.getValue();
+
            pixelCount = 0;
            pixelColorInner = checkColor(inner);
            pixelColorOuter = checkColor(outer);
@@ -62,6 +66,8 @@ public class OutakeColorSensorsTesting extends OpMode {
            telemetry.addData("Outer pixel spot ", pixelColorOuter);
            telemetry.addData("Number of pixels ", pixelCount);
 
+           telemetry.addLine("Inner color sensor RGB percentages " +  inner.getR() + " " + inner.getG() + " " +  inner.getB());
+           telemetry.addLine("Outer color sensor RGB percentages " +  outer.getR() + " " + outer.getG() + " " +  outer.getB());
     }
 
     private pixelColors checkColor(RGBColor rgbColor){//checks the color of the pixles
