@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
+import org.firstinspires.ftc.teamcode.Testing.ColorSensor.OutakeColorSensors;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
@@ -41,6 +42,7 @@ public class Main extends OpMode implements ServoPositions {
     boolean isUsingFieldOriented;
     ServoSmooth boxServoController;
     double rotationResetConstant = 0;
+    OutakeColorSensors outakeColorSensors;
     Timer timer;
 
     @Override
@@ -52,6 +54,7 @@ public class Main extends OpMode implements ServoPositions {
         timer = new Timer();
 
         init_IMU();
+        outakeColorSensors = new OutakeColorSensors(hardwareMap, telemetry);
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
 
@@ -155,6 +158,7 @@ public class Main extends OpMode implements ServoPositions {
             mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
         }
 
+
         // launcher
         if (gamepad2.dpad_up && gamepad2.y) {
             launcherServo.setPosition(launcherOpen);
@@ -163,6 +167,7 @@ public class Main extends OpMode implements ServoPositions {
         else {
             launcherServo.setPosition(launcherClosed);
         }
+
     }
 
     boolean lastLeftTriggerPressed = false;
@@ -228,6 +233,7 @@ public class Main extends OpMode implements ServoPositions {
             rightWristServo.setPosition(wristServoFlat);
             wristPos = wristServoFlat;
         }
+        outakeColorSensors.updateTelemetry();
     }
 
     void telemetry() {
