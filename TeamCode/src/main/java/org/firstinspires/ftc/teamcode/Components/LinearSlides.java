@@ -68,7 +68,7 @@ public class LinearSlides{
 
 //        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
-//        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        motorRight.setMode(DcMotor.RunMhode.RUN_WITHOUT_ENCODER);
 
         setStartingPositions(motorLeft.getCurrentPosition(), motorRight.getCurrentPosition());
 

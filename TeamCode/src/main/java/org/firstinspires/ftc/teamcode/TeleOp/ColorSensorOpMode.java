@@ -71,7 +71,7 @@ public class ColorSensorOpMode extends OpMode {
             FL.setPower(0.5);
         }
 
-    /*  if(colorSensor2.blue()>100&&colorSensor1.blue()<100){
+      if(colorSensor2.blue()>100&&colorSensor1.blue()<100){
             FL.setPower(0.5);
             BL.setPower(0.5);
 
@@ -94,7 +94,7 @@ public class ColorSensorOpMode extends OpMode {
             FL.setPower(0.5);
         }
 
-*/
+
 
 
 

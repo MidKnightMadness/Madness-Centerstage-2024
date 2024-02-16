@@ -15,6 +15,9 @@ public class ColorSensorWrapper {
     public ArrayList<RGBColor> getRgbBuffer() {
         return rgbBuffer;
     }
+    public void setSize(int size){
+        this.BUFFER_SIZE = size;
+    }
 
     public ColorSensorWrapper(ColorSensor colorSensor) {
         this.colorSensor = colorSensor;

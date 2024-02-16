@@ -45,7 +45,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public CameraEnums.CameraModes getAllianceColor(){
         return CameraEnums.CameraModes.RED;
     }
-
+    Thread thread;
     public StartingPosition getStartingPosition() {
         return StartingPosition.NEAR;
     }
@@ -69,6 +69,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     @Override
     public void init() {
         timer = new Timer();
+        thread = new Thread();
         slides = new LinearSlides(hardwareMap);
         telemetry.setAutoClear(false);
         a = new ButtonToggle();
@@ -134,7 +135,11 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         drive();
     }
 
-
+    @Override
+    public void stop(){
+        telemetry.addLine("STOPPED");
+        telemetry.update();
+    }
 
     void sleep(long milis) {
         try {
