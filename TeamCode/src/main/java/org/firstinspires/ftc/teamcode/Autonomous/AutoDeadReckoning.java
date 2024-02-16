@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -66,6 +67,9 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     LinearSlides slides;
     ServoSmooth boxServoController;
 
+    // Testing for April tag incorporation
+    AprilTagProcessor aprilTagProcessor;
+
     @Override
     public void init() {
         timer = new Timer();
@@ -92,6 +96,8 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
+        aprilTagProcessor = new AprilTagProcessor.Builder().build();
         webcam.setPipeline(teamPropMask);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {

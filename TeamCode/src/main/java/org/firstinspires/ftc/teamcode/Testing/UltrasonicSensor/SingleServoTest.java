@@ -2,18 +2,21 @@ package org.firstinspires.ftc.teamcode.Testing.UltrasonicSensor;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 
 @TeleOp (name = "Basic Servo Testing", group = "testing")
 public class SingleServoTest extends OpMode{
     Servo servo;
+    DcMotorEx intakeMotor;
     double targetTicks = 0.2; // Set to start in middle of range
     double centerTicks = 0.2;
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "Center box servo");
+        servo = hardwareMap.get(Servo.class, "Right intake servo");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake motor");
     }
 
     @Override
@@ -33,5 +36,6 @@ public class SingleServoTest extends OpMode{
             }
         }
 
+        intakeMotor.setPower(-gamepad1.right_trigger);
     }
 }

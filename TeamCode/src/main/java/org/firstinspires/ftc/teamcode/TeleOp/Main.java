@@ -42,7 +42,7 @@ public class Main extends OpMode implements ServoPositions {
     boolean isUsingFieldOriented;
     ServoSmooth boxServoController;
     double rotationResetConstant = 0;
-    OutakeColorSensors outakeColorSensors;
+//    OutakeColorSensors outakeColorSensors;
     Timer timer;
 
     @Override
@@ -54,7 +54,7 @@ public class Main extends OpMode implements ServoPositions {
         timer = new Timer();
 
         init_IMU();
-        outakeColorSensors = new OutakeColorSensors(hardwareMap, telemetry);
+//        outakeColorSensors = new OutakeColorSensors(hardwareMap, telemetry);
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
 
@@ -233,7 +233,7 @@ public class Main extends OpMode implements ServoPositions {
             rightWristServo.setPosition(wristServoFlat);
             wristPos = wristServoFlat;
         }
-        outakeColorSensors.updateTelemetry();
+//        outakeColorSensors.updateTelemetry();
     }
 
     void telemetry() {
