@@ -122,6 +122,25 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
 
     int teamPropPosition = 0;
 
+    // For April Tag Localization
+    public final double[][] APRIL_TAG_COORDS = { // hardcoded
+            {135d, 115d},//id 1
+            {135d, 109d},//id 2
+            {135d, 103d},//id 3
+            {135d, 41d},//id 4
+            {135d, 35d},//id 5
+            {135d, 29d},//id 6
+            {0d, 114d},//id 7 not necesarily accurate yet
+            {0d, 108d},//id 8 not necesarily accurate yet
+            {0d, 36d},//id 9 not necesarily accurate yet
+            {0d, 30d}//id 10 not necesarily accurate y
+    };
+    double [] CAMERA_RELATIVE_COORDINATES = {0d, 0d};
+    double heading = 0d;
+    double [] cameraCoordinates = {0d, 0d};
+    double [] robotCoordinates = {0d, 0d};
+    double rangeCoefficient = 0.0; // Used as average intermediate
+
     @Override
     public void runOpMode() {
         initDoubleVision();
@@ -337,5 +356,91 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
     private void telemetryTfod() {
         telemetry.addData("Detected spike mark position", teamPropPosition);
     }   // end method telemetryTfod()
+
+    // Localization Method
+    public double [] getRelCoords(double robotHeading, double currentX, double currentY){ // Camera coordinates, relative to field; x, y, heading
+        // Reset calculation variables
+        rangeCoefficient = 0d;
+        heading = 0d;
+        cameraCoordinates [0] = 0d;
+        cameraCoordinates [1] = 0d;
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        if(currentDetections.size() == 0 || currentDetections == null){ // Works for all tags!
+            return new double [] {currentX, currentY, robotHeading};
+        }
+
+        for(AprilTagDetection detection : currentDetections) { // Calculate range coefficient
+            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+
+            if(detection.id == 3 || detection.id == 4) {
+                rangeCoefficient += 1d /
+                        (detection.ftcPose.range * detection.ftcPose.range);
+            }else {
+                rangeCoefficient += 0.1 /
+                        (detection.ftcPose.range * detection.ftcPose.range);
+            }
+        }
+
+        for(AprilTagDetection detection : currentDetections) {
+            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+
+            if(detection.id == 3 || detection.id == 4) {
+                heading += (detection.ftcPose.yaw * 1d) /
+                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+            }else if(detection.id > 6) {
+                heading += ((detection.ftcPose.yaw + Math.PI) * 0.1) /
+                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+            }else {
+                heading += (detection.ftcPose.yaw * 0.1) /
+                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+            }
+        }
+
+        for(AprilTagDetection detection : currentDetections) {
+            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+
+            if(detection.id == 3 || detection.id == 4) {
+                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+
+                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+            }else {
+                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+
+                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+            }
+        }
+
+        return cameraCoordinates;
+    }
+
+
+    private double correctY(double percievedY){
+        return (percievedY + 1.200) / 1.068;
+    }
+
+    private double correctX(double percievedX, double actualY){
+        return (percievedX - (actualY * 0.06898) + 0.2844) / (-1.0425);
+    }
+
+    private double [][] TAG_RANGE_CORRECTIONS = { // A, B, C
+            // Perceived range = A * exp(C * range) + B
+            {2.352 * 10000d, -2.351 * 10000d, 4.179 / 100000d}, // ID 1
+            {6503d, -6502d, 0.0001502}, // ID 2
+            {3909d, -3908d, 0.0002501}, // ID 3
+            {298.8, -297.2, 0.003194}, // ID 4
+            {-1.282 * 10000d, 1.282 * 10000d, -7.845 / 100000d}, // ID 5
+            {-837.2, 837.6, -0.001248}, // ID 6
+    };
+
+    public double correctAprilTagError(int id, double perceivedRange){
+        return (2.303 * (1 / Math.log(2.71828182846)) * Math.log((perceivedRange - TAG_RANGE_CORRECTIONS[id - 1][1]) / TAG_RANGE_CORRECTIONS[id - 1][0]) / TAG_RANGE_CORRECTIONS[id - 1][2]);
+    }
 
 }   // end class
