@@ -35,4 +35,9 @@ public class AverageBuffer {
         return value;
     }
 
+    public void clear(){
+        buffer.clear();
+    }
+
+
 }

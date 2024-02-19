@@ -168,7 +168,7 @@ public class MecanumDrive implements WheelRPMConfig {
         setMotorPowers();
     }
     double[] lastPowers = {0, 0, 0, 0};
-    public void setPowers(double fl, double fr, double bl, double br) {
+    public void setAdjustedPowers(double fl, double fr, double bl, double br) {
         FL.setPower(fl * RPMMultipliers[0]);
         FR.setPower(fr * RPMMultipliers[1]);
         BL.setPower(bl * RPMMultipliers[2]);
