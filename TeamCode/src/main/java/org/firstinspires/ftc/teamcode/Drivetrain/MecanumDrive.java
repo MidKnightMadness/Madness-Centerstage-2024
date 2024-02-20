@@ -40,6 +40,7 @@ public class MecanumDrive implements WheelRPMConfig {
     public static final double [] FORWARD = {-1.0, 1.0, -1.0, -1.0};
     ///forward: -1.0, 1.0, -1.0, -1.0
     public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
+    double [] realRight = {-1.0, 1.0, 1.0, -1.0};
     public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
     public static final double POWER_MULTIPLIER = 1;
 

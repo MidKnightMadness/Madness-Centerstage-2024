@@ -30,16 +30,26 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.tfod.CanvasAnnotator;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.Autonomous.DeadReckoningDrive;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
+import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Localization.CameraLocalizationPackage;
+import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -60,7 +70,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Concept: Double Vision with Team Element Detection", group = "Concept")
-public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
+public class ConceptDoubleVisionForTeamProp extends OpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**
@@ -141,58 +151,68 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
     double [] robotCoordinates = {0d, 0d};
     double rangeCoefficient = 0.0; // Used as average intermediate
 
+    MecanumDrive mecanumDrive;
+    DeadReckoningDrive deadReckoningDrive;
+    IMU imu;
+
+    // For alignment with camera
+    double P = 0.1;
+    double D = 0.075;
+    double [] perceivedPosition = {0.0, 0.0};
+    double [] targetCoordinates = {118.5, 109d};
+    double [] deltaPosition = {0.0, 0.0};
+    double [] lastPosition = {0.0, 0.0};
+    double [] velocity = {0.0, 0.0};
+    final double targetAngle = 0;
+
     @Override
-    public void runOpMode() {
+    public void init(){
         initDoubleVision();
 
-        // This OpMode loops continuously, allowing the user to switch between
-        // AprilTag and TensorFlow Object Detection (TFOD) image processors.
-        while (!isStopRequested())  {
+        init_IMU();
+        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
+        deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
+        imu.resetYaw();
 
-            if (opModeInInit()) {
-                telemetry.addData("DS preview on/off","3 dots, Camera Stream");
-                telemetry.addLine();
-                telemetry.addLine("----------------------------------------");
-            }
 
-            if (myVisionPortal.getProcessorEnabled(aprilTag)) {
-                // User instructions: Dpad left or Dpad right.
-                telemetry.addLine("Dpad Left to disable AprilTag");
-                telemetry.addLine();
-                telemetryAprilTag();
-            } else {
-                telemetry.addLine("Dpad Right to enable AprilTag");
-            }
-            telemetry.addLine();
-            telemetry.addLine("----------------------------------------");
-            if (myVisionPortal.getProcessorEnabled(tfod)) {
-                telemetry.addLine("Dpad Down to disable TFOD");
-                telemetry.addLine();
-                telemetryTfod();
-            } else {
-                telemetry.addLine("Dpad Up to enable TFOD");
-            }
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Override
+    public void start() {
+            deadReckoningDrive.moveRightDistance(aprilTag.getDetections().get(0).ftcPose.x);
 
-            // Push telemetry to the Driver Station.
+            telemetry.addLine(String.format("Target: [%5.2f, %5.2f]", targetCoordinates [0], targetCoordinates [1]));
+            telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
+            telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", aprilTag.getDetections().get(0).ftcPose.x, 0));// deltaPosition [1]));
+            telemetry.addData("Angle correction", 0.2 * (targetAngle - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)));
             telemetry.update();
 
-            if (gamepad1.dpad_left) {
-                myVisionPortal.setProcessorEnabled(aprilTag, false);
-            } else if (gamepad1.dpad_right) {
-                myVisionPortal.setProcessorEnabled(aprilTag, true);
-            }
-            if (gamepad1.dpad_down) {
-                myVisionPortal.setProcessorEnabled(tfod, false);
-            } else if (gamepad1.dpad_up) {
-                myVisionPortal.setProcessorEnabled(tfod, true);
-            }
 
-            sleep(20);
-
-        }   // end while loop
 
     }   // end method runOpMode()
 
+    @Override
+    public void loop() {
+
+    }
+
+    @Override
+    public void init_loop(){
+        perceivedPosition = getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), perceivedPosition [0], perceivedPosition [1]);
+        deltaPosition [0] = targetCoordinates [0] - perceivedPosition [0];
+        deltaPosition [1] = targetCoordinates [1] - perceivedPosition [1];
+        velocity [0] = perceivedPosition [0] - lastPosition [0];
+        velocity [1] = perceivedPosition [1] - lastPosition [1];
+
+        telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", deltaPosition [0], deltaPosition [1]));
+        telemetry.update();
+
+        telemetryAprilTag();
+    }
 
     /**
      * Initialize AprilTag and TFOD.
@@ -265,8 +285,6 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
                     teamPropPosition = 2;
                 }
 
-                telemetry.clear();
-
 
                 Imgproc.rectangle(output, leftRect, leftColor, 4);
                 Imgproc.rectangle(output, rightRect, rightColor, 4);
@@ -277,7 +295,7 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
 
             @Override
             public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
-
+                canvas.drawCircle(320, 180, 50, new Paint());
             }
 
             @Override
@@ -372,50 +390,68 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
             return new double [] {currentX, currentY, robotHeading};
         }
 
-        for(AprilTagDetection detection : currentDetections) { // Calculate range coefficient
-            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
-
-            if(detection.id == 3 || detection.id == 4) {
-                rangeCoefficient += 1d /
-                        (detection.ftcPose.range * detection.ftcPose.range);
-            }else {
-                rangeCoefficient += 0.1 /
-                        (detection.ftcPose.range * detection.ftcPose.range);
-            }
+        for(AprilTagDetection detection : currentDetections){
+            rangeCoefficient += detection.ftcPose.range;
         }
+        rangeCoefficient /= currentDetections.size();
 
         for(AprilTagDetection detection : currentDetections) {
-            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
-
-            if(detection.id == 3 || detection.id == 4) {
-                heading += (detection.ftcPose.yaw * 1d) /
-                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-            }else if(detection.id > 6) {
-                heading += ((detection.ftcPose.yaw + Math.PI) * 0.1) /
-                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-            }else {
-                heading += (detection.ftcPose.yaw * 0.1) /
-                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-            }
+            heading += detection.ftcPose.yaw;
         }
+        heading /= currentDetections.size();
 
         for(AprilTagDetection detection : currentDetections) {
-            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+            cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+                    -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / currentDetections.size();
+            cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+                    -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / currentDetections.size();
 
-            if(detection.id == 3 || detection.id == 4) {
-                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
-                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-
-                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
-                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-            }else {
-                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
-                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-
-                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
-                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
-            }
         }
+
+//        for(AprilTagDetection detection : currentDetections) { // Calculate range coefficient
+//            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+//
+//            if(detection.id == 3 || detection.id == 4) {
+//                rangeCoefficient += 1d /
+//                        (detection.ftcPose.range * detection.ftcPose.range);
+//            }else {
+//                rangeCoefficient += 0.1 /
+//                        (detection.ftcPose.range * detection.ftcPose.range);
+//            }
+//        }
+//
+//        for(AprilTagDetection detection : currentDetections) {
+//            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+//
+//            if(detection.id == 3 || detection.id == 4) {
+//                heading += (detection.ftcPose.yaw * 1d) /
+//                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//            }else if(detection.id > 6) {
+//                heading += ((detection.ftcPose.yaw + Math.PI) * 0.1) /
+//                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//            }else {
+//                heading += (detection.ftcPose.yaw * 0.1) /
+//                        (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//            }
+//        }
+//
+//        for(AprilTagDetection detection : currentDetections) {
+//            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
+//
+//            if(detection.id == 3 || detection.id == 4) {
+//                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+//                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//
+//                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+//                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 1d / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//            }else {
+//                cameraCoordinates [0] -= (Math.cos(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+//                        -APRIL_TAG_COORDS [detection.id  - 1][0]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//
+//                cameraCoordinates [1] -= (Math.sin(heading + detection.ftcPose.bearing) * detection.ftcPose.range
+//                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 0.1 / (rangeCoefficient * (detection.ftcPose.range * detection.ftcPose.range));
+//            }
+//        }
 
         return cameraCoordinates;
     }
@@ -443,4 +479,72 @@ public class ConceptDoubleVisionForTeamProp extends LinearOpMode {
         return (2.303 * (1 / Math.log(2.71828182846)) * Math.log((perceivedRange - TAG_RANGE_CORRECTIONS[id - 1][1]) / TAG_RANGE_CORRECTIONS[id - 1][0]) / TAG_RANGE_CORRECTIONS[id - 1][2]);
     }
 
+    void init_IMU() {
+        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;  // logo facing up
+        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;   // usb facing forward
+
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        imu.resetYaw();
+    }
 }   // end class
+
+/* This is an easter egg
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+@TeleOp
+
+public class Daddy extends LinearOpMode{
+    DcMotor Daddy1;
+    DcMotor Daddy2;
+    DcMotor Mommy1;
+    DcMotor Mommy2;
+
+    public void runOpMode(){
+        Daddy1 = hardwareMap.get(DcMotor.class, "fl");
+        Daddy1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        Daddy2 = hardwareMap.get(DcMotor.class, "fr");
+        Daddy2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        Mommy1 = hardwareMap.get(DcMotor.class, "bl");
+        Mommy1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        Mommy2 = hardwareMap.get(DcMotor.class, "br");
+        Mommy2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        waitForStart();
+
+        if(opModeIsActive()){
+            while(opModeIsActive()){
+                double forwardPower = gamepad1.left_stick_y;
+                Daddy1.setPower(forwardPower);
+                Daddy2.setPower(-forwardPower);
+
+                double turnPower = gamepad1.right_stick_x;
+                if(turnPower!=0){
+                Mommy1.setPower(turnPower);
+                Mommy2.setPower(turnPower);
+                }
+                else{
+                Mommy1.setPower(-forwardPower);
+                Mommy2.setPower(forwardPower);
+                }
+
+                if(forwardPower==0){
+                    Daddy1.setPower(-gamepad1.left_trigger);
+                    Daddy2.setPower(gamepad1.right_trigger);
+                }
+
+
+            }
+        }
+    }
+}
+ */

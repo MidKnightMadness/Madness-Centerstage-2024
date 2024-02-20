@@ -56,10 +56,11 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     void init_motors(HardwareMap hardwareMap) {
         leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
         rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
-        topEncoder = hardwareMap.get(DcMotorEx.class, "Intake motor");
+        topEncoder = hardwareMap.get(DcMotorEx.class, "BR");
 
         leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        topEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         FR = hardwareMap.get(DcMotorEx.class, "FR");
@@ -428,7 +429,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
 
 
-    void moveRightDistance(double distance) {
+    public void moveRightDistance(double distance) {
         double minPower = 0.3;
         double maxPower = 0.5;
 

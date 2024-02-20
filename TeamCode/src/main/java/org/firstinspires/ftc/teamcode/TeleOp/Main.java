@@ -89,6 +89,9 @@ public class Main extends OpMode implements ServoPositions {
 
     double power = 1;
     public void handleDriverControls() {
+        telemetry.addData("Left encoder", mecanumDrive.FL.getCurrentPosition());
+        telemetry.addData("Right encoder", mecanumDrive.FR.getCurrentPosition());
+        telemetry.addData("Center encoder", mecanumDrive.BR.getCurrentPosition());
         if (g1RightBump.update(gamepad1.right_bumper)) {//toggle power to 0.35 or max for normal drive by clicking gamepad 1's right bumper
             gamepad1.rumble(300);
             if (power == 1) {
