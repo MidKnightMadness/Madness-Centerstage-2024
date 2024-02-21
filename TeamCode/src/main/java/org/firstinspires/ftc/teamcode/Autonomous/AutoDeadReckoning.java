@@ -184,6 +184,8 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         myVisionPortal.setProcessorEnabled(aprilTag, false);
     }
 
+    double targetRotation = 0;
+    double pow = 0.4;
     @Override
     public void init_loop() {
         telemetry.clear();
@@ -192,11 +194,32 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         telemetry.addData("Detected spike mark position", getSpikeMarkPosition());
         telemetry.addData("Detected spike mark position number", teamPropPosition);
         deadReckoningDrive.updateDisplacement();
+
+//        if(cameraMode == CameraModes.RED){
+//            telemetry.addLine("Camera Mode: RED");
+//        } else{
+//            telemetry.addLine("Camera Mode: BLUE");
+//        }
+
         telemetry.addData("Displacement", deadReckoningDrive.getDisplacement());
-        if(cameraMode == CameraModes.RED){
-            telemetry.addLine("Camera Mode: RED");
-        }else{
-            telemetry.addLine("Camera Mode: BLUE");
+        telemetry.addData("Yaw", String.format("%.3f", deadReckoningDrive.getRobotDegrees()));
+
+        telemetry.addData("Target Rotation", String.format("%.3f", targetRotation));
+
+        if (gamepad1.dpad_up) {
+            deadReckoningDrive.setPowersSmoothed(pow, pow, pow, pow, 0.2);
+        }
+        else if (gamepad1.dpad_down) {
+            deadReckoningDrive.setPowersSmoothed(-pow, -pow, -pow, -pow, 0.2);
+        }
+        else if (gamepad1.dpad_right) {
+            deadReckoningDrive.setPowersSmoothed(pow, -pow, -pow, pow, 0.2);
+        }
+        else if (gamepad1.dpad_left) {
+            deadReckoningDrive.setPowersSmoothed(-pow, pow, pow, -pow, 0.2);
+        }
+        else {
+            deadReckoningDrive.setPowersSmoothed(0, 0, 0, 0, 0.2);
         }
 
         perceivedPosition = getRelCoords(Math.PI, 0, 0);
@@ -209,6 +232,37 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         velocity [1] = perceivedPosition [1] - lastPosition [1];
 
         telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", deltaPosition [0], deltaPosition [1]));
+
+        targetRotation += gamepad1.left_stick_y * 0.5;
+        targetRotation = deadReckoningDrive.normalizeAngle(targetRotation);
+
+        if (gamepad1.left_bumper) {
+            deadReckoningDrive.resetDisplacement();
+        }
+
+        if (gamepad1.right_bumper) {
+            imu.resetYaw();
+        }
+
+        if (gamepad1.right_trigger != 0) {
+            deadReckoningDrive.setTargetRotation(targetRotation, 0.3);
+        }
+
+        if (gamepad1.y) {
+            deadReckoningDrive.setTargetRotation(0);
+        }
+        else if (gamepad1.a) {
+            deadReckoningDrive.setTargetRotation(180);
+        }
+        else if (gamepad1.x) {
+            deadReckoningDrive.setTargetRotation(-90);
+        }
+        else if (gamepad1.b) {
+            deadReckoningDrive.setTargetRotation(90);
+        }
+
+        deadReckoningDrive.updateDisplacement();
+
     }
 
     @Override
