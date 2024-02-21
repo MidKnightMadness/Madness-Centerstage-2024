@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Size;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.opencv.core.Core;
@@ -52,10 +54,12 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public CameraEnums.CameraModes getAllianceColor(){
         return CameraEnums.CameraModes.RED;
     }
+    public CameraEnums.StartingPositions getStartingSide() { return StartingPositions.BACK; }
     Thread thread;
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
-    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
+//    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
+    int teamPropPosition = 0;
 
     // Hardware and hardware-related variables
     IMU imu;
@@ -182,8 +186,10 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     @Override
     public void init_loop() {
         telemetry.clear();
+        telemetry.addLine("Updated1");
         telemetry.addData("imu yaw", deadReckoningDrive.getRobotDegrees());
-        telemetry.addData("Detected spike mark position", teamPropPosition);
+        telemetry.addData("Detected spike mark position", getSpikeMarkPosition());
+        telemetry.addData("Detected spike mark position number", teamPropPosition);
         deadReckoningDrive.updateDisplacement();
         telemetry.addData("Displacement", deadReckoningDrive.getDisplacement());
         if(cameraMode == CameraModes.RED){
@@ -191,6 +197,17 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         }else{
             telemetry.addLine("Camera Mode: BLUE");
         }
+
+        perceivedPosition = getRelCoords(Math.PI, 0, 0);
+        telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
+        telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", deltaPosition [0], deltaPosition [1]));
+        telemetry.addData("Angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        deltaPosition [0] = targetCoordinates [0] - perceivedPosition [0];
+        deltaPosition [1] = targetCoordinates [1] - perceivedPosition [1];
+        velocity [0] = perceivedPosition [0] - lastPosition [0];
+        velocity [1] = perceivedPosition [1] - lastPosition [1];
+
+        telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", deltaPosition [0], deltaPosition [1]));
     }
 
     @Override
@@ -202,6 +219,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         rightWristServo.setPosition(wristServoIn);
         intakeRightServo.setPosition(intakeHighest);
 
+//        deadReckoningDrive.moveRightDistance(deltaPosition [1]);
         drive();
     }
 
@@ -411,20 +429,26 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
                 double right = rightAvg.val[0];
                 double center = centerAvg.val[0];
 
-                if (left > right && left > center) {
+                telemetry.addData("left", left);
+                telemetry.addData("right", right);
+                telemetry.addData("center", center);
+
+                if(false){
+
+                } else if (left > right && left > center) {
                     leftColor = detectedRectColor;
                     position = CameraEnums.SpikeMarkPositions.LEFT;
-                    teamPropPosition [0]++; // Left
+                    teamPropPosition = 0;// [0]++; // Left
                 }
                 else if (right > left && right > center) {
                     rightColor = detectedRectColor;
                     position = CameraEnums.SpikeMarkPositions.RIGHT;
-                    teamPropPosition [1]++; // Right
+                    teamPropPosition = 1;//[1]++; // Right
                 }
                 else {
                     centerColor = detectedRectColor;
                     position = CameraEnums.SpikeMarkPositions.CENTER;
-                    teamPropPosition [2]++; // Center
+                    teamPropPosition = 2;//[2]++; // Center
                 }
 
 
@@ -437,7 +461,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
             @Override
             public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
-                canvas.drawCircle(320, 180, 50, new Paint());
+
             }
 
             @Override
@@ -478,24 +502,75 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
-                    .addProcessors(tfod, aprilTag)
+                    .addProcessors(tfod, aprilTag).setCameraResolution(new Size(640, 360))
                     .build();
         } else {
             myVisionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessors(tfod, aprilTag)
+                    .addProcessors(tfod, aprilTag).setCameraResolution(new Size(640, 360))
                     .build();
         }
+
+        myVisionPortal.setProcessorEnabled(tfod, true);
     }
 
-    public SpikeMarkPositions getSpikeMarkPosition(){
-        if(teamPropPosition [0] > teamPropPosition [1] && teamPropPosition [0] > teamPropPosition [2] ){ // Left
-            return SpikeMarkPositions.LEFT;
-        }else if(teamPropPosition [1] > teamPropPosition [0] && teamPropPosition [1] > teamPropPosition [2] ){ // Right
-            return SpikeMarkPositions.RIGHT;
-        }else{ // Center
-            return SpikeMarkPositions.CENTER;
+    public double [] getRelCoords(double robotHeading, double currentX, double currentY) { // Camera coordinates, relative to field; x, y, heading
+        // Reset calculation variables
+        rangeCoefficient = 0d;
+        heading = 0d;
+        cameraCoordinates[0] = 0d;
+        cameraCoordinates[1] = 0d;
+
+        List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        if (currentDetections.size() == 0 || currentDetections == null) { // Works for all tags!
+            return new double[]{currentX, currentY, robotHeading};
         }
+
+        for (AprilTagDetection detection : currentDetections) { // Simplified version
+            heading = (detection.ftcPose.yaw * Math.PI / 180d) + Math.PI;
+            double bearing = detection.ftcPose.bearing * Math.PI / 180d;
+            telemetry.addData("Perceived Yaw + bearing", heading + bearing);
+            telemetry.addData("Sine", Math.sin(heading + bearing));
+            telemetry.addData("Cosine", Math.cos(heading + bearing));
+
+            cameraCoordinates[0] = (Math.cos(heading + bearing) * detection.ftcPose.range + APRIL_TAG_COORDS[detection.id - 1][0]);
+
+            double cameraCoordinates1Intermediate = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS[detection.id - 1][1]);
+            cameraCoordinates[1] = -cameraCoordinates1Intermediate;
+        }
+
+//        cameraCoordinates [0] /= currentDetections.size();
+//        cameraCoordinates [1] /= currentDetections.size();
+
+        return cameraCoordinates;
+    }
+
+        public SpikeMarkPositions getSpikeMarkPosition(){
+//        if(teamPropPosition [0] > teamPropPosition [1] && teamPropPosition [0] > teamPropPosition [2] ){ // Left
+//            return SpikeMarkPositions.LEFT;
+//        }else if(teamPropPosition [1] > teamPropPosition [0] && teamPropPosition [1] > teamPropPosition [2] ){ // Right
+//            return SpikeMarkPositions.RIGHT;
+//        }else{ // Center
+//            return SpikeMarkPositions.CENTER;
+//        }
+            switch(teamPropPosition){
+                case 0:
+                    return SpikeMarkPositions.LEFT;
+                case 1:
+                    return SpikeMarkPositions.RIGHT;
+                case 2:
+                    return SpikeMarkPositions.CENTER;
+            }
+
+            return SpikeMarkPositions.RIGHT;
+//            if((getAllianceColor() == CameraModes.BLUE && getStartingSide() == StartingPositions.BACK) ||
+//                    (getAllianceColor() == CameraModes.RED && getStartingSide() == StartingPositions.FRONT)) {
+//                return SpikeMarkPositions.RIGHT;
+//            }else{
+//                return SpikeMarkPositions.LEFT;
+//            }
     }
 }
 

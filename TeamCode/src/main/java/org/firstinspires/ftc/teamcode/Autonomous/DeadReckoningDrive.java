@@ -56,11 +56,11 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     void init_motors(HardwareMap hardwareMap) {
         leftEncoder = hardwareMap.get(DcMotorEx.class, "FL");
         rightEncoder = hardwareMap.get(DcMotorEx.class, "FR");
-        topEncoder = hardwareMap.get(DcMotorEx.class, "BR");
+        topEncoder = hardwareMap.get(DcMotorEx.class, "Intake motor");
 
         leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        topEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        topEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         FR = hardwareMap.get(DcMotorEx.class, "FR");
@@ -81,7 +81,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    final double TICKS_PER_INCH_FORWARD = 1295.22674954;
+    final double TICKS_PER_INCH_FORWARD = 29583d / (23 * 19 / 25);
     final double TICKS_PER_INCH_RIGHT = 1309.32317327;
 
     double forwardDisplacement = 0;
@@ -95,7 +95,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
         // left encoder is reversed
 //        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
-        forwardDisplacement = (-leftPos+ rightPos) / (2d * TICKS_PER_INCH_FORWARD);
+        forwardDisplacement = -leftPos / TICKS_PER_INCH_FORWARD; //(-leftPos+ rightPos) / (2d * TICKS_PER_INCH_FORWARD);
         lateralDisplacement = topEncoder.getCurrentPosition() / TICKS_PER_INCH_RIGHT;
     }
     void resetDisplacement() {
@@ -433,7 +433,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
     public void moveRightDistance(double distance) {
         double minPower = 0.3;
-        double maxPower = 0.5;
+        double maxPower = 0.8;
 
         resetDisplacement();
 
@@ -471,7 +471,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
     public void moveRightDistance(double distance, double targetAngle) { // Angle in radians
         double currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
         double minPower = 0.3;
-        double maxPower = 0.5;
+        double maxPower = (distance > 5)? 0.8 : 0.5;
 
         resetDisplacement();
 

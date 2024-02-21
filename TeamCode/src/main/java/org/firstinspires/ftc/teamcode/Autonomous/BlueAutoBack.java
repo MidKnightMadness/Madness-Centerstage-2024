@@ -13,17 +13,15 @@ public class BlueAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(-60, 0.8);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.8, 5, true);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 9d, 0.8);
-            deadReckoningDrive.setTargetRotation(0, 0.8);
-            deadReckoningDrive.moveRightDistance(-2);
             deadReckoningDrive.setTargetRotation(90, 0.8);
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8, 0);
             deadReckoningDrive.setTargetRotation(33, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d, 0.8, 33);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 9d, 0.8, 33);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 2d);
             deadReckoningDrive.setTargetRotation(90, 0.8);
         } else {
-            deadReckoningDrive.moveForwardDistance(19d, 0.8, 0);
+            deadReckoningDrive.moveForwardDistance(19, 0.8, 0);
             deadReckoningDrive.moveForwardDistance(-4, 0.8, 0);
         }
 
@@ -31,15 +29,19 @@ public class BlueAutoBack extends AutoDeadReckoning {
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(23d, 0.8, 5, true);
             deadReckoningDrive.setTargetRotation(90, 0.8);
+        } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT){
+            deadReckoningDrive.setTargetRotation(93, 0.8);
+            deadReckoningDrive.moveForwardDistance(21, 0.8, 5, true);
         } else {
             deadReckoningDrive.setTargetRotation(93, 0.8);
             deadReckoningDrive.moveForwardDistance(21, 0.8, 5, true);
+            deadReckoningDrive.moveRightDistance(6, 90);
         }
 
         // Aligning code, may be broken from here on
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(90, 0.8);
-            deadReckoningDrive.moveRightDistance(6d);
+            deadReckoningDrive.moveRightDistance(15d, 90);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
@@ -48,6 +50,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
+            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -56,7 +59,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2, 0.8);
-            deadReckoningDrive.moveRightDistance(-30);
+            deadReckoningDrive.moveRightDistance(-20, 90);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
 
 
@@ -70,6 +73,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
+            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -78,7 +82,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2, 0.8);
-            deadReckoningDrive.moveRightDistance(-26);
+            deadReckoningDrive.moveRightDistance(-16);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
 
         } else {
@@ -91,6 +95,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoIn);
             boxServo.setPosition(boxServoNeutral);
+            sleep(500);
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
@@ -99,7 +104,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2, 0.8);
-            deadReckoningDrive.moveRightDistance(-2, 0.83);
+            deadReckoningDrive.moveRightDistance(-16, 0.83);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
         }
 

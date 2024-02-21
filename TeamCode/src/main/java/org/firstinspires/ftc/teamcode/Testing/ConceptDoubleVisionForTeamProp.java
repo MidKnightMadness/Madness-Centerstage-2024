@@ -183,7 +183,8 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
     }
     @Override
     public void start() {
-        deadReckoningDrive.moveRightDistance(deltaPosition [1]);
+        imu.resetYaw();
+        deadReckoningDrive.moveRightDistance(deltaPosition [1], 0);
     }
 
     @Override
@@ -395,14 +396,14 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
             telemetry.addData("Sine", Math.sin(heading + bearing));
             telemetry.addData("Cosine", Math.cos(heading + bearing));
 
-            cameraCoordinates [0] += (Math.cos(heading + bearing) * detection.ftcPose.range  + APRIL_TAG_COORDS [detection.id  - 1][0]);
+            cameraCoordinates [0] = (Math.cos(heading + bearing) * detection.ftcPose.range  + APRIL_TAG_COORDS [detection.id  - 1][0]);
 
             double cameraCoordinates1Intermediate = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS [detection.id  - 1][1]);
-            cameraCoordinates [1] -= cameraCoordinates1Intermediate;
+            cameraCoordinates [1] = -cameraCoordinates1Intermediate;
         }
 
-        cameraCoordinates [0] /= currentDetections.size();
-        cameraCoordinates [1] /= currentDetections.size();
+//        cameraCoordinates [0] /= currentDetections.size();
+//        cameraCoordinates [1] /= currentDetections.size();
 
         return cameraCoordinates;
 

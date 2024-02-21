@@ -11,4 +11,9 @@ public class CameraEnums {
         CENTER,
         RIGHT,
     }
+
+    public enum StartingPositions {
+        FRONT,
+        BACK
+    }
 }
