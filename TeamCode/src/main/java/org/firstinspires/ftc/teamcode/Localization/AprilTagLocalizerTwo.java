@@ -24,7 +24,7 @@ public class AprilTagLocalizerTwo extends Localizer {
 
     // VARIABLES COPIED FROM CONCEPT APRIL TAG CLASS ===============================================
     private final boolean USE_WEBCAM = true;
-    private AprilTagProcessor aprilTag;
+    public AprilTagProcessor aprilTag;
     public VisionPortal visionPortal;
 
     // CLASS SPECIFIC VARIABLES ====================================================================
@@ -188,7 +188,7 @@ public class AprilTagLocalizerTwo extends Localizer {
         //builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.
-        builder.addProcessor(aprilTag);
+        builder.addProcessors(aprilTag);
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();

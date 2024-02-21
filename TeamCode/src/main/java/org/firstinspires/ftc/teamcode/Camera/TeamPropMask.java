@@ -67,6 +67,7 @@ public class TeamPropMask extends OpenCvPipeline {
 //        center: vector2
 //        right: vector2
 //    }
+
     public double[][] coordinates = {
             {1,0,24,42},
             {1,1,36,48},
@@ -168,9 +169,6 @@ public class TeamPropMask extends OpenCvPipeline {
 
         telemetry.clear();
 
-        telemetry.addData("Left AVG", leftAvg);
-        telemetry.addData("right AVG", rightAvg);
-        telemetry.addData("center AVG", centerAvg);
 
         Imgproc.rectangle(output, leftRect, leftColor, 4);
         Imgproc.rectangle(output, rightRect, rightColor, 4);

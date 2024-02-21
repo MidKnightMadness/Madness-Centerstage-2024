@@ -40,6 +40,7 @@ public class MecanumDrive implements WheelRPMConfig {
     public static final double [] FORWARD = {-1.0, 1.0, -1.0, -1.0};
     ///forward: -1.0, 1.0, -1.0, -1.0
     public static final double [] RIGHT = {-1.0, -1.0, 1.0, -1.0};
+    double [] realRight = {-1.0, 1.0, 1.0, -1.0};
     public static final double [] CLOCKWISE = {-1.0, -1.0, -1.0, 1.0};
     public static final double POWER_MULTIPLIER = 1;
 
@@ -168,7 +169,7 @@ public class MecanumDrive implements WheelRPMConfig {
         setMotorPowers();
     }
     double[] lastPowers = {0, 0, 0, 0};
-    public void setPowers(double fl, double fr, double bl, double br) {
+    public void setAdjustedPowers(double fl, double fr, double bl, double br) {
         FL.setPower(fl * RPMMultipliers[0]);
         FR.setPower(fr * RPMMultipliers[1]);
         BL.setPower(bl * RPMMultipliers[2]);

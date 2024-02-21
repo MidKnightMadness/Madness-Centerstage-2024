@@ -15,6 +15,11 @@ public interface ServoPositions {
 
     double intakeDefault = 0.19;
     double intakeLowest = 0.20;
+    double intakeStackOfThree = 0.1185;
+    double intakeStackOfTwo = 0.1535;
     double intakeHighest = 0.066;
-
+    
+    double elbowServoOut = 0.719;
+    double elbowServoVertical = 0.1865;
+    double elbowServoIn = 0.0455;
 }

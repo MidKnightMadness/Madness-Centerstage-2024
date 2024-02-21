@@ -17,8 +17,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Localization.AprilTagLocalizerTwo;
+import org.firstinspires.ftc.teamcode.Testing.ColorSensor.OutakeColorSensors;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
+import org.firstinspires.ftc.teamcode.Utility.Timer;
 //import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 
 @TeleOp(group= "aGame", name = "Driver Controlled TeleOp")
@@ -30,16 +32,18 @@ public class Main extends OpMode implements ServoPositions {
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
     boolean isIntakeMode = true;
+    int rightSideStartingPosition = 0;
     IMU imu;
     ModernRoboticsI2cRangeSensor rangeSensor;
     WebcamName webcamName;
     AprilTagLocalizerTwo localizer;
 
-    double rotationResetConstant = Math.PI / 2;
-
     Servo launcherServo;
     boolean isUsingFieldOriented;
     ServoSmooth boxServoController;
+    double rotationResetConstant = 0;
+//    OutakeColorSensors outakeColorSensors;
+    Timer timer;
 
     @Override
     public void init() {
@@ -47,13 +51,15 @@ public class Main extends OpMode implements ServoPositions {
         intakeMotor = hardwareMap.get(DcMotor.class, "Intake motor");
         leftIntakeServo = hardwareMap.get(Servo.class, "Left intake servo");
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
+        timer = new Timer();
 
         init_IMU();
+//        outakeColorSensors = new OutakeColorSensors(hardwareMap, telemetry);
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
-        g2Y = new ButtonToggle();
+                g2Y = new ButtonToggle();
         g2A = new ButtonToggle();
         g2LeftBump = new ButtonToggle();
         g1A = new ButtonToggle();
@@ -74,7 +80,7 @@ public class Main extends OpMode implements ServoPositions {
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        rightSideStartingPosition = motorRight.getCurrentPosition();
         telemetry.addLine("Initialized");
 
         startingPositions [0] = motorLeft.getCurrentPosition();
@@ -83,6 +89,9 @@ public class Main extends OpMode implements ServoPositions {
 
     double power = 1;
     public void handleDriverControls() {
+        telemetry.addData("Left encoder", mecanumDrive.FL.getCurrentPosition());
+        telemetry.addData("Right encoder", mecanumDrive.FR.getCurrentPosition());
+        telemetry.addData("Center encoder", mecanumDrive.BR.getCurrentPosition());
         if (g1RightBump.update(gamepad1.right_bumper)) {//toggle power to 0.35 or max for normal drive by clicking gamepad 1's right bumper
             gamepad1.rumble(300);
             if (power == 1) {
@@ -152,18 +161,36 @@ public class Main extends OpMode implements ServoPositions {
             mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
         }
 
+
         // launcher
         if (gamepad2.dpad_up && gamepad2.y) {
             launcherServo.setPosition(launcherOpen);
+            telemetry.addLine("Launching Drone");
         }
         else {
             launcherServo.setPosition(launcherClosed);
         }
+
     }
 
+    boolean lastLeftTriggerPressed = false;
     void handleIntakeControls() {
         double intakeDirection = gamepad2.a ? 1 : -1;
-        intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
+//        double intakeStartTime = 0;
+//        if(gamepad2.left_trigger != 0) {
+//            if(!lastLeftTriggerPressed){
+//                intakeStartTime = timer.getTime();
+//            }
+//            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
+                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
+//            }
+//            rightIntakeServo.setPosition(intakeLowest);
+//            lastLeftTriggerPressed = true;
+//        }else{
+//            intakeMotor.setPower(0);
+//            rightIntakeServo.setPosition(intakeDefault);
+//            lastLeftTriggerPressed = false;
+//        }
 
         if (gamepad2.y) {
             rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
@@ -187,15 +214,16 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServo.setPosition(boxServoRight);
-//                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 1, telemetry);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.5, telemetry);  // right
             } else {
-                boxServo.setPosition(boxServoLeft); //left
-//                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
-//                boxServoController.setStartingPosition(boxServoNeutral);
+                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
             }
         } else {
             boxServo.setPosition(boxServoNeutral);  // center
+        }
+
+        if(gamepad2.b){
+            rightWristServo.setPosition(wristServoFlat);
         }
 
         if (g2X.update(gamepad2.x)) {
@@ -208,6 +236,7 @@ public class Main extends OpMode implements ServoPositions {
             rightWristServo.setPosition(wristServoFlat);
             wristPos = wristServoFlat;
         }
+//        outakeColorSensors.updateTelemetry();
     }
 
     void telemetry() {
