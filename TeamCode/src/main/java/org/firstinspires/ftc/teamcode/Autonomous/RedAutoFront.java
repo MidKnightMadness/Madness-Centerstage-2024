@@ -12,8 +12,8 @@ public class RedAutoFront extends AutoDeadReckoning {
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(14d, 0.8);
             deadReckoningDrive.setTargetRotation(-60, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 3.5d, 0.8, 2, true);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 3.5d, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.8, 2, true);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.8);
             deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveForwardDistance(22d, 0.8);
 

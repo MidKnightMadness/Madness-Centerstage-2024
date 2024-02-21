@@ -64,7 +64,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     // Hardware and hardware-related variables
     IMU imu;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
-    public double slidesExtensionTimeConstant = 1.9;
+    public double slidesExtensionTimeConstant = 1.75;
     public double rammingPower = 0.6;
     ModernRoboticsI2cRangeSensor rangeSensor;
     LinearSlides slides;
@@ -181,6 +181,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
         // Init Vision Portal
         initDoubleVision();
+        myVisionPortal.setProcessorEnabled(aprilTag, false);
     }
 
     @Override
