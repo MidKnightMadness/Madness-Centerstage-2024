@@ -1,35 +1,40 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.annotation.SuppressLint;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums.*;
-import org.firstinspires.ftc.teamcode.Camera.TeamPropMask;
 import org.firstinspires.ftc.teamcode.Components.LinearSlides;
 import org.firstinspires.ftc.teamcode.Components.ServoPositions;
 import org.firstinspires.ftc.teamcode.Drivetrain.WheelRPMConfig;
 import org.firstinspires.ftc.teamcode.Utility.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Utility.ServoSmooth;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+
+import java.util.List;
 
 /* For testing opmodes without odometry
 Objectives:
@@ -43,35 +48,113 @@ Contains:
 @TeleOp
 @SuppressLint("DefaultLocale")
 public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPositions {
+    // OpMode Camera Variables
     public CameraEnums.CameraModes getAllianceColor(){
         return CameraEnums.CameraModes.RED;
     }
     Thread thread;
-    public StartingPosition getStartingPosition() {
-        return StartingPosition.NEAR;
-    }
-    public double slidesExtensionTimeConstant = 1.9;
-    public double rammingPower = 0.6;
-
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
+    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
+
+    // Hardware and hardware-related variables
     IMU imu;
-    SpikeMarkPositions teamPropPosition = SpikeMarkPositions.LEFT;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
+    public double slidesExtensionTimeConstant = 1.9;
+    public double rammingPower = 0.6;
     ModernRoboticsI2cRangeSensor rangeSensor;
-    Timer timer;
-    ButtonToggle a, b, x, y;
-    OpenCvWebcam webcam;
-    public WebcamName webcamName;
-    TeamPropMask teamPropMask;
     LinearSlides slides;
     ServoSmooth boxServoController;
 
-    // Testing for April tag incorporation
-    AprilTagProcessor aprilTagProcessor;
+    // Auxillary variables
+    Timer timer;
+    ButtonToggle a, b, x, y;
+
+    // April Tag Detection, correction constants
+    private double [][] TAG_RANGE_CORRECTIONS = { // A, B, C
+            // Perceived range = A * exp(C * range) + B
+            {2.352 * 10000d, -2.351 * 10000d, 4.179 / 100000d}, // ID 1
+            {6503d, -6502d, 0.0001502}, // ID 2
+            {3909d, -3908d, 0.0002501}, // ID 3
+            {298.8, -297.2, 0.003194}, // ID 4
+            {-1.282 * 10000d, 1.282 * 10000d, -7.845 / 100000d}, // ID 5
+            {-837.2, 837.6, -0.001248}, // ID 6
+    };
+
+    public final double[][] APRIL_TAG_COORDS = { // hardcoded
+            {135d, 115d},//id 1
+            {135d, 109d},//id 2
+            {135d, 103d},//id 3
+            {135d, 41d},//id 4
+            {135d, 35d},//id 5
+            {135d, 29d},//id 6
+            {0d, 114d},//id 7 not necesarily accurate yet
+            {0d, 108d},//id 8 not necesarily accurate yet
+            {0d, 36d},//id 9 not necesarily accurate yet
+            {0d, 30d}//id 10 not necesarily accurate y
+    };
+
+    // Processors and Portals
+    boolean USE_WEBCAM = true;
+    public AprilTagProcessor aprilTag;
+    public TfodProcessor tfod;
+    public VisionPortal myVisionPortal;
+
+    // April Tag Tracking Variables
+    double heading = 0d;
+    double [] cameraCoordinates = {0d, 0d};
+    double rangeCoefficient = 0.0; // Used as average intermediate
+    double [] perceivedPosition = {0.0, 0.0};
+    double [] targetCoordinates = {118.5, 109d};
+    double [] deltaPosition = {0.0, 0.0};
+    double [] lastPosition = {0.0, 0.0};
+    double [] velocity = {0.0, 0.0};
+
+    // Team Prop Detection Variables
+    Mat hsvMat = new Mat();
+    Mat output = new Mat();
+
+    CameraEnums.CameraModes mode = CameraEnums.CameraModes.RED;
+    CameraEnums.SpikeMarkPositions position = CameraEnums.SpikeMarkPositions.LEFT;
+
+    // blue color bounds
+    Scalar blueLower = new Scalar(85, 90, 90);
+    Scalar blueUpper = new Scalar(145, 255, 255);
+
+    // red color bounds
+    Scalar redLower = new Scalar(0, 100, 100);
+    Scalar redUpper = new Scalar(15, 255, 255);
+    Scalar redLower2 = new Scalar(160, 100, 100);
+    Scalar redUpper2 = new Scalar(180, 255, 255);
+
+    Rect leftRect = new Rect(90, 200, 95, 75);
+    Rect rightRect = new Rect(510, 200, 95, 75);
+    Rect centerRect = new Rect(300, 185, 95, 75);
+
+    public double[][] coordinates = {
+            {1,0,24,42},
+            {1,1,36,48},
+            {1,2,48,42},
+
+            {2,0,72,42},
+            {2,1,84,48},
+            {2,2,96,42},
+
+            {3,0,24,102},
+            {3,1,36,96},
+            {3,2,48,102},
+
+            {4,0,72,102},
+            {4,1,84,96},
+            {4,2,96,102}
+    };
+
+    Scalar defaultRectColor = new Scalar(255, 255, 255); // white
+    Scalar detectedRectColor = new Scalar(100, 150, 255); // gray
 
     @Override
     public void init() {
+        // Auxillary Init
         timer = new Timer();
         thread = new Thread();
         slides = new LinearSlides(hardwareMap);
@@ -81,42 +164,24 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         y = new ButtonToggle();
         x = new ButtonToggle();
 
+        // Init Hardware Elements
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
         rightWristServo = hardwareMap.get(Servo.class, "Right wrist servo");
         boxServo = hardwareMap.get(Servo.class, "Center box servo");
         boxServoController = new ServoSmooth(boxServo);
         init_IMU();
 
-        teamPropMask = new TeamPropMask(640, 360, telemetry);
-        teamPropMask.setMode(getAllianceColor());
         intakeRightServo = hardwareMap.get(Servo.class, "Right intake servo");
         intakeRightServo.setPosition(0.1);
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
 
-        webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-
-        aprilTagProcessor = new AprilTagProcessor.Builder().build();
-        webcam.setPipeline(teamPropMask);
-
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addData("Error " + errorCode, "error accessing camera stream");
-            }
-        });
+        // Init Vision Portal
+        initDoubleVision();
     }
 
     @Override
     public void init_loop() {
         telemetry.clear();
-        teamPropPosition = teamPropMask.getSpikeMarkPosition();
         telemetry.addData("imu yaw", deadReckoningDrive.getRobotDegrees());
         telemetry.addData("Detected spike mark position", teamPropPosition);
         deadReckoningDrive.updateDisplacement();
@@ -131,7 +196,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     @Override
     public void start() {
         imu.resetYaw();
-        webcam.stopStreaming();
 
         // Reset servos
         boxServo.setPosition(boxServoNeutral);
@@ -291,6 +355,146 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    // Stuff for April Tag Localization
+    public void initDoubleVision() {
+        // -----------------------------------------------------------------------------------------
+        // AprilTag Configuration
+        // -----------------------------------------------------------------------------------------
+
+        aprilTag = new AprilTagProcessor.Builder()
+                .build();
+
+        // -----------------------------------------------------------------------------------------
+        // TFOD Configuration
+        // -----------------------------------------------------------------------------------------
+
+        tfod = new TfodProcessor() {
+            @Override
+            public void init(int width, int height, CameraCalibration calibration) {
+
+            }
+
+            @Override
+            public Object processFrame(Mat input, long captureTimeNanos) {
+                Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
+
+                if (getAllianceColor() == CameraEnums.CameraModes.RED) {
+                    Mat redOutput1 = new Mat();
+                    Mat redOutput2 = new Mat();
+
+                    // red bounds
+                    Core.inRange(hsvMat, redLower, redUpper, redOutput1);
+                    Core.inRange(hsvMat, redLower2, redUpper2, redOutput2);
+                    Core.bitwise_or(redOutput1, redOutput2, output);
+                }
+                else {
+                    Core.inRange(hsvMat, blueLower, blueUpper, output);
+                }
+
+                Scalar leftColor = defaultRectColor;
+                Scalar rightColor  = defaultRectColor;
+                Scalar centerColor = defaultRectColor;
+
+
+                Mat leftRectMat = output.submat(leftRect);
+                Mat rightRectMat = output.submat(rightRect);
+                Mat centerRectMat = output.submat(centerRect);
+
+                Scalar leftAvg = Core.mean(leftRectMat);
+                Scalar rightAvg = Core.mean(rightRectMat);
+                Scalar centerAvg = Core.mean(centerRectMat);
+
+                double left = leftAvg.val[0];
+                double right = rightAvg.val[0];
+                double center = centerAvg.val[0];
+
+                if (left > right && left > center) {
+                    leftColor = detectedRectColor;
+                    position = CameraEnums.SpikeMarkPositions.LEFT;
+                    teamPropPosition [0]++; // Left
+                }
+                else if (right > left && right > center) {
+                    rightColor = detectedRectColor;
+                    position = CameraEnums.SpikeMarkPositions.RIGHT;
+                    teamPropPosition [1]++; // Right
+                }
+                else {
+                    centerColor = detectedRectColor;
+                    position = CameraEnums.SpikeMarkPositions.CENTER;
+                    teamPropPosition [2]++; // Center
+                }
+
+
+                Imgproc.rectangle(output, leftRect, leftColor, 4);
+                Imgproc.rectangle(output, rightRect, rightColor, 4);
+                Imgproc.rectangle(output, centerRect, centerColor, 4);
+
+                return output;
+            }
+
+            @Override
+            public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
+                canvas.drawCircle(320, 180, 50, new Paint());
+            }
+
+            @Override
+            public void setMinResultConfidence(float minResultConfidence) {
+
+            }
+
+            @Override
+            public void setClippingMargins(int left, int top, int right, int bottom) {
+
+            }
+
+            @Override
+            public void setZoom(double magnification) {
+
+            }
+
+            @Override
+            public List<Recognition> getRecognitions() {
+                return null;
+            }
+
+            @Override
+            public List<Recognition> getFreshRecognitions() {
+                return null;
+            }
+
+            @Override
+            public void shutdown() {
+
+            }
+        };
+
+        // -----------------------------------------------------------------------------------------
+        // Camera Configuration
+        // -----------------------------------------------------------------------------------------
+
+        if (USE_WEBCAM) {
+            myVisionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessors(tfod, aprilTag)
+                    .build();
+        } else {
+            myVisionPortal = new VisionPortal.Builder()
+                    .setCamera(BuiltinCameraDirection.BACK)
+                    .addProcessors(tfod, aprilTag)
+                    .build();
+        }
+    }
+
+    public SpikeMarkPositions getSpikeMarkPosition(){
+        if(teamPropPosition [0] > teamPropPosition [1] && teamPropPosition [0] > teamPropPosition [2] ){ // Left
+            return SpikeMarkPositions.LEFT;
+        }else if(teamPropPosition [1] > teamPropPosition [0] && teamPropPosition [1] > teamPropPosition [2] ){ // Right
+            return SpikeMarkPositions.RIGHT;
+        }else{ // Center
+            return SpikeMarkPositions.CENTER;
         }
     }
 }

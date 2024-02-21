@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 public class BlueAutoBack extends AutoDeadReckoning {
     @Override
     public void drive() {
-        if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
+        if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(13d, 0.8, 0);
             deadReckoningDrive.setTargetRotation(-60, 0.8);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.8, 5, true);
@@ -16,7 +16,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveRightDistance(-2);
             deadReckoningDrive.setTargetRotation(90, 0.8);
-        } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
+        } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8, 0);
             deadReckoningDrive.setTargetRotation(33, 0.8);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d, 0.8, 33);
@@ -28,7 +28,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
         }
 
         // go to backdrop
-        if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
+        if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(23d, 0.8, 5, true);
             deadReckoningDrive.setTargetRotation(90, 0.8);
         } else {
@@ -37,7 +37,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
         }
 
         // Aligning code, may be broken from here on
-        if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
+        if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(90, 0.8);
             deadReckoningDrive.moveRightDistance(6d);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
@@ -60,7 +60,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(6, 0.8);
 
 
-        } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
+        } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.setTargetRotation(95, 0.8);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);

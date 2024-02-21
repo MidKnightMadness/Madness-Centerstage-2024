@@ -188,11 +188,11 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
 
     @Override
     public void loop() {
-        perceivedPosition = getRelCoords(Math.PI, 0, 0);
-        telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
-        telemetryAprilTag();
-        telemetry.addData("Angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-        telemetry.update();
+//        perceivedPosition = getRelCoords(Math.PI, 0, 0);
+//        telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
+//        telemetryAprilTag();
+//        telemetry.addData("Angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+//        telemetry.update();
     }
 
     @Override
@@ -333,7 +333,7 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
 
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessors(tfod, aprilTag)
                 .build();
         } else {
@@ -395,16 +395,16 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
             telemetry.addData("Sine", Math.sin(heading + bearing));
             telemetry.addData("Cosine", Math.cos(heading + bearing));
 
-            cameraCoordinates [0] = (Math.cos(heading + bearing) * detection.ftcPose.range  + APRIL_TAG_COORDS [detection.id  - 1][0]);
+            cameraCoordinates [0] += (Math.cos(heading + bearing) * detection.ftcPose.range  + APRIL_TAG_COORDS [detection.id  - 1][0]);
 
-            cameraCoordinates [1] = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS [detection.id  - 1][1]);
-            cameraCoordinates [1] = -cameraCoordinates [1];
-
-            return cameraCoordinates;
+            double cameraCoordinates1Intermediate = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS [detection.id  - 1][1]);
+            cameraCoordinates [1] -= cameraCoordinates1Intermediate;
         }
 
-//        cameraCoordinates [0] /= currentDetections.size();
-//        cameraCoordinates [1] /= currentDetections.size();
+        cameraCoordinates [0] /= currentDetections.size();
+        cameraCoordinates [1] /= currentDetections.size();
+
+        return cameraCoordinates;
 
 //        for(AprilTagDetection detection : currentDetections) { // Calculate range coefficient
 //            double actualRange = correctAprilTagError(detection.id, detection.ftcPose.range);
@@ -450,8 +450,6 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
 //                        -APRIL_TAG_COORDS [detection.id  - 1][1]) * 0.1 / (rangeCoefficient * (actualRange * actualRange));
 //            }
 //        }
-
-        return cameraCoordinates;
     }
 
     private double correctY(double percievedY){
@@ -463,7 +461,7 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
     }
 
     public double correctAprilTagError(int id, double perceivedRange){
-        return perceivedRange;// (2.303 * Math.log10((perceivedRange - TAG_RANGE_CORRECTIONS[id - 1][1]) / TAG_RANGE_CORRECTIONS[id - 1][0]) / TAG_RANGE_CORRECTIONS[id - 1][2]);
+        return (2.303 * Math.log10((perceivedRange - TAG_RANGE_CORRECTIONS[id - 1][1]) / TAG_RANGE_CORRECTIONS[id - 1][0]) / TAG_RANGE_CORRECTIONS[id - 1][2]);
     }
 
     private double [][] TAG_RANGE_CORRECTIONS = { // A, B, C

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 public class BlueAutoNoYellow extends AutoDeadReckoning {
     @Override
     public void drive(){
-        if (teamPropPosition == CameraEnums.SpikeMarkPositions.LEFT) {
+        if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(18d);
             deadReckoningDrive.setTargetRotation(60);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 8d);
@@ -16,7 +16,7 @@ public class BlueAutoNoYellow extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(0);
             deadReckoningDrive.moveForwardDistance(25d);
 
-        } else if (teamPropPosition == CameraEnums.SpikeMarkPositions.RIGHT) {
+        } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d);
             deadReckoningDrive.setTargetRotation(-42);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d);
