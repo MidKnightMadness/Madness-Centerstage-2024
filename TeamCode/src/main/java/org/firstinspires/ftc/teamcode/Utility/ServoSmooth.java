@@ -20,6 +20,11 @@ public class ServoSmooth {
         this.servo = servo;
     }
 
+    public void setStartingPosition(double start) {
+        parametersSet = false;
+        this.startPosition = start;
+    }
+
 
     public boolean setServoPosition(double startingPosition, double targetPosition, double time, Telemetry telemetry) {
         parametersSet = startingPosition == this.startPosition && targetPosition == this.targetPosition;
