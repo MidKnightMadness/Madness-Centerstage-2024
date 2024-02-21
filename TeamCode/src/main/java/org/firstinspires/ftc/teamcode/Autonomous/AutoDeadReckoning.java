@@ -477,7 +477,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                     .addProcessors(tfod, aprilTag)
                     .build();
         } else {

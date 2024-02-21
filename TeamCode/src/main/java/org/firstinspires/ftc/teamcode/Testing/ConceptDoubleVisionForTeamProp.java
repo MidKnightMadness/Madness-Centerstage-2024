@@ -159,7 +159,7 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
     double P = 0.1;
     double D = 0.075;
     double [] perceivedPosition = {0.0, 0.0};
-    double [] targetCoordinates = {118.5, 109d};
+    double [] targetCoordinates = {118.5, 35d};
     double [] deltaPosition = {0.0, 0.0};
     double [] lastPosition = {0.0, 0.0};
     double [] velocity = {0.0, 0.0};
@@ -333,7 +333,7 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
 
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessors(tfod, aprilTag)
                 .build();
         } else {
