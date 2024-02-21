@@ -151,8 +151,8 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
     double [] robotCoordinates = {0d, 0d};
     double rangeCoefficient = 0.0; // Used as average intermediate
 
-//    MecanumDrive mecanumDrive;
-//    DeadReckoningDrive deadReckoningDrive;
+    MecanumDrive mecanumDrive;
+    DeadReckoningDrive deadReckoningDrive;
     IMU imu;
 
     // For alignment with camera
@@ -170,8 +170,8 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
         initDoubleVision();
 
         init_IMU();
-//        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
-//        deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
+        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
+        deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
         imu.resetYaw();
 
 
@@ -183,25 +183,24 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
     }
     @Override
     public void start() {
-//            deadReckoningDrive.moveRightDistance(aprilTag.getDetections().get(0).ftcPose.x);
-
-
-    }   // end method runOpMode()
+        deadReckoningDrive.moveRightDistance(deltaPosition [1]);
+    }
 
     @Override
     public void loop() {
-        perceivedPosition = getRelCoords(Math.PI, 0, 0);//imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), 0, 0);
-//        telemetry.addLine(String.format("Target: [%5.2f, %5.2f]", targetCoordinates [0], targetCoordinates [1]));
+        perceivedPosition = getRelCoords(Math.PI, 0, 0);
         telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
         telemetryAprilTag();
-//        telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", deltaPosition [0], deltaPosition [1]));
         telemetry.addData("Angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.update();
     }
 
     @Override
     public void init_loop(){
-        perceivedPosition = getRelCoords(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), perceivedPosition [0], perceivedPosition [1]);
+        perceivedPosition = getRelCoords(Math.PI, 0, 0);
+        telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
+        telemetry.addLine(String.format("Delta: [%5.2f, %5.2f]", deltaPosition [0], deltaPosition [1]));
+        telemetry.addData("Angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         deltaPosition [0] = targetCoordinates [0] - perceivedPosition [0];
         deltaPosition [1] = targetCoordinates [1] - perceivedPosition [1];
         velocity [0] = perceivedPosition [0] - lastPosition [0];
@@ -334,7 +333,7 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
 
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessors(tfod, aprilTag)
                 .build();
         } else {
@@ -396,11 +395,10 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
             telemetry.addData("Sine", Math.sin(heading + bearing));
             telemetry.addData("Cosine", Math.cos(heading + bearing));
 
-            cameraCoordinates [0] = (Math.cos(heading + bearing) * detection.ftcPose.range
-                        +APRIL_TAG_COORDS [detection.id  - 1][0]);
+            cameraCoordinates [0] = (Math.cos(heading + bearing) * detection.ftcPose.range  + APRIL_TAG_COORDS [detection.id  - 1][0]);
 
-            cameraCoordinates [1] = (Math.sin(heading + bearing) * detection.ftcPose.range
-                        +APRIL_TAG_COORDS [detection.id  - 1][1]);
+            cameraCoordinates [1] = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS [detection.id  - 1][1]);
+            cameraCoordinates [1] = -cameraCoordinates [1];
 
             return cameraCoordinates;
         }
