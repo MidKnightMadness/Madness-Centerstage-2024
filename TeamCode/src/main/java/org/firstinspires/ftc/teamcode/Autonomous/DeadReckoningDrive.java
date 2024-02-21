@@ -80,7 +80,9 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    final double TICKS_PER_INCH = 1248.66631083;
+    final double TICKS_PER_INCH_FORWARD = 1295.22674954;
+    final double TICKS_PER_INCH_RIGHT = 1309.32317327;
+
     double forwardDisplacement = 0;
     double lateralDisplacement = 0;
 
@@ -92,8 +94,8 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
         // left encoder is reversed
 //        forwardDisplacement += (-deltaLeftTicks + deltaRightTicks) * IN_PER_TICK / 2d;
-        forwardDisplacement = (-leftPos+ rightPos) / (2d * TICKS_PER_INCH);
-        lateralDisplacement = topEncoder.getCurrentPosition() / TICKS_PER_INCH;
+        forwardDisplacement = (-leftPos+ rightPos) / (2d * TICKS_PER_INCH_FORWARD);
+        lateralDisplacement = topEncoder.getCurrentPosition() / TICKS_PER_INCH_RIGHT;
     }
     void resetDisplacement() {
         resetEncoders();
