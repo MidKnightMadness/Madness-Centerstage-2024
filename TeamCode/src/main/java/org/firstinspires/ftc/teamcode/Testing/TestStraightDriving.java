@@ -10,6 +10,6 @@ public class TestStraightDriving extends AutoDeadReckoning {
     @Override
     public void drive(){
         deadReckoningDrive.moveForwardDistance(50d, 0.5, 0);
-        deadReckoningDrive.moveRightDistance(75d, 0);
+        deadReckoningDrive.moveRightDistance(-20d, 0);
     }
 }

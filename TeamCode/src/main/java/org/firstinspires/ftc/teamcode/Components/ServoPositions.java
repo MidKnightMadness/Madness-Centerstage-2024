@@ -13,7 +13,7 @@ public interface ServoPositions {
     double launcherClosed = 0.6;
 
 
-    double intakeDefault = 0.19;
+    double intakeIdle = 0.19;
     double intakeLowest = 0.20;
     double intakeStackOfThree = 0.1185;
     double intakeStackOfTwo = 0.1535;

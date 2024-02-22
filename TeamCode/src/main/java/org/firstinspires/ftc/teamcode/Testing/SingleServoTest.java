@@ -19,8 +19,7 @@ public class SingleServoTest extends OpMode{
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "Right elbow servo");
-        boxServo = hardwareMap.get(Servo.class, "Center box servo");
+        servo = hardwareMap.get(Servo.class, "Right intake servo");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake motor");
     }
 
@@ -41,6 +40,8 @@ public class SingleServoTest extends OpMode{
             }
         }
 
-        boxServo.setPosition((gamepad1.right_stick_x + 2) * (boxServoLeft - boxServoRight) / 2d + boxServoRight);
+        intakeMotor.setPower(-gamepad1.left_trigger);
+
+//        boxServo.setPosition((gamepad1.right_stick_x + 2) * (boxServoLeft - boxServoRight) / 2d + boxServoRight);
     }
 }

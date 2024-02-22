@@ -60,12 +60,13 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public DeadReckoningDrive deadReckoningDrive;
 //    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
     int teamPropPosition = 0;
+    boolean lookForTeamProp = true;
 
     // Hardware and hardware-related variables
     IMU imu;
     Servo intakeRightServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
-    public double slidesExtensionTimeConstant = 1.75;
-    public double rammingPower = 0.6;
+    public double slidesExtensionTimeConstant = 1.9;
+    public double rammingPower = 0.4;
     ModernRoboticsI2cRangeSensor rangeSensor;
     LinearSlides slides;
     ServoSmooth boxServoController;
@@ -268,6 +269,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     @Override
     public void start() {
         imu.resetYaw();
+        lookForTeamProp = false;
 
         // Reset servos
         boxServo.setPosition(boxServoNeutral);
@@ -488,22 +490,20 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
                 telemetry.addData("right", right);
                 telemetry.addData("center", center);
 
-                if(false){
-
-                } else if (left > right && left > center) {
-                    leftColor = detectedRectColor;
-                    position = CameraEnums.SpikeMarkPositions.LEFT;
-                    teamPropPosition = 0;// [0]++; // Left
-                }
-                else if (right > left && right > center) {
-                    rightColor = detectedRectColor;
-                    position = CameraEnums.SpikeMarkPositions.RIGHT;
-                    teamPropPosition = 1;//[1]++; // Right
-                }
-                else {
-                    centerColor = detectedRectColor;
-                    position = CameraEnums.SpikeMarkPositions.CENTER;
-                    teamPropPosition = 2;//[2]++; // Center
+                if(lookForTeamProp) {
+                    if (left > right && left > center) {
+                        leftColor = detectedRectColor;
+                        position = CameraEnums.SpikeMarkPositions.LEFT;
+                        teamPropPosition = 0;// [0]++; // Left
+                    } else if (right > left && right > center) {
+                        rightColor = detectedRectColor;
+                        position = CameraEnums.SpikeMarkPositions.RIGHT;
+                        teamPropPosition = 1;//[1]++; // Right
+                    } else {
+                        centerColor = detectedRectColor;
+                        position = CameraEnums.SpikeMarkPositions.CENTER;
+                        teamPropPosition = 2;//[2]++; // Center
+                    }
                 }
 
 

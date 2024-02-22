@@ -17,10 +17,10 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(-12d, 0.8, 3, true);
 
             // Go through stage door
-            deadReckoningDrive.setTargetRotation(90, 0.3);
-            deadReckoningDrive.moveForwardDistance(25, 0.8, 0);
+            deadReckoningDrive.setTargetRotation(88, 0.3);
+            deadReckoningDrive.moveForwardDistance(25, 0.8, 88);
             sleep(500);
-            deadReckoningDrive.moveForwardDistance(35, 0.8, 90, 5);
+            deadReckoningDrive.moveForwardDistance(35, 0.8, 88, 5);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90, 0.3);

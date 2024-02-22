@@ -71,6 +71,7 @@ public class ConceptDoubleVision extends LinearOpMode {
     @Override
     public void runOpMode() {
         initDoubleVision();
+        myVisionPortal.resumeStreaming();
 
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
@@ -145,7 +146,7 @@ public class ConceptDoubleVision extends LinearOpMode {
 
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessors(tfod, aprilTag)
                 .build();
         } else {

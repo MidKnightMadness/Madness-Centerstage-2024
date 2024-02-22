@@ -27,7 +27,7 @@ public class RedAutoBack extends AutoDeadReckoning {
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.setTargetRotation(-94, 0.8);
             deadReckoningDrive.moveForwardDistance(20, 0.8, 5, true);
-            deadReckoningDrive.moveRightDistance(-4);
+            deadReckoningDrive.moveRightDistance(-5);
             deadReckoningDrive.setTargetRotation(-94, 0.8);
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.setTargetRotation(-94, 0.8);
@@ -39,7 +39,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
         // Aligning code, may be broken from here on
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveRightDistance(-14d);
+            deadReckoningDrive.moveRightDistance(-17);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
@@ -52,11 +52,11 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Hit backdrop to make sure pixel is scored
             deadReckoningDrive.moveForwardDistance(-2, 0.5);
-            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
+//            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(16);
+            deadReckoningDrive.moveRightDistance(24);
             stop();
 
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
@@ -72,7 +72,7 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Hit backdrop to make sure pixel is scored
             deadReckoningDrive.moveForwardDistance(-2, 0.5);
-            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
+//            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
@@ -93,11 +93,11 @@ public class RedAutoBack extends AutoDeadReckoning {
 
             // Hit backdrop to make sure pixel is scored
             deadReckoningDrive.moveForwardDistance(-2, 0.5);
-            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
+//            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(10);
+            deadReckoningDrive.moveRightDistance(16);
             stop();
         }
     }

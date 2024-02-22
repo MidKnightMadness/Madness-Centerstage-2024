@@ -44,6 +44,7 @@ public class Main extends OpMode implements ServoPositions {
     double rotationResetConstant = 0;
 //    OutakeColorSensors outakeColorSensors;
     Timer timer;
+    double intakeServoPosition;
 
     @Override
     public void init() {
@@ -89,9 +90,9 @@ public class Main extends OpMode implements ServoPositions {
 
     double power = 1;
     public void handleDriverControls() {
-        telemetry.addData("Left encoder", mecanumDrive.FL.getCurrentPosition());
-        telemetry.addData("Right encoder", mecanumDrive.FR.getCurrentPosition());
-        telemetry.addData("Center encoder", mecanumDrive.BR.getCurrentPosition());
+//        telemetry.addData("Left encoder", mecanumDrive.FL.getCurrentPosition());
+//        telemetry.addData("Right encoder", mecanumDrive.FR.getCurrentPosition());
+//        telemetry.addData("Center encoder", mecanumDrive.BR.getCurrentPosition());
         if (g1RightBump.update(gamepad1.right_bumper)) {//toggle power to 0.35 or max for normal drive by clicking gamepad 1's right bumper
             gamepad1.rumble(300);
             if (power == 1) {
@@ -121,9 +122,7 @@ public class Main extends OpMode implements ServoPositions {
             }
         }
 
-        if(gamepad1.dpad_up){
-            alignToBoardContinuous();
-        }
+
 
         //reset imu at 90 degrees angle(facing backstage) when a is clicked
         if (gamepad1.a) { // Temporary for field oriented drive, may come up with auto align functionality
@@ -182,7 +181,8 @@ public class Main extends OpMode implements ServoPositions {
 //                intakeStartTime = timer.getTime();
 //            }
 //            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
-                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
+                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.75);
+                telemetry.addData("Intake Power", gamepad2.left_trigger);
 //            }
 //            rightIntakeServo.setPosition(intakeLowest);
 //            lastLeftTriggerPressed = true;
@@ -196,7 +196,7 @@ public class Main extends OpMode implements ServoPositions {
             rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
         }
         else {
-            rightIntakeServo.setPosition(intakeDefault);
+            rightIntakeServo.setPosition(intakeIdle);
         }
     }
 
