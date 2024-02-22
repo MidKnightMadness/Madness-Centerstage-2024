@@ -14,14 +14,14 @@ public class SingleServoTest extends OpMode{
     Servo servo;
     Servo boxServo;
     DcMotorEx intakeMotor;
-    double targetTicks = 0.2; // Set to start in middle of range
-    double centerTicks = 0.2;
+    double targetTicks = 0.5; // Set to start in middle of range
+    double centerTicks = 0.5;
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "Right elbow servo");
-        boxServo = hardwareMap.get(Servo.class, "Center box servo");
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake motor");
+        servo = hardwareMap.get(Servo.class, "Launcher servo");
+//        boxServo = hardwareMap.get(Servo.class, "Center box servo");
+//        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake motor");
     }
 
     @Override
