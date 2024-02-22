@@ -140,10 +140,10 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
             {135d, 41d},//id 4
             {135d, 35d},//id 5
             {135d, 29d},//id 6
-            {0d, 114d},//id 7 not necesarily accurate yet
-            {0d, 108d},//id 8 not necesarily accurate yet
-            {0d, 36d},//id 9 not necesarily accurate yet
-            {0d, 30d}//id 10 not necesarily accurate y
+            {0d, 114d},//id 7
+            {0d, 108d},//id 8
+            {0d, 36d},//id 9
+            {0d, 30d}//id 10
     };
     double [] CAMERA_RELATIVE_COORDINATES = {0d, 0d};
     double heading = 0d;
@@ -370,8 +370,10 @@ public class ConceptDoubleVisionForTeamProp extends OpMode {
     /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
+    //object detection(pixel)
     private void telemetryTfod() {
         telemetry.addData("Detected spike mark position", teamPropPosition);
+        telemetry.addLine("----------------------------");
     }   // end method telemetryTfod()
 
     // Localization Method

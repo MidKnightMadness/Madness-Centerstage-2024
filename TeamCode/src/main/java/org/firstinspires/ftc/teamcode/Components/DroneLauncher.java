@@ -16,12 +16,11 @@ public class DroneLauncher {
 
 
     public DroneLauncher(HardwareMap hardwareMap) {
-        servo = hardwareMap.get(Servo.class, "servo");
+        servo = hardwareMap.get(Servo.class, "drone launcher servo");
         servo.setDirection(Servo.Direction.FORWARD);
-
     }
 
-    public void setPostion(double position) {
+    public void setPosition(double position) {
         if(position<1&&position>0){//within the range of 0 to
             double x = position * difference;
             servo.setPosition(max-x);
@@ -30,14 +29,17 @@ public class DroneLauncher {
 
 
     public void lock(){
-        servo.setPosition(max);
-    }
-
-    public void open(){
         servo.setPosition(min);
     }
 
+    public void open(){
+        servo.setPosition(max);
+    }
 
+
+    public double getPosition(){
+        return this.getPosition();
+    }
 
 
 
