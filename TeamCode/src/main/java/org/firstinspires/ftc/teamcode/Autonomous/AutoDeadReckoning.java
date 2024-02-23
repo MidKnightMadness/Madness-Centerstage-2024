@@ -9,6 +9,9 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -58,6 +61,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     Thread thread;
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
+    public DcMotorEx IntakeMotor;
 //    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
     int teamPropPosition = 0;
     boolean lookForTeamProp = true;
@@ -163,6 +167,9 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         timer = new Timer();
         thread = new Thread();
         slides = new LinearSlides(hardwareMap);
+        IntakeMotor = hardwareMap.get(DcMotorEx.class, "Intake motor");
+        IntakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         telemetry.setAutoClear(false);
         a = new ButtonToggle();
         b = new ButtonToggle();
@@ -270,6 +277,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     public void start() {
         imu.resetYaw();
         lookForTeamProp = false;
+        myVisionPortal.setProcessorEnabled(tfod, false);
 
         // Reset servos
         boxServo.setPosition(boxServoNeutral);
@@ -583,17 +591,17 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
             return new double[]{currentX, currentY, robotHeading};
         }
 
-        for (AprilTagDetection detection : currentDetections) { // Simplified version
+        for(AprilTagDetection detection : currentDetections){ // Simplified version
             heading = (detection.ftcPose.yaw * Math.PI / 180d) + Math.PI;
             double bearing = detection.ftcPose.bearing * Math.PI / 180d;
             telemetry.addData("Perceived Yaw + bearing", heading + bearing);
             telemetry.addData("Sine", Math.sin(heading + bearing));
             telemetry.addData("Cosine", Math.cos(heading + bearing));
 
-            cameraCoordinates[0] = (Math.cos(heading + bearing) * detection.ftcPose.range + APRIL_TAG_COORDS[detection.id - 1][0]);
+            cameraCoordinates [0] = (Math.cos(heading + bearing) * detection.ftcPose.range  + APRIL_TAG_COORDS [detection.id  - 1][0]);
 
-            double cameraCoordinates1Intermediate = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS[detection.id - 1][1]);
-            cameraCoordinates[1] = -cameraCoordinates1Intermediate;
+            double cameraCoordinates1Intermediate = (Math.sin(heading + bearing) * detection.ftcPose.range - APRIL_TAG_COORDS [detection.id  - 1][1]);
+            cameraCoordinates [1] = -cameraCoordinates1Intermediate;
         }
 
 //        cameraCoordinates [0] /= currentDetections.size();
@@ -603,13 +611,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     }
 
         public SpikeMarkPositions getSpikeMarkPosition(){
-//        if(teamPropPosition [0] > teamPropPosition [1] && teamPropPosition [0] > teamPropPosition [2] ){ // Left
-//            return SpikeMarkPositions.LEFT;
-//        }else if(teamPropPosition [1] > teamPropPosition [0] && teamPropPosition [1] > teamPropPosition [2] ){ // Right
-//            return SpikeMarkPositions.RIGHT;
-//        }else{ // Center
-//            return SpikeMarkPositions.CENTER;
-//        }
             switch(teamPropPosition){
                 case 0:
                     return SpikeMarkPositions.LEFT;
@@ -620,12 +621,6 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
             }
 
             return SpikeMarkPositions.RIGHT;
-//            if((getAllianceColor() == CameraModes.BLUE && getStartingSide() == StartingPositions.BACK) ||
-//                    (getAllianceColor() == CameraModes.RED && getStartingSide() == StartingPositions.FRONT)) {
-//                return SpikeMarkPositions.RIGHT;
-//            }else{
-//                return SpikeMarkPositions.LEFT;
-//            }
     }
 }
 

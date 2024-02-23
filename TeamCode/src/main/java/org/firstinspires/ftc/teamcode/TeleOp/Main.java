@@ -181,7 +181,7 @@ public class Main extends OpMode implements ServoPositions {
 //                intakeStartTime = timer.getTime();
 //            }
 //            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
-                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.75);
+                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.85);
                 telemetry.addData("Intake Power", gamepad2.left_trigger);
 //            }
 //            rightIntakeServo.setPosition(intakeLowest);
