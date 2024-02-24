@@ -8,6 +8,8 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 public class BlueAutoBack extends AutoDeadReckoning {
     @Override
     public void drive() {
+        //parking direction, negative is to the left and positive is to the right
+        int parkDirection = -1;
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(13d, 0.8, 0);
             deadReckoningDrive.setTargetRotation(-60, 0.8);
@@ -59,7 +61,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2, 0.8);
-            deadReckoningDrive.moveRightDistance(-20, 90);
+            deadReckoningDrive.moveRightDistance(20*parkDirection, 90);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
 
 
@@ -82,7 +84,7 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2, 0.8);
-            deadReckoningDrive.moveRightDistance(-16);
+            deadReckoningDrive.moveRightDistance(16*parkDirection);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
 
         } else {
@@ -104,7 +106,10 @@ public class BlueAutoBack extends AutoDeadReckoning {
 
             // Park
             deadReckoningDrive.moveForwardDistance(-2, 0.8);
-            deadReckoningDrive.moveRightDistance(-16, 0.83);
+
+
+
+            deadReckoningDrive.moveRightDistance(16*parkDirection, 0.83);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
         }
 
