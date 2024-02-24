@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -54,7 +56,7 @@ public class Main extends OpMode implements ServoPositions {
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
         timer = new Timer();
 
-        init_IMU();
+                init_IMU();
 //        outakeColorSensors = new OutakeColorSensors(hardwareMap, telemetry);
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
@@ -162,11 +164,10 @@ public class Main extends OpMode implements ServoPositions {
 
 
         // launcher
-        if (gamepad2.dpad_up && gamepad2.y) {
+        if(gamepad2.dpad_up && gamepad2.y){
             launcherServo.setPosition(launcherOpen);
-            telemetry.addLine("Launching Drone");
-        }
-        else {
+            telemetry.addLine("Toggled launching Drone");
+        } else {
             launcherServo.setPosition(launcherClosed);
         }
 
@@ -174,16 +175,19 @@ public class Main extends OpMode implements ServoPositions {
 
     boolean lastLeftTriggerPressed = false;
     void handleIntakeControls() {
-        double intakeDirection = gamepad2.a ? 1 : -1;
+        double intakeDirection = gamepad2.a ? 0.4 : -1;
 //        double intakeStartTime = 0;
 //        if(gamepad2.left_trigger != 0) {
 //            if(!lastLeftTriggerPressed){
 //                intakeStartTime = timer.getTime();
 //            }
 //            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
-                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.925);
-                telemetry.addData("Intake Power", gamepad2.left_trigger);
-//            }
+        if(Math.abs(gamepad2.left_trigger) > 0) {
+            intakeMotor.setPower(intakeDirection * 0.85);
+            telemetry.addData("Intake Power", intakeDirection * 0.85);
+        }else{
+            intakeMotor.setPower(0);
+        }
 //            rightIntakeServo.setPosition(intakeLowest);
 //            lastLeftTriggerPressed = true;
 //        }else{
@@ -214,9 +218,9 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.6, telemetry);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.9, telemetry);  // right
             } else {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.6, telemetry); // left
+                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.9, telemetry); // left
             }
         } else {
             boxServo.setPosition(boxServoNeutral);  // center

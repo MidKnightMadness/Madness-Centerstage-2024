@@ -435,7 +435,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
 
     public void moveRightDistance(double distance) {
-        double minPower = 0.3;
+        double minPower = 0.275;
         double maxPower = 0.8;
 
         resetDisplacement();
@@ -477,7 +477,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
 
     public void moveRightDistance(double distance, double targetAngle) { // Angle in radians
         double currentAngleCorrected = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) > 0)? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + 2 * Math.PI;
-        double minPower = 0.3;
+        double minPower = 0.275;
         double maxPower = (Math.abs(distance) > 5)? 0.8 : 0.5;
 
         resetDisplacement();

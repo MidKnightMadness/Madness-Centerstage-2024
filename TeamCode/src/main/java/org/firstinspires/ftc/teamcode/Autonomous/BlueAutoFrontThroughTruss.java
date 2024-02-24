@@ -49,8 +49,8 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
 
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(2d, 0.8, 3, true);
-            deadReckoningDrive.setTargetRotation(-37, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 11d, 0.8, 3, true);
+            deadReckoningDrive.setTargetRotation(-35, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 10d, 0.8, 3, true);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveForwardDistance(-10d, 0.8, 3, true);

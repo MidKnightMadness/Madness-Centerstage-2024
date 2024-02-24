@@ -214,21 +214,21 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
         telemetry.addData("Target Rotation", String.format("%.3f", targetRotation));
 
-        if (gamepad1.dpad_up) {
-            deadReckoningDrive.setPowersSmoothed(pow, pow, pow, pow, 0.2);
-        }
-        else if (gamepad1.dpad_down) {
-            deadReckoningDrive.setPowersSmoothed(-pow, -pow, -pow, -pow, 0.2);
-        }
-        else if (gamepad1.dpad_right) {
-            deadReckoningDrive.setPowersSmoothed(pow, -pow, -pow, pow, 0.2);
-        }
-        else if (gamepad1.dpad_left) {
-            deadReckoningDrive.setPowersSmoothed(-pow, pow, pow, -pow, 0.2);
-        }
-        else {
-            deadReckoningDrive.setPowersSmoothed(0, 0, 0, 0, 0.2);
-        }
+//        if (gamepad1.dpad_up) {
+//            deadReckoningDrive.setPowersSmoothed(pow, pow, pow, pow, 0.2);
+//        }
+//        else if (gamepad1.dpad_down) {
+//            deadReckoningDrive.setPowersSmoothed(-pow, -pow, -pow, -pow, 0.2);
+//        }
+//        else if (gamepad1.dpad_right) {
+//            deadReckoningDrive.setPowersSmoothed(pow, -pow, -pow, pow, 0.2);
+//        }
+//        else if (gamepad1.dpad_left) {
+//            deadReckoningDrive.setPowersSmoothed(-pow, pow, pow, -pow, 0.2);
+//        }
+//        else {
+//            deadReckoningDrive.setPowersSmoothed(0, 0, 0, 0, 0.2);
+//        }
 
         perceivedPosition = getRelCoords(Math.PI, 0, 0);
         telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));
@@ -575,6 +575,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         }
 
         myVisionPortal.setProcessorEnabled(tfod, true);
+        myVisionPortal.setProcessorEnabled(aprilTag, false);
     }
 
     public double [] getRelCoords(double robotHeading, double currentX, double currentY) { // Camera coordinates, relative to field; x, y, heading
