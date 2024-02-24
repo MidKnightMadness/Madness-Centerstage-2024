@@ -85,38 +85,14 @@ public class MecanumDrive implements WheelRPMConfig {
         for(int i = 0; i < 4; i++){
             motorInputs [i] = ((FORWARD [i] * y) + (RIGHT [i] * x) + (CLOCKWISE [i] * rotation));
             motorInputs[i] *= POWER_MULTIPLIER * RPMMultipliers[i] * power;
-//
-//            if(Math.abs(motorInputs [i]) > maxPowerLevel){
-//                maxPowerLevel = Math.abs(motorInputs [i]);
-//            }
         }
 
-        // Normalize power inputs within envelope, dead zone 0.2
-//        double powerEnvelope = Math.sqrt(motorInputs[0]*motorInputs[0] + motorInputs[1]*motorInputs[1] + motorInputs[2]*motorInputs[2] + motorInputs[3]*motorInputs[3]) / 2.0;
-//        if(powerEnvelope > 0.2 && maxPowerLevel > 1.0){
-//            for(int i = 0; i < 4; i++){
-//                motorInputs [i] /= maxPowerLevel;
-//            }
-//        }
 
-//        telemetry.addData("Power envelope", powerEnvelope);
-//        telemetry.addData("Max Power", maxPowerLevel);
-//        telemetry.addData("X", x);
-//        telemetry.addData("Y", y);
-
-        telemetry.addData("FL", motorInputs [0]);
-        telemetry.addData("FR", motorInputs [1]);
-        telemetry.addData("BL", motorInputs [2]);
-        telemetry.addData("BR", motorInputs [3]);
-
-        setMotorPowers();
+        setAdjustedPowers(motorInputs [0], motorInputs [1], motorInputs [2], motorInputs [3]);
     }
 
     void setMotorPowers() {
-        FL.setPower( motorInputs [0]);
-        FR.setPower( motorInputs [1]);
-        BL.setPower( motorInputs [2]);
-        BR.setPower( motorInputs [3]);
+        setAdjustedPowers(motorInputs [0], motorInputs [1], motorInputs [2], motorInputs [3]);
     }
 
     // Built-in ow pass for autonomous purposes
@@ -155,18 +131,7 @@ public class MecanumDrive implements WheelRPMConfig {
             }
         }
 
-//        telemetry.addData("\nPower envelope", powerEnvelope);
-//        telemetry.addData("Max Power", maxPowerLevel);
-//        telemetry.addData("X", newX);
-//        telemetry.addData("Y", newY);
-//
-//        telemetry.addData("FL", motorInputs [0]);
-//        telemetry.addData("FR", motorInputs [1]);
-//        telemetry.addData("BL", motorInputs [2]);
-//        telemetry.addData("BR", motorInputs [3]);
-//        telemetry.addData("Low pass latency", 0.5);
-
-        setMotorPowers();
+        setAdjustedPowers(motorInputs [0], motorInputs [1], motorInputs [2], motorInputs [3]);
     }
     double[] lastPowers = {0, 0, 0, 0};
     public void setAdjustedPowers(double fl, double fr, double bl, double br) {

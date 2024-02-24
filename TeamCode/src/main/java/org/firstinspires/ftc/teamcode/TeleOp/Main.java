@@ -117,7 +117,7 @@ public class Main extends OpMode implements ServoPositions {
             else {
                 //can use gamepad 1 left bumper to toggle field oriented drive controlled by driver one x, y movements on sticks
                 mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x,
-                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2 + rotationResetConstant,
+                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI + rotationResetConstant, // We start facing left
                         telemetry);
             }
         }
@@ -181,7 +181,7 @@ public class Main extends OpMode implements ServoPositions {
 //                intakeStartTime = timer.getTime();
 //            }
 //            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
-                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.85);
+                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.925);
                 telemetry.addData("Intake Power", gamepad2.left_trigger);
 //            }
 //            rightIntakeServo.setPosition(intakeLowest);
@@ -193,7 +193,7 @@ public class Main extends OpMode implements ServoPositions {
 //        }
 
         if (gamepad2.y) {
-            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
+            rightIntakeServo.setPosition(intakeLowest + (intakeStackOfFive - intakeLowest) * -gamepad2.left_stick_y);;
         }
         else {
             rightIntakeServo.setPosition(intakeIdle);
@@ -214,9 +214,9 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.5, telemetry);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.6, telemetry);  // right
             } else {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
+                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.6, telemetry); // left
             }
         } else {
             boxServo.setPosition(boxServoNeutral);  // center

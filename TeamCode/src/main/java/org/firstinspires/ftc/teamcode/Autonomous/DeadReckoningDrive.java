@@ -318,10 +318,11 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - forwardDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + (maxPower - minPower) * Math.abs(error / 16d);
+            double power = minPower + ((error > 5)? (maxPower - minPower) : maxPower) * Math.abs(error / 16d);
 
             telemetry.addData("Error", error);
             telemetry.addData("Power", power * direction);
+            telemetry.addData("Time elapsed", timer.updateTime() - startTime);
             telemetry.addLine("-------");
 
             telemetry.update();
@@ -370,7 +371,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - forwardDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + (maxPower - minPower) * Math.abs(error / 16d);
+            double power = minPower + ((error > 5)? (maxPower - minPower) : maxPower) * Math.abs(error / 16d);
 
             telemetry.addData("Error", error);
             telemetry.addData("Power", power * direction);
@@ -453,7 +454,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - lateralDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
+            double power = minPower + ((error > 5)? (maxPower - minPower) : maxPower) * Math.abs(error / distance);
 
             telemetry.clear();
             telemetry.addData("Error", error);
@@ -499,7 +500,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - lateralDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + (maxPower - minPower) * Math.abs(error / distance);
+            double power = minPower + ((error > 5)? (maxPower - minPower) : maxPower) * Math.abs(error / distance);
 
             telemetry.clear();
             telemetry.addData("Error", error);
@@ -604,8 +605,9 @@ public class DeadReckoningDrive implements WheelRPMConfig {
         // run for time
         while (timer.getTime() - startTime < seconds) {
             setPowers(fl, fr, bl, br);
-//            telemetryMotorVelocities();
-            timer.updateTime();
+            telemetry.clear();
+            telemetry.addData("Time elapsed", timer.updateTime() - startTime);
+            telemetry.update();
         }
 
         setPowers(0, 0, 0, 0);

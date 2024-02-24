@@ -13,10 +13,11 @@ public class TestIntakeFromStack extends AutoDeadReckoning{
         sleep(250);
         deadReckoningDrive.moveForwardDistance(-2, 0.5);
         sleep(250);
+        IntakeMotor.setPower(0.5);
+        sleep(250);
         IntakeMotor.setPower(1.0);
         sleep(1000);
-        IntakeMotor.setPower(0);
-        sleep(250);
         deadReckoningDrive.moveForwardDistance(2, 0.5);
+        IntakeMotor.setPower(0);
     }
 }

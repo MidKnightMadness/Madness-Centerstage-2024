@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 
 @Autonomous
 @Deprecated
+@Disabled
 public class BlueAutoFront extends AutoDeadReckoning {
     @Override
     public void drive(){
