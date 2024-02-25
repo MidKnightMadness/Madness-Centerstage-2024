@@ -21,7 +21,7 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(88, 0.6);
             deadReckoningDrive.moveForwardDistance(25, 0.8, 88);
             sleep(500);
-            deadReckoningDrive.setTargetRotation(88, 0.3);
+            deadReckoningDrive.setTargetRotation(86, 0.3);
             deadReckoningDrive.moveForwardDistance(35, 0.8, 88, 5);
 
             // Align to backdrop
@@ -39,12 +39,12 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
-            deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
+//            deadReckoningDrive.moveForwardDistance(-2);
+//            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
 
             // Park
-            deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(-23);
+            deadReckoningDrive.moveForwardDistance(-2, 1.0);
+            deadReckoningDrive.moveRightDistance(28);
             deadReckoningDrive.moveForwardDistance(6);
 
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
@@ -53,7 +53,7 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 10d, 0.8, 3, true);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(0, 0.8);
-            deadReckoningDrive.moveForwardDistance(-10d, 0.8, 3, true);
+            deadReckoningDrive.moveForwardDistance(-10d, 0.8, 1, true);
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(93, 0.5); // Set power level for rotation adjustment on all autons to thos
@@ -66,7 +66,7 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(26d);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
-            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant + 0.5);
+            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
@@ -77,19 +77,19 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
-            deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
+//            deadReckoningDrive.moveForwardDistance(-2);
+//            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
 
             // Park
-            deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(13d);
+            deadReckoningDrive.moveForwardDistance(-2, 1.0);
+            deadReckoningDrive.moveRightDistance(14d);
             deadReckoningDrive.moveForwardDistance(6);
 
         } else {
-            deadReckoningDrive.moveForwardDistance(20, 0.6, 3, true);
-            deadReckoningDrive.moveForwardDistance(-1.5, 0.6, 3, true);
+            deadReckoningDrive.moveForwardDistance(20, 0.8, 3, true);
+            deadReckoningDrive.moveForwardDistance(-1.5, 0.8, 3, true);
 
-            deadReckoningDrive.setTargetRotation(90, 0.4);
+            deadReckoningDrive.setTargetRotation(90, 0.5);
             // Intake white pixel
 //            deadReckoningDrive.moveForwardDistance(-16, 0.6, 2, true);
 //            IntakeMotor.setPower(1.0);
@@ -115,7 +115,6 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             deadReckoningDrive.moveForwardDistance(35, 0.6, 90, 5);
 
             // Align to backdrop
-            deadReckoningDrive.moveRightDistance(1);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
@@ -128,12 +127,12 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
 
             // Hit backdrop to make sure pixel is scored
-            deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
+//            deadReckoningDrive.moveForwardDistance(-2);
+//            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
 
             // Park
-            deadReckoningDrive.moveForwardDistance(-2);
-            deadReckoningDrive.moveRightDistance(9);
+            deadReckoningDrive.moveForwardDistance(-2, 1.0);
+            deadReckoningDrive.moveRightDistance(20);
             deadReckoningDrive.moveForwardDistance(6);
         }
     }

@@ -454,7 +454,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - lateralDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + ((error > 5)? (maxPower - minPower) : maxPower) * Math.abs(error / distance);
+            double power = minPower + ((error > 5)? maxPower : maxPower - minPower) * Math.abs(error / distance);
 
             telemetry.clear();
             telemetry.addData("Error", error);
@@ -500,7 +500,7 @@ public class DeadReckoningDrive implements WheelRPMConfig {
             error = distance - lateralDisplacement;
             double direction = Math.signum(error);
 
-            double power = minPower + ((error > 5)? (maxPower - minPower) : maxPower) * Math.abs(error / distance);
+            double power = minPower + ((error > 5)? maxPower : maxPower - minPower) * Math.abs(error / distance);
 
             telemetry.clear();
             telemetry.addData("Error", error);

@@ -33,7 +33,8 @@ public class Main extends OpMode implements ServoPositions {
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
-    boolean isIntakeMode = true;
+    double [] intakeStackHeights = {intakeLowest, intakeStackOfTwo, intakeStackOfThree, intakeStackOfFour, intakeStackOfFive};
+    int intakePreset = 0; // Index from intake heights presets
     int rightSideStartingPosition = 0;
     IMU imu;
     ModernRoboticsI2cRangeSensor rangeSensor;
@@ -44,7 +45,6 @@ public class Main extends OpMode implements ServoPositions {
     boolean isUsingFieldOriented;
     ServoSmooth boxServoController;
     double rotationResetConstant = 0;
-//    OutakeColorSensors outakeColorSensors;
     Timer timer;
     double intakeServoPosition;
 
@@ -119,7 +119,7 @@ public class Main extends OpMode implements ServoPositions {
             else {
                 //can use gamepad 1 left bumper to toggle field oriented drive controlled by driver one x, y movements on sticks
                 mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x,
-                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI + rotationResetConstant, // We start facing left
+                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d + rotationResetConstant, // We start facing left
                         telemetry);
             }
         }
@@ -173,7 +173,9 @@ public class Main extends OpMode implements ServoPositions {
 
     }
 
-    boolean lastLeftTriggerPressed = false;
+    Timer intakeTimer = new Timer(); // For allowing better control of intake height
+    double intakeAdjustmentStartTime = 0.0;
+
     void handleIntakeControls() {
         double intakeDirection = gamepad2.a ? 0.4 : -1;
 //        double intakeStartTime = 0;
@@ -182,12 +184,7 @@ public class Main extends OpMode implements ServoPositions {
 //                intakeStartTime = timer.getTime();
 //            }
 //            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
-        if(Math.abs(gamepad2.left_trigger) > 0) {
-            intakeMotor.setPower(intakeDirection * 0.85);
-            telemetry.addData("Intake Power", intakeDirection * 0.85);
-        }else{
-            intakeMotor.setPower(0);
-        }
+        intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.95);
 //            rightIntakeServo.setPosition(intakeLowest);
 //            lastLeftTriggerPressed = true;
 //        }else{
@@ -196,12 +193,31 @@ public class Main extends OpMode implements ServoPositions {
 //            lastLeftTriggerPressed = false;
 //        }
 
-        if (gamepad2.y) {
-            rightIntakeServo.setPosition(intakeLowest + (intakeStackOfFive - intakeLowest) * -gamepad2.left_stick_y);;
+        if(gamepad2.dpad_left && intakePreset < 4){
+            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
+                intakeAdjustmentStartTime = timer.updateTime();
+                intakePreset++;
+            }else{
+                timer.updateTime();
+            }
+        }else if(gamepad2.dpad_right && intakePreset > 0){
+            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
+                intakeAdjustmentStartTime = timer.updateTime();
+                intakePreset--;
+            }else{
+                timer.updateTime();
+            }
         }
-        else {
-            rightIntakeServo.setPosition(intakeIdle);
-        }
+        rightIntakeServo.setPosition(intakeStackHeights [intakePreset]);
+        telemetry.addLine("\n\n\n===========================================\nIntakePosition:" + intakePreset + "\n===========================================\n\n\n");
+
+
+//        if (gamepad2.y) {
+//            rightIntakeServo.setPosition(intakeLowest + (intakeStackOfFive - intakeLowest) * -gamepad2.left_stick_y);;
+//        }
+//        else {
+//            rightIntakeServo.setPosition(intakeLowest);
+//        }
     }
 
     // For setting motor bounds and allowing automatic servo movement
@@ -218,9 +234,9 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.9, telemetry);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.4, telemetry);  // right
             } else {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.9, telemetry); // left
+                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.4, telemetry); // left
             }
         } else {
             boxServo.setPosition(boxServoNeutral);  // center

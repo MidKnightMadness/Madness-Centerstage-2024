@@ -42,7 +42,7 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 //
 //            // Park
             deadReckoningDrive.moveForwardDistance(-2, 1.0);
-            deadReckoningDrive.moveRightDistance(-23);
+            deadReckoningDrive.moveRightDistance(-21);
             deadReckoningDrive.moveForwardDistance(6);
 
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
@@ -79,7 +79,7 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 //
 //            // Park
             deadReckoningDrive.moveForwardDistance(-2, 1.0);
-            deadReckoningDrive.moveRightDistance(13d);
+            deadReckoningDrive.moveRightDistance(-16d);
             deadReckoningDrive.moveForwardDistance(6);
 
         } else {
@@ -95,8 +95,7 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(-90, 0.7);
-            deadReckoningDrive.moveRightDistance(1);
-            deadReckoningDrive.setMotorPowersForTime(2d, rammingPower, rammingPower, rammingPower, rammingPower);
+            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
@@ -113,7 +112,7 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 //
 //            // Park
             deadReckoningDrive.moveForwardDistance(-2, 1.0);
-            deadReckoningDrive.moveRightDistance(9);
+            deadReckoningDrive.moveRightDistance(-24);
             deadReckoningDrive.moveForwardDistance(6);
         }
     }

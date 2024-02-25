@@ -6,8 +6,8 @@ public interface ServoPositions {
     double wristServoFlat = 0;
 
     double boxServoNeutral = 0.5115;
-    double boxServoRight = 0.5115 - 0.75 + 0.5115;
-    double boxServoLeft = 0.75;
+    double boxServoRight = 0.5115 - 0.72 + 0.5115;
+    double boxServoLeft = 0.72;
 
     double launcherOpen = 0.5;
     double launcherClosed = 0.6;
@@ -15,7 +15,7 @@ public interface ServoPositions {
 
     double intakeIdle = 0.19;
     double intakeLowest = 0.20;
-    double intakeStackOfTwo = 0.1535;
+    double intakeStackOfTwo = 0.16;
     double intakeStackOfThree = 0.1185;
     double intakeStackOfFour = 0.1315;
     double intakeStackOfFive = 0.076;
