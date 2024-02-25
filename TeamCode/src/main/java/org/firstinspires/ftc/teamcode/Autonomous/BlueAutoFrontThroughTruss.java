@@ -1,3 +1,10 @@
+
+
+
+
+
+
+/*
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,22 +19,21 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(13d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(57, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.8, 5, true);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.8, 3, true);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 4d, 0.8, 5, true);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveForwardDistance(-12d, 0.8, 3, true);
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(88, 0.6);
-            deadReckoningDrive.moveForwardDistance(25, 0.8, 88);
+            deadReckoningDrive.moveForwardDistance(35, 0.8, 88);
             sleep(500);
-            deadReckoningDrive.setTargetRotation(86, 0.3);
-            deadReckoningDrive.moveForwardDistance(35, 0.8, 88, 5);
+            deadReckoningDrive.setTargetRotation(50, 0.4);
+            deadReckoningDrive.moveForwardDistance(25, 0.8, 60, 5);
 
             // Align to backdrop
-            deadReckoningDrive.setTargetRotation(90, 0.3);
-            deadReckoningDrive.moveRightDistance(16d);
-            deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
+            deadReckoningDrive.setTargetRotation(90, 0.8);
+            deadReckoningDrive.setMotorPowersForTime(2d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
@@ -57,14 +63,14 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
 
             // Go through stage door
             deadReckoningDrive.setTargetRotation(93, 0.5); // Set power level for rotation adjustment on all autons to thos
-            deadReckoningDrive.moveForwardDistance(30, 0.6, 0);
+            deadReckoningDrive.moveForwardDistance(35, 0.6, 0);
             sleep(500);
-            deadReckoningDrive.setTargetRotation(90, 0.25); // Set power level for rotation adjustment on all autons to thos
-            deadReckoningDrive.moveForwardDistance(30, 0.6, 90, 5);
+            deadReckoningDrive.setTargetRotation(50, 0.25); // Set power level for rotation adjustment on all autons to thos
+            deadReckoningDrive.moveForwardDistance(30, 0.6, 60, 5);
 
             // Align to backdrop
             deadReckoningDrive.setTargetRotation(90);
-            deadReckoningDrive.moveRightDistance(26d);
+            deadReckoningDrive.moveRightDistance(8);
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
             slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
@@ -111,8 +117,8 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
             // Go through stage door
             deadReckoningDrive.moveForwardDistance(30, 0.6, 90);
             sleep(2000);
-            deadReckoningDrive.setTargetRotation(93, 0.4);
-            deadReckoningDrive.moveForwardDistance(35, 0.6, 90, 5);
+            deadReckoningDrive.setTargetRotation(53, 0.4);
+            deadReckoningDrive.moveForwardDistance(35, 0.6, 60, 5);
 
             // Align to backdrop
             deadReckoningDrive.setMotorPowersForTime(1d, rammingPower, rammingPower, rammingPower, rammingPower);
@@ -143,3 +149,4 @@ public class BlueAutoFrontThroughTruss extends AutoDeadReckoning {
     }
 }
 
+*/

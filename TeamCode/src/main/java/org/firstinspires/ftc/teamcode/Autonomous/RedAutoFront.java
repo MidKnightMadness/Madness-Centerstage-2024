@@ -7,8 +7,6 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 
 
 @Autonomous
-@Deprecated
-@Disabled
 public class RedAutoFront extends AutoDeadReckoning {
     @Override
     public void drive(){

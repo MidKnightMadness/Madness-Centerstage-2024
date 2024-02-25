@@ -62,7 +62,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     CameraModes cameraMode = getAllianceColor();
     public DeadReckoningDrive deadReckoningDrive;
     public DcMotorEx IntakeMotor;
-//    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
+    //    int [] teamPropPosition = {0, 0, 0}; // Counts up detected in each position
     int teamPropPosition = 0;
     boolean lookForTeamProp = true;
 
@@ -611,17 +611,17 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         return cameraCoordinates;
     }
 
-        public SpikeMarkPositions getSpikeMarkPosition(){
-            switch(teamPropPosition){
-                case 0:
-                    return SpikeMarkPositions.LEFT;
-                case 1:
-                    return SpikeMarkPositions.RIGHT;
-                case 2:
-                    return SpikeMarkPositions.CENTER;
-            }
+    public SpikeMarkPositions getSpikeMarkPosition(){
+        switch(teamPropPosition){
+            case 0:
+                return SpikeMarkPositions.LEFT;
+            case 1:
+                return SpikeMarkPositions.RIGHT;
+            case 2:
+                return SpikeMarkPositions.CENTER;
+        }
 
-            return SpikeMarkPositions.RIGHT;
+        return SpikeMarkPositions.RIGHT;
     }
 }
 

@@ -8,6 +8,9 @@ import org.firstinspires.ftc.teamcode.Camera.CameraEnums;
 public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
     @Override
     public void drive(){
+        //parking direction, negative is to the left and positive is to the right
+        int parkDirection = -1;
+        //dif dist park for left or right
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
             deadReckoningDrive.moveForwardDistance(2d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(35, 0.8);
@@ -42,14 +45,20 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 //
 //            // Park
             deadReckoningDrive.moveForwardDistance(-2, 1.0);
-            deadReckoningDrive.moveRightDistance(-21);
+//            if (parkDirection == -1){
+            deadReckoningDrive.moveRightDistance(21*parkDirection);
+//            }
+//            else(
+//                    deadReckoningDrive.moveRightDistance(18*parkDirection);
+//
+//                    )
             deadReckoningDrive.moveForwardDistance(6);
 
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(14d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(-60, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.8, 3, true);
-            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 5d, 0.8, 3, true);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 4d, 0.8, 3, true);
+            deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 4d, 0.8, 3, true);
             deadReckoningDrive.setTargetRotation(0, 0.8);
             deadReckoningDrive.moveForwardDistance(-14d, 0.8, 1, true);
 
@@ -57,7 +66,7 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(-93, 0.6); // Set power level for rotation adjustment on all autons to thos
             deadReckoningDrive.moveForwardDistance(35, 0.6, -93);
             sleep(500);
-            deadReckoningDrive.setTargetRotation(-60, 0.25); // Set power level for rotation adjustment on all autons to thos
+            deadReckoningDrive.setTargetRotation(-50, 0.4); // Set power level for rotation adjustment on all autons to thos
             deadReckoningDrive.moveForwardDistance(25, 0.6, -90, 5);
 
             // Align to backdrop
@@ -79,7 +88,12 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 //
 //            // Park
             deadReckoningDrive.moveForwardDistance(-2, 1.0);
-            deadReckoningDrive.moveRightDistance(-16d);
+            if (parkDirection == -1) {
+                deadReckoningDrive.moveRightDistance(16d * parkDirection);
+            }
+            else{
+                deadReckoningDrive.moveRightDistance(21*parkDirection);
+            }
             deadReckoningDrive.moveForwardDistance(6);
 
         } else {
@@ -112,7 +126,11 @@ public class RedAutoFrontThroughTruss extends AutoDeadReckoning {
 //
 //            // Park
             deadReckoningDrive.moveForwardDistance(-2, 1.0);
-            deadReckoningDrive.moveRightDistance(-24);
+//test this and try again depending on how it ends up parking IT'S FINE IF IT RAMS TO THE WALL BUT NOT THE BACKDROP
+                deadReckoningDrive.moveRightDistance(24 * parkDirection);
+
+
+
             deadReckoningDrive.moveForwardDistance(6);
         }
     }
