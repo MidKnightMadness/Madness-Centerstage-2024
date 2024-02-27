@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -31,7 +33,8 @@ public class Main extends OpMode implements ServoPositions {
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
     ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
-    boolean isIntakeMode = true;
+    double [] intakeStackHeights = {intakeLowest, intakeStackOfTwo, intakeStackOfThree, intakeStackOfFour, intakeStackOfFive};
+    int intakePreset = 0; // Index from intake heights presets
     int rightSideStartingPosition = 0;
     IMU imu;
     ModernRoboticsI2cRangeSensor rangeSensor;
@@ -42,8 +45,8 @@ public class Main extends OpMode implements ServoPositions {
     boolean isUsingFieldOriented;
     ServoSmooth boxServoController;
     double rotationResetConstant = 0;
-//    OutakeColorSensors outakeColorSensors;
     Timer timer;
+    double intakeServoPosition;
 
     @Override
     public void init() {
@@ -53,7 +56,7 @@ public class Main extends OpMode implements ServoPositions {
         launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
         timer = new Timer();
 
-        init_IMU();
+                init_IMU();
 //        outakeColorSensors = new OutakeColorSensors(hardwareMap, telemetry);
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "Front Distance Sensor");
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
@@ -89,9 +92,9 @@ public class Main extends OpMode implements ServoPositions {
 
     double power = 1;
     public void handleDriverControls() {
-        telemetry.addData("Left encoder", mecanumDrive.FL.getCurrentPosition());
-        telemetry.addData("Right encoder", mecanumDrive.FR.getCurrentPosition());
-        telemetry.addData("Center encoder", mecanumDrive.BR.getCurrentPosition());
+//        telemetry.addData("Left encoder", mecanumDrive.FL.getCurrentPosition());
+//        telemetry.addData("Right encoder", mecanumDrive.FR.getCurrentPosition());
+//        telemetry.addData("Center encoder", mecanumDrive.BR.getCurrentPosition());
         if (g1RightBump.update(gamepad1.right_bumper)) {//toggle power to 0.35 or max for normal drive by clicking gamepad 1's right bumper
             gamepad1.rumble(300);
             if (power == 1) {
@@ -116,14 +119,12 @@ public class Main extends OpMode implements ServoPositions {
             else {
                 //can use gamepad 1 left bumper to toggle field oriented drive controlled by driver one x, y movements on sticks
                 mecanumDrive.FieldOrientedDrive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x,
-                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2 + rotationResetConstant,
+                        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.PI / 2d + rotationResetConstant, // We start facing left
                         telemetry);
             }
         }
 
-        if(gamepad1.dpad_up){
-            alignToBoardContinuous();
-        }
+
 
         //reset imu at 90 degrees angle(facing backstage) when a is clicked
         if (gamepad1.a) { // Temporary for field oriented drive, may come up with auto align functionality
@@ -163,27 +164,27 @@ public class Main extends OpMode implements ServoPositions {
 
 
         // launcher
-        if (gamepad2.dpad_up && gamepad2.y) {
+        if(gamepad2.dpad_up && gamepad2.y){
             launcherServo.setPosition(launcherOpen);
-            telemetry.addLine("Launching Drone");
-        }
-        else {
+            telemetry.addLine("Toggled launching Drone");
+        } else {
             launcherServo.setPosition(launcherClosed);
         }
 
     }
 
-    boolean lastLeftTriggerPressed = false;
+    Timer intakeTimer = new Timer(); // For allowing better control of intake height
+    double intakeAdjustmentStartTime = 0.0;
+
     void handleIntakeControls() {
-        double intakeDirection = gamepad2.a ? 1 : -1;
+        double intakeDirection = gamepad2.a ? 0.4 : -1;
 //        double intakeStartTime = 0;
 //        if(gamepad2.left_trigger != 0) {
 //            if(!lastLeftTriggerPressed){
 //                intakeStartTime = timer.getTime();
 //            }
 //            if(timer.getTime() - intakeStartTime < 0.25) { // Added a .25 second delay before it actually gets powered
-                intakeMotor.setPower(gamepad2.left_trigger * intakeDirection);
-//            }
+        intakeMotor.setPower(gamepad2.left_trigger * intakeDirection * 0.95);
 //            rightIntakeServo.setPosition(intakeLowest);
 //            lastLeftTriggerPressed = true;
 //        }else{
@@ -192,12 +193,31 @@ public class Main extends OpMode implements ServoPositions {
 //            lastLeftTriggerPressed = false;
 //        }
 
-        if (gamepad2.y) {
-            rightIntakeServo.setPosition(intakeLowest + (intakeHighest - intakeLowest) * gamepad2.left_stick_y);;
+        if(gamepad2.dpad_left && intakePreset < 4){
+            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
+                intakeAdjustmentStartTime = timer.updateTime();
+                intakePreset++;
+            }else{
+                timer.updateTime();
+            }
+        }else if(gamepad2.dpad_right && intakePreset > 0){
+            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
+                intakeAdjustmentStartTime = timer.updateTime();
+                intakePreset--;
+            }else{
+                timer.updateTime();
+            }
         }
-        else {
-            rightIntakeServo.setPosition(intakeDefault);
-        }
+        rightIntakeServo.setPosition(intakeStackHeights [intakePreset]);
+        telemetry.addLine("\n\n\n===========================================\nIntakePosition:" + intakePreset + "\n===========================================\n\n\n");
+
+
+//        if (gamepad2.y) {
+//            rightIntakeServo.setPosition(intakeLowest + (intakeStackOfFive - intakeLowest) * -gamepad2.left_stick_y);;
+//        }
+//        else {
+//            rightIntakeServo.setPosition(intakeLowest);
+//        }
     }
 
     // For setting motor bounds and allowing automatic servo movement
@@ -214,9 +234,9 @@ public class Main extends OpMode implements ServoPositions {
 
         if (this.gamepad2.right_bumper) {
             if (gamepad2.a) {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.5, telemetry);  // right
+                boxServoController.setServoPosition(boxServoNeutral, boxServoRight, 0.4, telemetry);  // right
             } else {
-                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.5, telemetry);
+                boxServoController.setServoPosition(boxServoNeutral, boxServoLeft, 0.4, telemetry); // left
             }
         } else {
             boxServo.setPosition(boxServoNeutral);  // center

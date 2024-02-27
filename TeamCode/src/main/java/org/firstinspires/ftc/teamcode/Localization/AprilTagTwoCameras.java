@@ -92,7 +92,6 @@ public class AprilTagTwoCameras extends LinearOpMode {
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
-
                 // Save CPU resources; can resume streaming when needed.
                 if (gamepad1.dpad_down) {
                     visionPortal.stopStreaming();
