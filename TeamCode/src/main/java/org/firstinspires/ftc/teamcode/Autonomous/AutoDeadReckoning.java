@@ -161,6 +161,7 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
     Scalar defaultRectColor = new Scalar(255, 255, 255); // white
     Scalar detectedRectColor = new Scalar(100, 150, 255); // gray
 
+    Servo launcherServo;
     @Override
     public void init() {
         // Auxillary Init
@@ -168,6 +169,9 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         thread = new Thread();
         slides = new LinearSlides(hardwareMap);
         IntakeMotor = hardwareMap.get(DcMotorEx.class, "Intake motor");
+        launcherServo = hardwareMap.get(Servo.class, "Launcher servo");
+        launcherServo.setPosition(launcherClosed);
+
         IntakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         IntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         telemetry.setAutoClear(false);
@@ -175,6 +179,9 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
         b = new ButtonToggle();
         y = new ButtonToggle();
         x = new ButtonToggle();
+
+        rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
+//        rightElbowServo.setPosition(elbowServoIn);
 
         // Init Hardware Elements
         deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
@@ -214,21 +221,21 @@ public class AutoDeadReckoning extends OpMode implements WheelRPMConfig, ServoPo
 
         telemetry.addData("Target Rotation", String.format("%.3f", targetRotation));
 
-//        if (gamepad1.dpad_up) {
-//            deadReckoningDrive.setPowersSmoothed(pow, pow, pow, pow, 0.2);
-//        }
-//        else if (gamepad1.dpad_down) {
-//            deadReckoningDrive.setPowersSmoothed(-pow, -pow, -pow, -pow, 0.2);
-//        }
-//        else if (gamepad1.dpad_right) {
-//            deadReckoningDrive.setPowersSmoothed(pow, -pow, -pow, pow, 0.2);
-//        }
-//        else if (gamepad1.dpad_left) {
-//            deadReckoningDrive.setPowersSmoothed(-pow, pow, pow, -pow, 0.2);
-//        }
-//        else {
-//            deadReckoningDrive.setPowersSmoothed(0, 0, 0, 0, 0.2);
-//        }
+        if (gamepad1.dpad_up) {
+            deadReckoningDrive.setPowersSmoothed(pow, pow, pow, pow, 0.2);
+        }
+        else if (gamepad1.dpad_down) {
+            deadReckoningDrive.setPowersSmoothed(-pow, -pow, -pow, -pow, 0.2);
+        }
+        else if (gamepad1.dpad_right) {
+            deadReckoningDrive.setPowersSmoothed(pow, -pow, -pow, pow, 0.2);
+        }
+        else if (gamepad1.dpad_left) {
+            deadReckoningDrive.setPowersSmoothed(-pow, pow, pow, -pow, 0.2);
+        }
+        else {
+            deadReckoningDrive.setPowersSmoothed(0, 0, 0, 0, 0.2);
+        }
 
         perceivedPosition = getRelCoords(Math.PI, 0, 0);
         telemetry.addLine(String.format("Current Position: [%5.2f, %5.2f]", perceivedPosition [0], perceivedPosition [1]));

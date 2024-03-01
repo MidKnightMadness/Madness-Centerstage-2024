@@ -32,20 +32,20 @@ public class BlueAutoFront extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             while(!boxServoController.setServoPosition(boxServoLeft, 1.25, telemetry)){}
-//            sleep(500);
-//            rightWristServo.setPosition(wristServoIn);
-//            boxServo.setPosition(boxServoNeutral);
-//            sleep(500);
-//            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
-//
-//            // Hit backdrop to make sure pixel is scored
+            sleep(500);
+            rightWristServo.setPosition(wristServoIn);
+            boxServo.setPosition(boxServoNeutral);
+            sleep(500);
+            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
+
+            // Hit backdrop to make sure pixel is scored
 //            deadReckoningDrive.moveForwardDistance(-2);
 //            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
-//
-//            // Park
-//            deadReckoningDrive.moveForwardDistance(-2);
-//            deadReckoningDrive.moveRightDistance(-23);
-//            deadReckoningDrive.moveForwardDistance(6);
+
+            // Park
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.moveRightDistance(-23);
+            deadReckoningDrive.moveForwardDistance(6);
 
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(2d, 0.8);
@@ -67,24 +67,24 @@ public class BlueAutoFront extends AutoDeadReckoning {
             deadReckoningDrive.setTargetRotation(90);
             deadReckoningDrive.moveRightDistance(-18d);
             deadReckoningDrive.setMotorPowersForTime(2d, rammingPower, rammingPower, rammingPower, rammingPower);
-            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant + 0.5);
+            slides.extendForTime(0.5, 0.5, slidesExtensionTimeConstant);
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
-//            sleep(500);
-//            rightWristServo.setPosition(wristServoIn);
-//            boxServo.setPosition(boxServoNeutral);
-//            sleep(500);
-//            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
-//
-//            // Hit backdrop to make sure pixel is scored
+            sleep(500);
+            rightWristServo.setPosition(wristServoIn);
+            boxServo.setPosition(boxServoNeutral);
+            sleep(500);
+            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
+
+            // Hit backdrop to make sure pixel is scored
 //            deadReckoningDrive.moveForwardDistance(-2);
 //            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
-//
-//            // Park
-//            deadReckoningDrive.moveForwardDistance(-2);
-//            deadReckoningDrive.moveRightDistance(13d);
-//            deadReckoningDrive.moveForwardDistance(6);
+
+            // Park
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.moveRightDistance(13d);
+            deadReckoningDrive.moveForwardDistance(6);
 
         } else {
             deadReckoningDrive.moveForwardDistance(20, 0.6);
@@ -105,20 +105,20 @@ public class BlueAutoFront extends AutoDeadReckoning {
             sleep(500);
             rightWristServo.setPosition(wristServoOut);
             while(!boxServoController.setServoPosition(boxServoRight, 1.25, telemetry)){}
-//            sleep(500);
-//            rightWristServo.setPosition(wristServoIn);
-//            boxServo.setPosition(boxServoNeutral);
-//            sleep(500);
-//            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
-//
-//            // Hit backdrop to make sure pixel is scored
+            sleep(500);
+            rightWristServo.setPosition(wristServoIn);
+            boxServo.setPosition(boxServoNeutral);
+            sleep(500);
+            slides.extendForTime(-0.5, -0.5, slidesExtensionTimeConstant);
+
+            // Hit backdrop to make sure pixel is scored
 //            deadReckoningDrive.moveForwardDistance(-2);
 //            deadReckoningDrive.setMotorPowersForTime(1d, 0.5, 0.5, 0.5, 0.5);
-//
-//            // Park
-//            deadReckoningDrive.moveForwardDistance(-2);
-//            deadReckoningDrive.moveRightDistance(9);
-//            deadReckoningDrive.moveForwardDistance(6);
+
+            // Park
+            deadReckoningDrive.moveForwardDistance(-2);
+            deadReckoningDrive.moveRightDistance(9);
+            deadReckoningDrive.moveForwardDistance(6);
         }
     }
 

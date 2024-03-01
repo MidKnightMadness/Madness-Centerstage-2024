@@ -32,7 +32,7 @@ public class Main extends OpMode implements ServoPositions {
     ButtonToggle g1A, g1RightBump, g1LeftBump;
     public DcMotorEx motorRight, motorLeft;
     Servo rightIntakeServo, leftIntakeServo, boxServo, rightElbowServo, rightWristServo;
-    ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X;
+    ButtonToggle g2Y, g2A, g2LeftBump, g2RightBump, g2X, g2Share;
     double [] intakeStackHeights = {intakeLowest, intakeStackOfTwo, intakeStackOfThree, intakeStackOfFour, intakeStackOfFive};
     int intakePreset = 0; // Index from intake heights presets
     int rightSideStartingPosition = 0;
@@ -62,7 +62,10 @@ public class Main extends OpMode implements ServoPositions {
         localizer = new AprilTagLocalizerTwo("Webcam 2", hardwareMap, telemetry, 0, 0);
 
         rightElbowServo = hardwareMap.get(Servo.class, "Right elbow servo");
-                g2Y = new ButtonToggle();
+        rightElbowServo.setPosition(elbowServoIn);
+
+        g2Share = new ButtonToggle();
+        g2Y = new ButtonToggle();
         g2A = new ButtonToggle();
         g2LeftBump = new ButtonToggle();
         g1A = new ButtonToggle();
@@ -154,6 +157,7 @@ public class Main extends OpMode implements ServoPositions {
     }
 
     double wristPos = wristServoIn;
+    double elbowPos = elbowServoIn;
     public void handleManipulatorControls() {
         handleIntakeControls();
         handleOuttakeControls();
@@ -161,6 +165,13 @@ public class Main extends OpMode implements ServoPositions {
         if (gamepad2.left_bumper) {
             mecanumDrive.normalDrive(power, -gamepad2.left_stick_x, gamepad2.left_stick_y, -gamepad2.right_stick_x);
         }
+
+
+//        if (g2Share.update(gamepad2.share)) {
+//            elbowPos = elbowPos == elbowServoIn ? elbowServoVertical : elbowServoIn;
+//            rightElbowServo.setPosition(elbowPos);
+//        }
+
 
 
         // launcher
@@ -192,32 +203,32 @@ public class Main extends OpMode implements ServoPositions {
 //            rightIntakeServo.setPosition(intakeDefault);
 //            lastLeftTriggerPressed = false;
 //        }
+//
+//        if(gamepad2.dpad_left && intakePreset < 4){
+//            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
+//                intakeAdjustmentStartTime = timer.updateTime();
+//                intakePreset++;
+//            }else{
+//                timer.updateTime();
+//            }
+//        }else if(gamepad2.dpad_right && intakePreset > 0){
+//            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
+//                intakeAdjustmentStartTime = timer.updateTime();
+//                intakePreset--;
+//            }else{
+//                timer.updateTime();
+//            }
+//        }
+//        rightIntakeServo.setPosition(intakeStackHeights [intakePreset]);
+//        telemetry.addLine("\n\n\n===========================================\nIntakePosition:" + intakePreset + "\n===========================================\n\n\n");
 
-        if(gamepad2.dpad_left && intakePreset < 4){
-            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
-                intakeAdjustmentStartTime = timer.updateTime();
-                intakePreset++;
-            }else{
-                timer.updateTime();
-            }
-        }else if(gamepad2.dpad_right && intakePreset > 0){
-            if(timer.updateTime() - intakeAdjustmentStartTime > 0.075){ // .25 second delay minimum for changing position
-                intakeAdjustmentStartTime = timer.updateTime();
-                intakePreset--;
-            }else{
-                timer.updateTime();
-            }
+
+        if (gamepad2.y) {
+            rightIntakeServo.setPosition(intakeLowest + (intakeStackOfFive - intakeLowest) * -gamepad2.left_stick_y);;
         }
-        rightIntakeServo.setPosition(intakeStackHeights [intakePreset]);
-        telemetry.addLine("\n\n\n===========================================\nIntakePosition:" + intakePreset + "\n===========================================\n\n\n");
-
-
-//        if (gamepad2.y) {
-//            rightIntakeServo.setPosition(intakeLowest + (intakeStackOfFive - intakeLowest) * -gamepad2.left_stick_y);;
-//        }
-//        else {
-//            rightIntakeServo.setPosition(intakeLowest);
-//        }
+        else {
+            rightIntakeServo.setPosition(intakeLowest);
+        }
     }
 
     // For setting motor bounds and allowing automatic servo movement

@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Autonomous.DeadReckoningDrive;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.firstinspires.ftc.teamcode.Utility.AverageBuffer;
 import org.firstinspires.ftc.teamcode.Utility.Vector2;
@@ -16,7 +18,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 @TeleOp(name = "Robot Encoder Benchmark", group = "Benchmark")
-@Disabled
 public class RobotEncoderBenchmark extends OpMode {
     AverageBuffer timeBuffer;
     BufferedWriter bufferedWriter;
@@ -26,35 +27,30 @@ public class RobotEncoderBenchmark extends OpMode {
     final int NUM_DATAPOINTS = 5000;
     int datapoints = 0;
 
-    Vector2 cameraResolution = new Vector2(800, 600);
 
-    final static String OUTPUT_FILE = "benchmark.csv";
+    final static String OUTPUT_FILE = "encoder.csv";
 
     DcMotor encoder1;
     DcMotor encoder2;
     DcMotor encoder3;
+    Servo intakeServo;
+
+    DeadReckoningDrive deadReckoningDrive;
 
     @Override
     public void init() {
-        encoder1 = hardwareMap.get(DcMotor.class, "encoder1");
-        encoder1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        encoder2 = hardwareMap.get(DcMotor.class, "encoder2");
-        encoder2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        encoder3 = hardwareMap.get(DcMotor.class, "encoder3");
-        encoder3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         timer = new Timer();
-        timeBuffer = new AverageBuffer(1);
-        // file initialization
-//        String directory_path = Environment.getExternalStorageDirectory().getPath()+"/"+this.FOLDER;
-
+        intakeServo = hardwareMap.get(Servo.class, "Right intake servo");
+        intakeServo.setPosition(0.066);
         String filePath = String.format("%s/FIRST/data/%s",
                 Environment.getExternalStorageDirectory().getAbsolutePath(), OUTPUT_FILE);
+
+        deadReckoningDrive = new DeadReckoningDrive(hardwareMap, telemetry);
 
         try {
             fileWriter = new FileWriter(filePath);
             bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write("Elapsed time,FPS,Delta time,pipeline,overhead\n");
+            bufferedWriter.write("Elapsed time,Encoder Position, Inches");
 
             telemetry.addLine("Successfully able to write to "+ OUTPUT_FILE);
         }
@@ -63,18 +59,34 @@ public class RobotEncoderBenchmark extends OpMode {
             telemetry.addData("Error", errorMessage);
         }
 
+
+
+
+
+
     }
 
     @Override
+    public void init_loop() {
+        telemetry.addData("Power", power);
+        power += gamepad1.left_stick_y * 0.001;
+
+    }
+    @Override
     public void start() {
-
-
         telemetry.clear();
+        deadReckoningDrive.resetEncoders();
+
     }
 
     boolean stopped = false;
+    double power = 0.3;
     @Override
     public void loop() {
+
+
+        deadReckoningDrive.setPowers(power, power, power, power);
+
         if (datapoints == NUM_DATAPOINTS) {
             if (!stopped) {
                 stop();
@@ -85,11 +97,7 @@ public class RobotEncoderBenchmark extends OpMode {
             }
         }
         else {
-            log(encoder1);
-            log(encoder2);
-            log(encoder3);
             log();
-            datapoints++;
         }
     }
     void log(DcMotor encoder) {
@@ -111,12 +119,13 @@ public class RobotEncoderBenchmark extends OpMode {
 
     void log() {
         timer.updateTime();
-        writeData(timer.getTime(), timer.getDeltaTime(), 1.0 / timer.getDeltaTime(), 0, 0);
+        deadReckoningDrive.updateDisplacement();
+        writeData(timer.getTime(), deadReckoningDrive.getTicks().y, deadReckoningDrive.getDisplacement().y);
     }
 
-    void writeData(double elapsedTime, double deltaTime, double fps, double pipeline, double overhead) {
+    void writeData(double elapsedTime, double ticks, double displacement) {
         try {
-            bufferedWriter.write(String.format("%f,%f,%f,%f,%f\n", elapsedTime, fps, deltaTime, pipeline, overhead));
+            bufferedWriter.write(String.format("%f,%f,%f\n", elapsedTime, ticks, displacement));
         }
         catch (IOException e) {
             telemetry.addData("Error", e.getMessage());

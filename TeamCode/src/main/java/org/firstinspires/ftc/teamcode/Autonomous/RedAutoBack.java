@@ -13,7 +13,7 @@ public class RedAutoBack extends AutoDeadReckoning {
         //parking direction, negative is to the left and positive is to the right
         int parkDirection = 1;
         if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.LEFT) {
-            deadReckoningDrive.moveForwardDistance(13d, 0.8);
+            deadReckoningDrive.moveForwardDistance(14d, 0.8);
             deadReckoningDrive.setTargetRotation(60, 0.8);
             deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 5d, 0.8, 5, true);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 9d, 0.8);
@@ -21,12 +21,12 @@ public class RedAutoBack extends AutoDeadReckoning {
         } else if (getSpikeMarkPosition() == CameraEnums.SpikeMarkPositions.RIGHT) {
             deadReckoningDrive.moveForwardDistance(5d, 0.8);
             deadReckoningDrive.setTargetRotation(-36, 0.8);
-            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 9d, 0.8);
+            deadReckoningDrive.moveForwardDistance(Math.sqrt(2) * 7d, 0.8);
             deadReckoningDrive.moveForwardDistance(-Math.sqrt(2) * 2d, 0.8);
             deadReckoningDrive.setTargetRotation(-93, 0.8);
         } else {
             deadReckoningDrive.moveForwardDistance(20, 0.8);
-            deadReckoningDrive.moveForwardDistance(-4, 0.8);
+            deadReckoningDrive.moveForwardDistance(-10, 0.8);
         }
 
         // go to backdrop
@@ -108,7 +108,7 @@ public class RedAutoBack extends AutoDeadReckoning {
             deadReckoningDrive.moveRightDistance(18*parkDirection);
             deadReckoningDrive.moveForwardDistance(6, 0.8);
             stop();
-        }
+       }
     }
 
     @Override

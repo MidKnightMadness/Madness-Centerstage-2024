@@ -23,5 +23,5 @@ public interface ServoPositions {
     
     double elbowServoOut = 0.719;
     double elbowServoVertical = 0.1865;
-    double elbowServoIn = 0.0455;
+    double elbowServoIn = 0;
 }
